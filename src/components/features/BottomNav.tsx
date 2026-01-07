@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, BarChart3, User, Users } from "lucide-react";
+import { Home, Calendar, BarChart3, Settings, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
   { href: "/calendar", icon: Calendar, label: "カレンダー" },
   { href: "/weight", icon: BarChart3, label: "体重" },
   { href: "/friends", icon: Users, label: "友達" },
-  { href: "/profile", icon: User, label: "プロフィール" },
+  { href: "/pets/settings", icon: Settings, label: "家族" },
 ];
 
 export function BottomNav() {

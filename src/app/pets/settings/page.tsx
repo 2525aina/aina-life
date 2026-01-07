@@ -8,6 +8,7 @@ import { useMembers } from "@/hooks/useMembers";
 import { usePets } from "@/hooks/usePets";
 import { useAuth } from "@/contexts/AuthContext";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import { usePetContext } from "@/contexts/PetContext";
 import { CustomTaskEditor } from "@/components/features/CustomTaskEditor";
 import {
   PetBasicInfoForm,
@@ -75,7 +76,8 @@ import { deleteField } from "firebase/firestore";
 function PetSettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const petId = searchParams.get("id");
+  const { selectedPet } = usePetContext();
+  const petId = searchParams.get("id") || selectedPet?.id || null;
 
   const { user } = useAuth();
   const { pets, updatePet, deletePet } = usePets();
