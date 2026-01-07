@@ -227,9 +227,14 @@ export function FriendDetailSheet({
                   出会った日
                 </p>
                 <p className="font-bold">
-                  {format(friend.metAt.toDate(), "yyyy年M月d日 (E)", {
-                    locale: ja,
-                  })}
+                  {format(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (friend.metAt as any)?.toDate?.() || new Date(friend.metAt as any),
+                    "yyyy年M月d日 (E)",
+                    {
+                      locale: ja,
+                    },
+                  )}
                 </p>
               </div>
             </div>
