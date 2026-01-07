@@ -26,6 +26,8 @@ import {
     X,
     PawPrint,
     Heart,
+    Users,
+    ListTodo,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Pet } from "@/lib/types";
@@ -34,6 +36,8 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useMembers } from "@/hooks/useMembers";
 import { usePets } from "@/hooks/usePets";
+import { useCustomTasks } from "@/hooks/useCustomTasks";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface PetDetailSheetProps {
     pet: Pet | null;
@@ -44,7 +48,8 @@ interface PetDetailSheetProps {
 
 export function PetDetailSheet({ pet, open, onClose, onEdit }: PetDetailSheetProps) {
     const { deletePet } = usePets();
-    const { isOwner } = useMembers(pet?.id || null);
+    const { isOwner, members } = useMembers(pet?.id || null);
+    const { tasks } = useCustomTasks(pet?.id || null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     if (!pet) return null;
@@ -261,6 +266,48 @@ export function PetDetailSheet({ pet, open, onClose, onEdit }: PetDetailSheetPro
                             )}
                         </div>
                     )}
+
+                    {/* Members & Tasks */}
+                    <div className="grid grid-cols-1 gap-4">
+                        {/* Members */}
+                        <div className="glass rounded-[2rem] p-5 border-white/20">
+                            <div className="flex items-center gap-2 mb-3 text-muted-foreground">
+                                <Users className="w-4 h-4" />
+                                <h3 className="text-xs font-bold uppercase tracking-wider">共有メンバー</h3>
+                            </div>
+                            <div className="flex -space-x-2 overflow-x-auto py-1 px-1">
+                                {members.filter(m => m.status === 'active').map((member) => (
+                                    <Avatar key={member.id} className="w-10 h-10 border-2 border-background ring-1 ring-white/10">
+                                        <AvatarImage src={member.userProfile?.avatarUrl} />
+                                        <AvatarFallback className="text-[10px]">
+                                            {member.userProfile?.displayName?.slice(0, 2) || "U"}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                ))}
+                                {members.length === 0 && <span className="text-xs text-muted-foreground">なし</span>}
+                            </div>
+                        </div>
+
+                        {/* Custom Tasks */}
+                        <div className="glass rounded-[2rem] p-5 border-white/20">
+                            <div className="flex items-center gap-2 mb-3 text-muted-foreground">
+                                <ListTodo className="w-4 h-4" />
+                                <h3 className="text-xs font-bold uppercase tracking-wider">カスタムタスク</h3>
+                            </div>
+                            {tasks.length > 0 ? (
+                                <div className="space-y-2">
+                                    {tasks.map(task => (
+                                        <div key={task.id} className="flex items-center gap-3 p-2 rounded-xl bg-white/30 border border-white/10">
+                                            <span className="text-lg">{task.emoji}</span>
+                                            <span className="text-sm font-medium">{task.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <span className="text-xs text-muted-foreground">なし</span>
+                            )}
+                        </div>
+                    </div>
 
                     <div className="px-2">
                         <Button onClick={onEdit} className="w-full h-14 rounded-full gradient-primary text-lg font-bold shadow-lg">
