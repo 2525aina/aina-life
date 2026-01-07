@@ -9,27 +9,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { EntryForm } from "@/components/features/EntryForm";
-import { Entry, type EntryFormData } from "@/lib/types";
+import { type EntryFormData } from "@/lib/types";
 
-interface EntryEditSheetProps {
-  entry: Entry | null;
+interface EntryNewSheetProps {
   open: boolean;
   onClose: () => void;
-  onSave: (entryId: string, data: EntryFormData) => Promise<void>;
+  onSave: (data: EntryFormData) => Promise<void>;
   isSubmitting: boolean;
+  initialType?: "diary" | "schedule";
 }
 
-export function EntryEditSheet({
-  entry,
+export function EntryNewSheet({
   open,
   onClose,
   onSave,
   isSubmitting,
-}: EntryEditSheetProps) {
-  if (!entry) return null;
-
+  initialType = "diary",
+}: EntryNewSheetProps) {
   const handleSubmit = async (data: EntryFormData) => {
-    await onSave(entry.id, data);
+    await onSave(data);
     onClose();
   };
 
@@ -50,21 +48,20 @@ export function EntryEditSheet({
             >
               <X className="w-5 h-5" />
             </Button>
-            <SheetTitle className="text-sm font-bold opacity-0">
-              編集
+            <SheetTitle className="text-sm font-bold">
+              {initialType === "diary" ? "日記を記録" : "予定を追加"}
             </SheetTitle>
-            <div className="w-9" />
+            <div className="w-9" /> {/* Spacer */}
           </div>
         </SheetHeader>
 
         {/* Content - EntryForm */}
         <div className="overflow-y-auto h-full">
           <EntryForm
-            initialData={entry}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
-            title="編集"
             hideHeader={true}
+            title={initialType === "diary" ? "日記を記録" : "予定を追加"}
           />
         </div>
       </SheetContent>

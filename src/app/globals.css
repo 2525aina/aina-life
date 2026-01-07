@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Noto Sans JP', 'Inter', system-ui, sans-serif;
+  --font-sans: "Noto Sans JP", "Inter", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -67,12 +67,12 @@
   --secondary: oklch(0.25 0.05 265);
   --secondary-foreground: oklch(0.98 0.01 265);
   --muted: oklch(0.25 0.05 265);
-  --muted-foreground: oklch(0.70 0.05 265);
+  --muted-foreground: oklch(0.7 0.05 265);
   --accent: oklch(0.25 0.05 265);
   --accent-foreground: oklch(0.98 0.01 265);
   --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.30 0.05 265);
-  --input: oklch(0.30 0.05 265);
+  --border: oklch(0.3 0.05 265);
+  --input: oklch(0.3 0.05 265);
   --ring: oklch(0.65 0.2 45);
 }
 
@@ -140,5 +140,6 @@ html {
 }
 
 body {
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
 }

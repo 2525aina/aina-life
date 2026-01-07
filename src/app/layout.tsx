@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   description: "大切な日々を記録し共有する生活日記アプリ",
   manifest: "/manifest.json",
   icons: {
-    icon: '/ogp.webp',
-    apple: '/ogp.webp',
+    icon: "/ogp.webp",
+    apple: "/ogp.webp",
   },
   openGraph: {
     title: "aina-life - 生活日記",
@@ -48,11 +48,20 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="ja" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className="min-h-screen">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthProvider>
             <PetProvider>
               {children}
