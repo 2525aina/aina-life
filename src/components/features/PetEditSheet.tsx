@@ -13,6 +13,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 // Select unused
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     Dialog,
     DialogContent,
     DialogHeader,
@@ -43,8 +50,12 @@ import {
     Edit,
     Eye,
     Crown,
-    UserPlus
+    UserPlus,
+    LogOut,
+    Mail,
+    Trash2,
 } from "lucide-react";
+
 import { useAuth } from "@/contexts/AuthContext";
 import {
     PetBasicInfoForm,
@@ -77,9 +88,9 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
         canEdit,
         canManageMembers,
         inviteMember,
-        // updateMemberRole,
-        // removeMember,
-        // leaveTeam,
+        updateMemberRole,
+        removeMember,
+        leaveTeam,
     } = useMembers(pet?.id || null);
     const { uploadPetAvatar, uploading } = useImageUpload();
 
@@ -219,7 +230,17 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
             setInviteRole("editor");
             setIsInviteDialogOpen(false);
         } catch (error) {
-            handleError(error, { context: "PetEdit.invite", fallbackMessage: "失敗しました" });
+            if (error instanceof Error && error.message === "このメールアドレスは既に招待済みまたはメンバーです") {
+                handleError(error, { context: "PetEdit.invite", fallbackMessage: "既にメンバーです", silent: true });
+                // We show silent: true error, but maybe we want toast warning?
+                // handleError displays toast unless silent? No, toast is displayed by handleError regardless of silent.
+                // silent only controls console.error.
+                // The user wants "handle the error".
+                // If the error message is already "このメールアドレスは既に招待済みまたはメンバーです", toast.error will show it.
+                // So no special handling needed for user visibility, just maybe suppress console if it's considered "normal".
+            } else {
+                handleError(error, { context: "PetEdit.invite", fallbackMessage: "失敗しました" });
+            }
         }
     };
 
@@ -243,8 +264,12 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
     const removeVetInfo = (index: number) => setPetVetInfo(petVetInfo.filter((_, i) => i !== index));
 
     const displayAvatar = removeAvatar ? null : avatarPreview || pet.avatarUrl;
-    const activeMembers = members.filter((m) => m.status === "active");
-
+    // Show all members, sort active first, then pending
+    const sortedMembers = [...members].sort((a, b) => {
+        if (a.status === 'active' && b.status !== 'active') return -1;
+        if (a.status !== 'active' && b.status === 'active') return 1;
+        return 0;
+    });
     const getRoleLabel = (role: string) => MEMBER_ROLES.find(r => r.value === role)?.label || role;
     const getRoleIcon = (role: string) => {
         switch (role) {
@@ -288,11 +313,11 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                             <TabsTrigger value="general" className="flex-1 rounded-full text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all h-9">
                                 <Settings className="w-3.5 h-3.5 mr-1.5" />基本
                             </TabsTrigger>
-                            <TabsTrigger value="members" className="flex-1 rounded-full text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all h-9">
-                                <Users className="w-3.5 h-3.5 mr-1.5" />共有
-                            </TabsTrigger>
                             <TabsTrigger value="custom" className="flex-1 rounded-full text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all h-9">
                                 <ListTodo className="w-3.5 h-3.5 mr-1.5" />タスク
+                            </TabsTrigger>
+                            <TabsTrigger value="members" className="flex-1 rounded-full text-xs font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all h-9">
+                                <Users className="w-3.5 h-3.5 mr-1.5" />共有
                             </TabsTrigger>
                             <TabsTrigger value="danger" className="flex-1 rounded-full text-xs font-bold data-[state=active]:bg-rose-500 data-[state=active]:text-white transition-all h-9">
                                 <Shield className="w-3.5 h-3.5 mr-1.5" />高度
@@ -380,21 +405,83 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                 )}
                             </div>
                             <div className="space-y-3">
-                                {activeMembers.map(member => (
+                                {sortedMembers.map(member => (
                                     <div key={member.id} className="flex items-center gap-3 p-3 rounded-2xl glass border-white/10">
                                         <Avatar className="w-10 h-10 border border-white/20">
-                                            <AvatarImage src={member.userProfile?.avatarUrl} />
+                                            <AvatarImage src={member.userProfile?.avatarUrl || member.petAvatarUrl} />
                                             <AvatarFallback>U</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-sm truncate">{member.userProfile?.displayName || "User"}</span>
-                                                {getRoleIcon(member.role)}
-                                                <span className="text-[10px] bg-primary/10 px-2 py-0.5 rounded-full text-primary">{getRoleLabel(member.role)}</span>
+                                                <span className="font-bold text-sm truncate">{member.userProfile?.displayName || member.petName || "User"}</span>
+                                                {member.status === 'pending' && <span className="text-[10px] bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full flex items-center gap-1"><Mail className="w-3 h-3" />招待中</span>}
+                                                {member.status === 'active' && getRoleIcon(member.role)}
+                                                {member.status === 'active' && <span className="text-[10px] bg-primary/10 px-2 py-0.5 rounded-full text-primary">{getRoleLabel(member.role)}</span>}
                                             </div>
                                             <p className="text-xs text-muted-foreground truncate">{member.inviteEmail}</p>
                                         </div>
-                                        {/* Role management could go here if needed, keeping it simple for now as per "Sheet" constraints, or add generic role selector if critical. User didn't ask for full member management change, just migration. I'll omit complex role changing UI for brevity unless requested, or put a simple delete. */}
+                                        {/* Role Select & Delete */}
+                                        {canManageMembers && member.status !== 'pending' && member.role !== 'owner' && (
+                                            <div className="flex items-center gap-1">
+                                                <Select
+                                                    value={member.role}
+                                                    onValueChange={(val) => updateMemberRole(member.id, val as MemberRole).catch(() => toast.error("権限変更に失敗しました"))}
+                                                >
+                                                    <SelectTrigger className="h-7 w-[70px] text-[10px] border-white/20 bg-white/20">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {MEMBER_ROLES.map(role => (
+                                                            <SelectItem key={role.value} value={role.value} className="text-xs">
+                                                                {role.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>メンバー削除</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                {member.userProfile?.displayName || "このメンバー"}を削除しますか？
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => removeMember(member.id)} className="bg-destructive rounded-full">削除</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </div>
+                                        )}
+                                        {/* Cancel Invite */}
+                                        {canManageMembers && member.status === 'pending' && (
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
+                                                        <X className="w-4 h-4" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>招待を取り消し</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            招待を取り消しますか？
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => removeMember(member.id)} className="bg-destructive rounded-full">取り消し</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -411,7 +498,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                     <h3 className="font-bold">危険な操作</h3>
                                 </div>
                                 <p className="text-sm text-muted-foreground">ペットデータを完全に削除します。この操作は取り消せません。</p>
-                                {isOwner && (
+                                {isOwner ? (
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button variant="destructive" className="w-full rounded-full font-bold">削除する</Button>
@@ -424,6 +511,26 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
                                                 <AlertDialogAction onClick={handleDeletePet} className="bg-destructive rounded-full">削除実行</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                ) : (
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="destructive" className="w-full rounded-full font-bold gap-2">
+                                                <LogOut className="w-4 h-4" /> 脱退する
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>チームから脱退しますか？</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    脱退すると、再度招待されるまでこのペットの情報にはアクセスできなくなります。
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => leaveTeam().then(onClose)} className="bg-destructive rounded-full">脱退実行</AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>
