@@ -14,12 +14,16 @@ export function useEntry(petId: string | null, entryId: string | null) {
 
   useEffect(() => {
     if (!petId || !entryId || !user) {
-      setEntry(null);
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setEntry(null);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
-    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 0);
     const entryRef = doc(db, "pets", petId, "entries", entryId);
 
     const unsubscribe = onSnapshot(
@@ -39,7 +43,10 @@ export function useEntry(petId: string | null, entryId: string | null) {
       },
     );
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, [petId, entryId, user]);
 
   return { entry, loading, error };

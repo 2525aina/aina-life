@@ -20,13 +20,8 @@ export function QuickActions() {
       ? tasks.slice(0, 4)
       : ENTRY_TAGS.slice(0, 4).map((t) => ({ name: t.label, emoji: t.emoji }));
 
-  const handleQuickAction = (_taskName: string) => {
-    // Navigate to entry creation with pre-selected tag
-    // Note: EntryForm needs to handle `tag` search param if we implement that.
-    // For now, just go to new entry.
-    // Ideally: router.push(`/entry/new?tag=${encodeURIComponent(taskName)}`);
-    // But let's check if EntryForm supports it. It might not yet.
-    // So for now, just open new entry.
+  const handleQuickAction = () => {
+    // Navigate to entry creation
     router.push("/entry/new");
   };
 
@@ -43,7 +38,7 @@ export function QuickActions() {
             backgroundColor: "rgba(255, 255, 255, 0.4)",
           }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => handleQuickAction(task.name)}
+          onClick={() => handleQuickAction()}
           className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/10 shadow-sm hover:shadow-md transition-all gap-1.5"
         >
           <span className="text-2xl drop-shadow-sm">{task.emoji}</span>

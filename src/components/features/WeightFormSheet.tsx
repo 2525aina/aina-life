@@ -46,15 +46,18 @@ export function WeightFormSheet({
   const [date, setDate] = useState<Date>(new Date());
 
   useEffect(() => {
-    if (weightItem) {
-      setValue(weightItem.value.toString());
-      setUnit(weightItem.unit);
-      setDate(weightItem.date.toDate());
-    } else {
-      setValue("");
-      setUnit("kg");
-      setDate(new Date());
-    }
+    const timer = setTimeout(() => {
+      if (weightItem) {
+        setValue(weightItem.value.toString());
+        setUnit(weightItem.unit);
+        setDate(weightItem.date.toDate());
+      } else {
+        setValue("");
+        setUnit("kg");
+        setDate(new Date());
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [weightItem, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {

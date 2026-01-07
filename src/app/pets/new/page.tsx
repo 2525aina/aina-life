@@ -1,5 +1,6 @@
 "use client";
 
+import { Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -100,11 +101,10 @@ export default function NewPetPage() {
         ...petData,
         avatarUrl: finalAvatarUrl,
         memberUids: user ? [user.uid] : [],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         createdBy: "",
         updatedBy: "",
-        createdAt: null as any,
-        updatedAt: null as any,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       });
       router.push("/dashboard");
     } catch (error) {

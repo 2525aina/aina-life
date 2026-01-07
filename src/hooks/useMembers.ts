@@ -12,8 +12,8 @@ import {
   where,
   getDocs,
   writeBatch,
-  setDoc,
   documentId,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,12 +29,16 @@ export function useMembers(petId: string | null) {
 
   useEffect(() => {
     if (!petId || !user) {
-      setMembers([]);
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setMembers([]);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
-    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(true);
+    }, 0);
     const membersQuery = query(collection(db, "pets", petId, "members"));
     const unsubscribe = onSnapshot(membersQuery, async (snapshot) => {
       const membersData = snapshot.docs.map((doc) => ({
@@ -76,10 +80,10 @@ export function useMembers(petId: string | null) {
         ...m,
         userProfile: usersMap[m.userId]
           ? {
-              displayName: usersMap[m.userId].displayName || "",
-              nickname: usersMap[m.userId].nickname,
-              avatarUrl: usersMap[m.userId].avatarUrl,
-            }
+            displayName: usersMap[m.userId].displayName || "",
+            nickname: usersMap[m.userId].nickname,
+            avatarUrl: usersMap[m.userId].avatarUrl,
+          }
           : undefined,
       }));
 
@@ -98,7 +102,10 @@ export function useMembers(petId: string | null) {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, [petId, user]);
 
   // メンバーを招待（メールアドレスで）
@@ -128,16 +135,17 @@ export function useMembers(petId: string | null) {
         throw new Error("このメールアドレスは既に招待済みまたはメンバーです");
       }
 
-      const data: any = {
+      const data: Omit<Member, "id"> = {
         userId: "", // 承諾時に設定
         inviteEmail: emailLower,
         role: role,
         status: "pending",
         invitedBy: user.uid,
-        invitedAt: serverTimestamp(),
+        invitedAt: Timestamp.now(),
+        createdBy: user.uid,
         updatedBy: user.uid,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       };
 
       if (petInfo) {

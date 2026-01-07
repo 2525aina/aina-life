@@ -17,7 +17,6 @@ import {
 import {
   doc,
   setDoc,
-  getDoc,
   serverTimestamp,
   onSnapshot,
 } from "firebase/firestore";

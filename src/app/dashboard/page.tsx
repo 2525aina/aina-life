@@ -16,6 +16,7 @@ import Image from "next/image";
 import { EntryNewSheet } from "@/components/features/EntryNewSheet";
 import { useEntries } from "@/hooks/useEntries";
 import { toast } from "sonner";
+import { EntryFormData } from "@/lib/types";
 
 export default function DashboardPage() {
   const { selectedPet } = usePetContext();
@@ -24,7 +25,7 @@ export default function DashboardPage() {
   const [isNewSheetOpen, setIsNewSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: EntryFormData) => {
     setIsSubmitting(true);
     try {
       await addEntry(data);

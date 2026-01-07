@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 // Styled Base Components
 // ==========================================
 
-interface StyledInputProps extends React.ComponentProps<typeof Input> {}
+type StyledInputProps = React.ComponentProps<typeof Input>;
 
 export const StyledInput = React.forwardRef<HTMLInputElement, StyledInputProps>(
   ({ className, ...props }, ref) => {
@@ -68,13 +68,13 @@ export const StyledSelect = ({
       <SelectContent className={cn("max-h-[300px]", className)}>
         {options
           ? options.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                <div className="flex items-center gap-2">
-                  {opt.icon}
-                  <span>{opt.label}</span>
-                </div>
-              </SelectItem>
-            ))
+            <SelectItem key={opt.value} value={opt.value}>
+              <div className="flex items-center gap-2">
+                {opt.icon}
+                <span>{opt.label}</span>
+              </div>
+            </SelectItem>
+          ))
           : children}
       </SelectContent>
     </Select>

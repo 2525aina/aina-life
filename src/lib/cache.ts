@@ -49,7 +49,7 @@ export function setCache<T>(key: string, data: T): void {
       timestamp: Date.now(),
     };
     sessionStorage.setItem(CACHE_PREFIX + key, JSON.stringify(entry));
-  } catch (_error) {
+  } catch {
     // sessionStorageがいっぱいの場合は古いキャッシュをクリア
     console.warn("[Cache] Storage full, clearing old entries");
     clearOldCache();

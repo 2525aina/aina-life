@@ -26,7 +26,8 @@ import { Trash2, Edit, Calendar, Clock, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTimeFormat } from "@/hooks/useTimeFormat";
-import { Friend } from "@/lib/types";
+import { Friend, CustomTask } from "@/lib/types";
+import Image from "next/image";
 
 interface EntryDetailSheetProps {
   entry: Entry | null;
@@ -34,7 +35,7 @@ interface EntryDetailSheetProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: (entryId: string) => Promise<void>;
-  tasks: any[];
+  tasks: CustomTask[];
   friends: Friend[];
   canEdit: boolean;
 }
@@ -192,16 +193,20 @@ export function EntryDetailSheet({
                           title={friend.name}
                         >
                           {friend.images?.[0] ? (
-                            <img
+                            <Image
                               src={friend.images[0]}
                               alt={friend.name}
+                              width={28}
+                              height={28}
                               className="w-full h-full object-cover"
                             />
                           ) : (
                             <div className="w-full h-full bg-muted flex items-center justify-center">
-                              <img
+                              <Image
                                 src="/ogp.webp"
                                 alt="No image"
+                                width={28}
+                                height={28}
                                 className="w-full h-full object-cover opacity-50 grayscale"
                               />
                             </div>
@@ -222,7 +227,7 @@ export function EntryDetailSheet({
               <div className="flex flex-wrap gap-2 mb-6 justify-center">
                 {entry.tags.map((tag) => {
                   const tagInfo =
-                    tasks.find((t: any) => t.name === tag) ||
+                    tasks.find((t) => t.name === tag) ||
                     ENTRY_TAGS.find((t) => t.value === tag);
                   return (
                     <span
@@ -231,7 +236,11 @@ export function EntryDetailSheet({
                     >
                       <span className="text-base">{tagInfo?.emoji}</span>
                       <span>
-                        {(tagInfo as any)?.name || (tagInfo as any)?.label}
+                        {tagInfo
+                          ? "name" in tagInfo
+                            ? (tagInfo as CustomTask).name
+                            : (tagInfo as { label: string }).label
+                          : tag}
                       </span>
                     </span>
                   );
@@ -260,9 +269,11 @@ export function EntryDetailSheet({
                       key={i}
                       className="aspect-square rounded-xl overflow-hidden shadow-md ring-1 ring-white/10"
                     >
-                      <img
+                      <Image
                         src={url}
                         alt=""
+                        width={200}
+                        height={200}
                         className="w-full h-full object-cover"
                       />
                     </div>

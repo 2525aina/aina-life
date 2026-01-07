@@ -31,7 +31,6 @@ import {
   User,
   Phone,
   Home,
-  Scale,
   Calendar as CalendarIcon,
   Heart,
 } from "lucide-react";
@@ -127,46 +126,49 @@ export function FriendFormSheet({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (friend && open) {
-      setName(friend.name);
-      setSpecies(friend.species || "Canis lupus familiaris");
-      setBreed(friend.breed || "");
-      setGender(friend.gender || "unknown");
-      setColor(friend.color || "");
-      setBirthday(friend.birthday?.toDate());
-      setBirthdayMode("birthday");
-      setWeight(friend.weight?.toString() || "");
-      setWeightUnit(friend.weightUnit || "kg");
-      setMetAt(friend.metAt.toDate());
-      setLocation(friend.location || "");
-      setMemo(friend.features || "");
-      setOwnerName(friend.ownerName || "");
-      setOwnerDetails(friend.ownerDetails || "");
-      setContact(friend.contact || "");
-      setAddress(friend.address || "");
-      setPreviewUrl(friend.images?.[0] || null);
-      setPendingImageFile(null);
-    } else if (open) {
-      // Reset for new friend
-      setName("");
-      setSpecies("Canis lupus familiaris");
-      setBreed("");
-      setGender("unknown");
-      setColor("");
-      setBirthday(undefined);
-      setBirthdayMode("birthday");
-      setWeight("");
-      setWeightUnit("kg");
-      setMetAt(new Date());
-      setLocation("");
-      setMemo("");
-      setOwnerName("");
-      setOwnerDetails("");
-      setContact("");
-      setAddress("");
-      setPreviewUrl(null);
-      setPendingImageFile(null);
-    }
+    const timer = setTimeout(() => {
+      if (friend && open) {
+        setName(friend.name);
+        setSpecies(friend.species || "Canis lupus familiaris");
+        setBreed(friend.breed || "");
+        setGender(friend.gender || "unknown");
+        setColor(friend.color || "");
+        setBirthday(friend.birthday?.toDate());
+        setBirthdayMode("birthday");
+        setWeight(friend.weight?.toString() || "");
+        setWeightUnit(friend.weightUnit || "kg");
+        setMetAt(friend.metAt.toDate());
+        setLocation(friend.location || "");
+        setMemo(friend.features || "");
+        setOwnerName(friend.ownerName || "");
+        setOwnerDetails(friend.ownerDetails || "");
+        setContact(friend.contact || "");
+        setAddress(friend.address || "");
+        setPreviewUrl(friend.images?.[0] || null);
+        setPendingImageFile(null);
+      } else if (open) {
+        // Reset for new friend
+        setName("");
+        setSpecies("Canis lupus familiaris");
+        setBreed("");
+        setGender("unknown");
+        setColor("");
+        setBirthday(undefined);
+        setBirthdayMode("birthday");
+        setWeight("");
+        setWeightUnit("kg");
+        setMetAt(new Date());
+        setLocation("");
+        setMemo("");
+        setOwnerName("");
+        setOwnerDetails("");
+        setContact("");
+        setAddress("");
+        setPreviewUrl(null);
+        setPendingImageFile(null);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [friend, open]);
 
   const handleImageChange = (file: File) => {

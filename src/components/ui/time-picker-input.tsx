@@ -47,7 +47,7 @@ function WheelColumn({
         containerRef.current.scrollTop = index * ITEM_HEIGHT;
       }
     }
-  }, []);
+  }, [items, value]);
 
   const handleScroll = () => {
     if (scrollTimeoutRef.current) {

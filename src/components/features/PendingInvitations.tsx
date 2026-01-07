@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { usePendingInvitations } from "@/hooks/usePendingInvitations";
 import { useMembers } from "@/hooks/useMembers";
 import type { Pet } from "@/lib/types";
@@ -113,9 +115,11 @@ function InvitationItem({
             alt={invitation.pet.name}
           />
           <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden">
-            <img
+            <Image
               src="/ogp.webp"
               alt="Pet"
+              width={40}
+              height={40}
               className="w-full h-full object-cover opacity-50 grayscale"
             />
           </AvatarFallback>

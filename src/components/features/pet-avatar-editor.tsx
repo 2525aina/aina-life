@@ -3,10 +3,8 @@
 import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCropper } from "@/components/ui/image-cropper";
-import { Button } from "@/components/ui/button";
 import { Camera, X, PawPrint } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface PetAvatarEditorProps {
   imageUrl?: string | null;

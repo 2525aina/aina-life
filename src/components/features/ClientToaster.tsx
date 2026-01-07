@@ -5,8 +5,7 @@ import { Toaster } from "sonner";
 
 export function ClientToaster() {
   const { userProfile } = useAuth();
-  const position =
-    (userProfile?.settings?.toastPosition as any) || "top-center";
+  const position = userProfile?.settings?.toastPosition || "top-center";
 
   return <Toaster position={position} richColors closeButton />;
 }

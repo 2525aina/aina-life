@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppLayout } from "@/components/features/AppLayout";
 import { useMembers } from "@/hooks/useMembers";
@@ -697,9 +698,11 @@ function PetSettingsContent() {
                                 alt={member.userProfile?.displayName}
                               />
                               <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden">
-                                <img
+                                <Image
                                   src="/ogp.webp"
                                   alt="Role"
+                                  width={48}
+                                  height={48}
                                   className="w-full h-full object-cover opacity-50 grayscale"
                                 />
                               </AvatarFallback>
@@ -710,8 +713,8 @@ function PetSettingsContent() {
                                   {member.userId === user?.uid
                                     ? `あなた`
                                     : member.userProfile?.nickname ||
-                                      member.userProfile?.displayName ||
-                                      "未登録ユーザー"}
+                                    member.userProfile?.displayName ||
+                                    "未登録ユーザー"}
                                 </span>
                                 <span
                                   className={cn(
@@ -790,7 +793,7 @@ function PetSettingsContent() {
                                                 handleRemoveMember(
                                                   member.id,
                                                   member.inviteEmail ||
-                                                    "メンバー",
+                                                  "メンバー",
                                                 )
                                               }
                                               className="bg-destructive text-destructive-foreground rounded-full"
@@ -877,49 +880,49 @@ function PetSettingsContent() {
                       activeMembers.some(
                         (m) => m.userId !== user?.uid && m.role === "owner",
                       )) && (
-                      <div className="flex items-center justify-between p-4 rounded-2xl border border-dotted border-destructive/30 hover:bg-destructive/5 transition-colors">
-                        <div>
-                          <h4 className="font-bold text-sm text-destructive">
-                            チームから脱退
-                          </h4>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            このペットの共有メンバーから抜けます。
-                          </p>
-                        </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="rounded-full"
-                            >
-                              脱退する
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                チームから脱退
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                本当にこのペットのチームから脱退しますか？
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="rounded-full">
-                                キャンセル
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={handleLeaveTeam}
-                                className="bg-destructive text-destructive-foreground rounded-full"
+                        <div className="flex items-center justify-between p-4 rounded-2xl border border-dotted border-destructive/30 hover:bg-destructive/5 transition-colors">
+                          <div>
+                            <h4 className="font-bold text-sm text-destructive">
+                              チームから脱退
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              このペットの共有メンバーから抜けます。
+                            </p>
+                          </div>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="rounded-full"
                               >
                                 脱退する
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    )}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  チームから脱退
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  本当にこのペットのチームから脱退しますか？
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="rounded-full">
+                                  キャンセル
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={handleLeaveTeam}
+                                  className="bg-destructive text-destructive-foreground rounded-full"
+                                >
+                                  脱退する
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      )}
                     {isOwner && (
                       <div className="flex items-center justify-between p-4 rounded-2xl bg-destructive/5 border border-destructive/20">
                         <div>

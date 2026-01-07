@@ -37,37 +37,40 @@ export function PetProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (petsLoading) return;
 
-    const storedPetId = localStorage.getItem("selectedPetId");
+    const timer = setTimeout(() => {
+      const storedPetId = localStorage.getItem("selectedPetId");
 
-    if (selectedPet) {
-      // Check if selected pet still exists
-      const stillExists = pets.find((p) => p.id === selectedPet.id);
-      if (!stillExists) {
-        // If current pet was deleted (or permission lost), fallback
-        const fallback = pets.length > 0 ? pets[0] : null;
-        setSelectedPet(fallback);
-      } else {
-        // Update pet data in case name/avatar changed
-        if (JSON.stringify(stillExists) !== JSON.stringify(selectedPet)) {
-          setSelectedPetState(stillExists); // Don't trigger persistence write unnecessarily loop, but here it's fine
+      if (selectedPet) {
+        // Check if selected pet still exists
+        const stillExists = pets.find((p) => p.id === selectedPet.id);
+        if (!stillExists) {
+          // If current pet was deleted (or permission lost), fallback
+          const fallback = pets.length > 0 ? pets[0] : null;
+          setSelectedPet(fallback);
+        } else {
+          // Update pet data in case name/avatar changed
+          if (JSON.stringify(stillExists) !== JSON.stringify(selectedPet)) {
+            setSelectedPetState(stillExists); // Don't trigger persistence write unnecessarily loop, but here it's fine
+          }
         }
-      }
-    } else {
-      // No pet selected currently
-      if (storedPetId) {
-        const storedPet = pets.find((p) => p.id === storedPetId);
-        if (storedPet) {
-          setSelectedPet(storedPet);
+      } else {
+        // No pet selected currently
+        if (storedPetId) {
+          const storedPet = pets.find((p) => p.id === storedPetId);
+          if (storedPet) {
+            setSelectedPet(storedPet);
+          } else if (pets.length > 0) {
+            // Stored ID not found, default to first
+            setSelectedPet(pets[0]);
+          }
         } else if (pets.length > 0) {
-          // Stored ID not found, default to first
+          // No stored ID, default to first
           setSelectedPet(pets[0]);
         }
-      } else if (pets.length > 0) {
-        // No stored ID, default to first
-        setSelectedPet(pets[0]);
       }
-    }
-    setIsInitialized(true);
+      setIsInitialized(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [pets, petsLoading, selectedPet, setSelectedPet]);
 
   return (

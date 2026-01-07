@@ -30,17 +30,22 @@ export function useFriends(petId: string | null) {
 
   useEffect(() => {
     if (!petId || !user) {
-      setFriends([]);
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setFriends([]);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     // キャッシュから初期データをロード
     const cacheKey = cacheKeys.friends(petId);
     const cached = getCache<Friend[]>(cacheKey);
     if (cached) {
-      setFriends(cached);
-      setLoading(false);
+      const timer = setTimeout(() => {
+        setFriends(cached);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     const friendsQuery = query(collection(db, "pets", petId, "friends"));
@@ -153,8 +158,10 @@ export function useFriend(petId: string | null, friendId: string) {
 
   useEffect(() => {
     if (!petId || !user || !friendId) {
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     const friendRef = doc(db, "pets", petId, "friends", friendId);

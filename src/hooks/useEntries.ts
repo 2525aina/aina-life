@@ -41,9 +41,11 @@ export function useCalendarEntries(petId: string | null, currentMonth: Date) {
 
   useEffect(() => {
     if (!petId || !user) {
-      setEntries([]);
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setEntries([]);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     const monthId = getMonthId(currentMonth);
@@ -81,10 +83,12 @@ export function useEntries(petId: string | null) {
   // Initial Load (Pagination)
   useEffect(() => {
     if (!petId || !user) {
-      setEntries([]);
-      setLoading(false);
-      setHasMore(true);
-      return;
+      const timer = setTimeout(() => {
+        setEntries([]);
+        setLoading(false);
+        setHasMore(true);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     const entriesQuery = query(

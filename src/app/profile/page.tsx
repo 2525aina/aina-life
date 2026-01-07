@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { AppLayout } from "@/components/features/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useImageUpload } from "@/hooks/useImageUpload";
@@ -433,9 +434,11 @@ export default function ProfilePage() {
                             className="object-cover"
                           />
                           <AvatarFallback className="bg-orange-100 flex items-center justify-center overflow-hidden">
-                            <img
+                            <Image
                               src="/ogp.webp"
                               alt="Pet"
+                              width={56}
+                              height={56}
                               className="w-full h-full object-cover opacity-50 grayscale"
                             />
                           </AvatarFallback>

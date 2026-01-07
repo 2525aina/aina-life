@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { PetSwitcher } from "./PetSwitcher";
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,9 +52,11 @@ export function Header() {
                     alt={userProfile?.displayName}
                   />
                   <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden">
-                    <img
+                    <Image
                       src="/ogp.webp"
                       alt="User"
+                      width={32}
+                      height={32}
                       className="w-full h-full object-cover opacity-50 grayscale"
                     />
                   </AvatarFallback>

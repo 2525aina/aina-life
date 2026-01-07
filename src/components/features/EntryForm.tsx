@@ -7,20 +7,18 @@ import { useImageUpload } from "@/hooks/useImageUpload";
 import { useCustomTasks } from "@/hooks/useCustomTasks";
 import { useFriends } from "@/hooks/useFriends";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { DatePickerDropdown } from "@/components/ui/date-picker-dropdown";
 import { TimePickerInput } from "@/components/ui/time-picker-input";
 import {
-  ENTRY_TAGS,
   type EntryTag,
   type TimeType,
   type Entry,
   type EntryFormData,
 } from "@/lib/types";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
+import Image from "next/image";
 import { Clock, ImagePlus, X, ArrowLeft, Save, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -315,12 +313,12 @@ export function EntryForm({
             </div>
             <div className="flex flex-wrap gap-2">
               {uniqueTags.map((tag) => {
-                const isSelected = tags.includes(tag.label as any);
+                const isSelected = tags.includes(tag.label as EntryTag);
                 return (
                   <button
                     key={tag.value}
                     type="button"
-                    onClick={() => toggleTag(tag.label as any)}
+                    onClick={() => toggleTag(tag.label as EntryTag)}
                     className={cn(
                       "flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border",
                       isSelected
@@ -368,16 +366,20 @@ export function EntryForm({
                         )}
                       >
                         {friend.images?.[0] ? (
-                          <img
+                          <Image
                             src={friend.images[0]}
                             alt={friend.name}
+                            width={56}
+                            height={56}
                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <img
+                            <Image
                               src="/ogp.webp"
                               alt="No image"
+                              width={56}
+                              height={56}
                               className="w-full h-full object-cover opacity-50 grayscale"
                             />
                           </div>
@@ -432,9 +434,11 @@ export function EntryForm({
                     key={i}
                     className="relative aspect-square rounded-xl overflow-hidden group"
                   >
-                    <img
+                    <Image
                       src={url}
                       alt=""
+                      width={100}
+                      height={100}
                       className="w-full h-full object-cover transition-transform group-hover:scale-110"
                     />
                     <button

@@ -7,7 +7,6 @@ import { useMembers } from "@/hooks/useMembers";
 import { useEntries, useCalendarEntries } from "@/hooks/useEntries";
 import { useFriends } from "@/hooks/useFriends";
 import { useCustomTasks } from "@/hooks/useCustomTasks";
-import { useTimeFormat } from "@/hooks/useTimeFormat";
 import { EntryDetailSheet } from "@/components/features/EntryDetailSheet";
 import { EntryEditSheet } from "@/components/features/EntryEditSheet";
 import { EntryNewSheet } from "@/components/features/EntryNewSheet";
