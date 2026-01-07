@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { PetNewSheet } from "@/components/features/PetNewSheet";
 import { PetDetailSheet } from "@/components/features/PetDetailSheet";
+import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { Pet } from "@/lib/types";
 import { differenceInYears, differenceInMonths } from "date-fns";
 
@@ -18,6 +19,7 @@ export default function PetsPage() {
     const { pets, loading } = usePets();
     const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
     const [isNewSheetOpen, setIsNewSheetOpen] = useState(false);
 
     // Helper to calculate age string
@@ -54,13 +56,6 @@ export default function PetsPage() {
                                     大切な家族の管理
                                 </p>
                             </div>
-                            <Button
-                                onClick={() => setIsNewSheetOpen(true)}
-                                size="icon"
-                                className="rounded-full w-12 h-12 shadow-lg gradient-primary hover:scale-105 transition-transform"
-                            >
-                                <Plus className="w-6 h-6 text-white" />
-                            </Button>
                         </div>
 
                         {/* List */}
@@ -128,10 +123,33 @@ export default function PetsPage() {
                     </div>
                 </div>
 
-                <PetNewSheet open={isNewSheetOpen} onClose={() => setIsNewSheetOpen(false)} />
-                <PetDetailSheet pet={selectedPet} open={isDetailOpen} onClose={() => setIsDetailOpen(false)} />
-
             </div>
+
+            {/* FAB */}
+            <div className="sticky bottom-24 z-20 flex justify-center px-4 pt-6">
+                <motion.button
+                    onClick={() => setIsNewSheetOpen(true)}
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-2 px-8 h-14 rounded-full bg-gradient-to-r from-primary to-orange-500 shadow-xl shadow-primary/30 text-white font-bold transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:brightness-110"
+                >
+                    <Plus className="w-5 h-5" />
+                    <span>家族を追加</span>
+                </motion.button>
+            </div>
+
+            <PetNewSheet open={isNewSheetOpen} onClose={() => setIsNewSheetOpen(false)} />
+            <PetDetailSheet
+                pet={selectedPet}
+                open={isDetailOpen}
+                onClose={() => setIsDetailOpen(false)}
+                onEdit={() => {
+                    setIsDetailOpen(false);
+                    setTimeout(() => setIsEditOpen(true), 100); // Short delay for smooth transition
+                }}
+            />
+            <PetEditSheet pet={selectedPet} open={isEditOpen} onClose={() => setIsEditOpen(false)} />
+
         </AppLayout>
     );
 }

@@ -31,8 +31,6 @@ import { toast } from "sonner";
 import { Pet } from "@/lib/types";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMembers } from "@/hooks/useMembers";
 import { usePets } from "@/hooks/usePets";
@@ -41,9 +39,10 @@ interface PetDetailSheetProps {
     pet: Pet | null;
     open: boolean;
     onClose: () => void;
+    onEdit: () => void;
 }
 
-export function PetDetailSheet({ pet, open, onClose }: PetDetailSheetProps) {
+export function PetDetailSheet({ pet, open, onClose, onEdit }: PetDetailSheetProps) {
     const { deletePet } = usePets();
     const { isOwner } = useMembers(pet?.id || null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -87,15 +86,14 @@ export function PetDetailSheet({ pet, open, onClose }: PetDetailSheetProps) {
                         </Button>
                         <SheetTitle className="text-sm font-bold">家族の詳細</SheetTitle>
                         <div className="flex gap-1">
-                            <Link href={`/pets/settings?id=${pet.id}`}>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="rounded-full w-9 h-9 text-muted-foreground hover:text-foreground"
-                                >
-                                    <Edit className="w-4 h-4" />
-                                </Button>
-                            </Link>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={onEdit}
+                                className="rounded-full w-9 h-9 text-muted-foreground hover:text-foreground"
+                            >
+                                <Edit className="w-4 h-4" />
+                            </Button>
                             {isOwner && (
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
@@ -221,7 +219,7 @@ export function PetDetailSheet({ pet, open, onClose }: PetDetailSheetProps) {
                     </div>
 
                     {/* Additional Info */}
-                    {(pet.color || pet.medicalNotes) && (
+                    {(pet.color || pet.medicalNotes || (pet.vetInfo && pet.vetInfo.length > 0)) && (
                         <div className="glass rounded-[2rem] p-6 shadow-lg border-white/20 space-y-4">
                             {pet.color && (
                                 <div className="flex items-center gap-3">
@@ -246,16 +244,29 @@ export function PetDetailSheet({ pet, open, onClose }: PetDetailSheetProps) {
                                     </p>
                                 </div>
                             )}
+                            {pet.vetInfo && pet.vetInfo.length > 0 && (
+                                <div className="pt-2 border-t border-dashed border-white/20">
+                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
+                                        かかりつけ医
+                                    </p>
+                                    <div className="space-y-2">
+                                        {pet.vetInfo.map((vet, idx) => (
+                                            <div key={idx} className="flex justify-between items-center text-sm">
+                                                <span className="font-bold">{vet.name}</span>
+                                                <span className="text-muted-foreground">{vet.phone}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
                     <div className="px-2">
-                        <Link href={`/pets/settings?id=${pet.id}`} className="block w-full">
-                            <Button className="w-full h-14 rounded-full gradient-primary text-lg font-bold shadow-lg">
-                                <Edit className="w-5 h-5 mr-2" />
-                                詳細設定・編集
-                            </Button>
-                        </Link>
+                        <Button onClick={onEdit} className="w-full h-14 rounded-full gradient-primary text-lg font-bold shadow-lg">
+                            <Edit className="w-5 h-5 mr-2" />
+                            詳細設定・編集
+                        </Button>
                     </div>
 
                 </div>
