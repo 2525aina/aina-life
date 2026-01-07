@@ -47,9 +47,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       <Header />
       <SideNav />
-      <main className="relative z-10 pb-32 max-w-2xl mx-auto px-4 md:ml-56">
-        {children}
-      </main>
+      <div className="md:pl-56">
+        <main className="relative z-10 pb-32 max-w-2xl mx-auto px-4">
+          {children}
+        </main>
+      </div>
       <BottomNav />
     </div>
   );

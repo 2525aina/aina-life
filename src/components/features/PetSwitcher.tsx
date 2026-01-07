@@ -13,12 +13,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown, Plus, Settings } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
 import Image from "next/image";
+import { PetNewSheet } from "@/components/features/PetNewSheet";
+import { useState, useEffect } from "react";
 
 export function PetSwitcher() {
   const { pets, loading } = usePets();
   const { selectedPet, setSelectedPet } = usePetContext();
+  const [isNewPetSheetOpen, setIsNewPetSheetOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -53,12 +55,21 @@ export function PetSwitcher() {
 
   if (pets.length === 0) {
     return (
-      <Link href="/pets/new">
-        <Button variant="outline" size="sm" className="gap-2">
+      <>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => setIsNewPetSheetOpen(true)}
+        >
           <Plus className="w-4 h-4" />
           ペットを登録
         </Button>
-      </Link>
+        <PetNewSheet
+          open={isNewPetSheetOpen}
+          onClose={() => setIsNewPetSheetOpen(false)}
+        />
+      </>
     );
   }
 
@@ -125,15 +136,20 @@ export function PetSwitcher() {
             </Link>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem asChild>
-          <Link href="/pets/new" className="gap-3 cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-              <Plus className="w-4 h-4" />
-            </div>
-            <span>新しいペットを追加</span>
-          </Link>
+        <DropdownMenuItem
+          className="gap-3 cursor-pointer"
+          onClick={() => setIsNewPetSheetOpen(true)}
+        >
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+            <Plus className="w-4 h-4" />
+          </div>
+          <span>新しいペットを追加</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
+      <PetNewSheet
+        open={isNewPetSheetOpen}
+        onClose={() => setIsNewPetSheetOpen(false)}
+      />
     </DropdownMenu>
   );
 }

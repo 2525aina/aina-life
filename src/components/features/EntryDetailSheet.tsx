@@ -74,7 +74,7 @@ export function EntryDetailSheet({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="bottom"
-        className="h-[85vh] rounded-t-3xl bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
+        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
       >
         {/* Header */}
         <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
@@ -87,7 +87,7 @@ export function EntryDetailSheet({
             >
               <X className="w-5 h-5" />
             </Button>
-            <SheetTitle className="text-sm font-bold">詳細</SheetTitle>
+            <SheetTitle className="text-sm font-bold">日記の詳細</SheetTitle>
             <div className="flex gap-1">
               {canEdit && (
                 <>

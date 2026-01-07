@@ -33,6 +33,7 @@ import {
   Home,
   Calendar as CalendarIcon,
   Heart,
+  Save,
 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
 import { format } from "date-fns";
@@ -263,7 +264,7 @@ export function FriendFormSheet({
         </SheetHeader>
 
         <div className="overflow-y-auto h-full pb-32">
-          <form onSubmit={handleSubmit} className="px-6 py-8 space-y-10">
+          <form id="friend-form" onSubmit={handleSubmit} className="px-6 py-8 space-y-10">
             {/* Image Upload */}
             <div className="flex justify-center">
               <PetAvatarEditor
@@ -515,23 +516,30 @@ export function FriendFormSheet({
               </div>
             </section>
 
-            {/* Submit Button */}
-            <div className="pt-6">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full h-16 rounded-2xl gradient-primary text-xl font-black shadow-xl shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="w-8 h-8 animate-spin" />
-                ) : friend ? (
-                  "更新する"
-                ) : (
-                  "登録する"
-                )}
-              </Button>
-            </div>
           </form>
+        </div>
+
+        {/* Sticky Submit Button */}
+        <div className="fixed bottom-8 left-0 right-0 px-6 flex justify-center pointer-events-none z-50">
+          <Button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              const form = document.querySelector("#friend-form") as HTMLFormElement;
+              if (form) form.requestSubmit();
+            }}
+            disabled={isSubmitting}
+            className="pointer-events-auto w-full max-w-sm h-14 text-lg font-bold gradient-primary shadow-xl rounded-full hover:scale-105 transition-transform"
+          >
+            {isSubmitting ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <>
+                <Save className="w-5 h-5 mr-2" />
+                {friend ? "更新する" : "登録する"}
+              </>
+            )}
+          </Button>
         </div>
       </SheetContent>
     </Sheet>
