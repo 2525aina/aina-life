@@ -69,13 +69,13 @@ function SectionHeader({
       <div
         className={cn(
           "w-8 h-8 rounded-xl flex items-center justify-center",
-          "bg-white/50 dark:bg-black/20 shadow-sm",
+          "bg-[var(--glass-bg)] shadow-sm",
         )}
       >
         {icon}
       </div>
       <span className="font-bold text-sm flex-1 text-left">{title}</span>
-      <span className="text-xs font-bold opacity-60 bg-white/30 dark:bg-black/20 px-2.5 py-1 rounded-full">
+      <span className="text-xs font-bold opacity-60 bg-[var(--glass-bg)] px-2.5 py-1 rounded-full">
         {count}
       </span>
       <ChevronDown
@@ -178,7 +178,7 @@ function EntryCard({
                 ? "bg-blue-50/80 dark:bg-blue-950/40 border-blue-200/50 dark:border-blue-800/30"
                 : entry.isCompleted
                   ? "bg-muted/30 border-muted/20 opacity-60"
-                  : "bg-white/60 dark:bg-zinc-900/60 border-white/30 dark:border-white/5 backdrop-blur-xl",
+                  : "glass border-[var(--glass-border)]",
           )}
         >
           {/* Time */}
@@ -191,7 +191,7 @@ function EntryCard({
             className={cn(
               "w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0",
               "bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5",
-              "shadow-sm border border-white/50 dark:border-white/10",
+              "shadow-sm border border-[var(--glass-border)]",
             )}
           >
             <span className="text-lg sm:text-xl">{mainEmoji}</span>

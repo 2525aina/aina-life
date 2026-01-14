@@ -39,7 +39,7 @@ export function QuickActions() {
           }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleQuickAction()}
-          className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/10 shadow-sm hover:shadow-md transition-all gap-1.5"
+          className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] shadow-sm hover:shadow-md transition-all gap-1.5"
         >
           <span className="text-2xl drop-shadow-sm">{task.emoji}</span>
           <span className="text-[10px] font-medium text-foreground/80 truncate w-full text-center">

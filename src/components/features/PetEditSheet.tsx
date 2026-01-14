@@ -314,9 +314,9 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="bottom"
-        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
+        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-[var(--glass-border)] p-0 overflow-hidden"
       >
-        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
+        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-[var(--glass-border)] px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -388,7 +388,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
               />
 
               {/* Medical & Vet - Copied logic from page */}
-              <div className="glass rounded-[2rem] p-6 shadow-sm border-white/20 space-y-6">
+              <div className="glass rounded-[2rem] p-6 shadow-sm border-[var(--glass-border)] space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-primary rounded-full" />
                   <h3 className="font-bold text-sm text-foreground/80">
@@ -405,7 +405,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                     placeholder="アレルギー、持病など..."
                     rows={3}
                     disabled={!canEdit}
-                    className="w-full rounded-xl border border-white/20 bg-white/50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                   />
                 </div>
                 <div className="space-y-3">
@@ -427,14 +427,14 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                     )}
                   </div>
                   {petVetInfo.length === 0 ? (
-                    <div className="text-xs text-center py-4 border-2 border-dashed border-white/20 rounded-xl text-muted-foreground">
+                    <div className="text-xs text-center py-4 border-2 border-dashed border-[var(--glass-border)] rounded-xl text-muted-foreground">
                       なし
                     </div>
                   ) : (
                     petVetInfo.map((vet, idx) => (
                       <div
                         key={idx}
-                        className="flex gap-2 items-start p-2 rounded-xl bg-white/40 border border-white/10"
+                        className="flex gap-2 items-start p-2 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)]"
                       >
                         <div className="grid gap-2 flex-1">
                           <Input
@@ -510,7 +510,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                         招待
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="glass border-white/20 rounded-[2rem]">
+                    <DialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                       <DialogHeader>
                         <DialogTitle>メンバー招待</DialogTitle>
                       </DialogHeader>
@@ -536,9 +536,9 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                 {sortedMembers.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center gap-3 p-3 rounded-2xl glass border-white/10"
+                    className="flex items-center gap-3 p-3 rounded-2xl glass border-[var(--glass-border)]"
                   >
-                    <Avatar className="w-10 h-10 border border-white/20">
+                    <Avatar className="w-10 h-10 border border-[var(--glass-border)]">
                       <AvatarImage
                         src={
                           member.userProfile?.avatarUrl || member.petAvatarUrl
@@ -588,7 +588,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                             ).catch(() => toast.error("権限変更に失敗しました"))
                           }
                         >
-                          <SelectTrigger className="h-7 w-[70px] text-[10px] border-white/20 bg-white/20">
+                          <SelectTrigger className="h-7 w-[70px] text-[10px] border-[var(--glass-border)] bg-[var(--glass-bg)]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -614,7 +614,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                          <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                             <AlertDialogHeader>
                               <AlertDialogTitle>メンバー削除</AlertDialogTitle>
                               <AlertDialogDescription>
@@ -649,7 +649,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                             <X className="w-4 h-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                        <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                           <AlertDialogHeader>
                             <AlertDialogTitle>招待を取り消し</AlertDialogTitle>
                             <AlertDialogDescription>
@@ -699,7 +699,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                           削除する
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                      <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                         <AlertDialogHeader>
                           <AlertDialogTitle>
                             本当に{pet.name}
@@ -733,7 +733,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                             <LogOut className="w-4 h-4" /> 脱退する
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                        <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                           <AlertDialogHeader>
                             <AlertDialogTitle>
                               本当にこのペットのチームから脱退しますか？
@@ -767,7 +767,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                         <LogOut className="w-4 h-4" /> 脱退する
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                    <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                       <AlertDialogHeader>
                         <AlertDialogTitle>
                           チームから脱退しますか？

@@ -56,12 +56,12 @@ export function PetAvatarEditor({
 
       <Avatar
         className={cn(
-          "w-32 h-32 md:w-40 md:h-40 border-4 border-white/50 dark:border-white/10 shadow-2xl relative z-10",
+          "w-32 h-32 md:w-40 md:h-40 border-4 border-[var(--glass-border)] shadow-2xl relative z-10",
           avatarClassName,
         )}
       >
         <AvatarImage src={imageUrl || undefined} className="object-cover" />
-        <AvatarFallback className="bg-white/50 dark:bg-black/20 text-4xl backdrop-blur-md">
+        <AvatarFallback className="bg-[var(--glass-bg)] text-4xl backdrop-blur-md">
           <PawPrint className="w-16 h-16 text-primary/50" />
         </AvatarFallback>
       </Avatar>

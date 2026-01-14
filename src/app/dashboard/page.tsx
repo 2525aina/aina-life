@@ -91,7 +91,7 @@ export default function DashboardPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12 w-full max-w-sm bg-white/50 dark:bg-black/20 backdrop-blur-xl rounded-3xl border border-white/20 shadow-xl p-8"
+            className="text-center py-12 w-full max-w-sm bg-[var(--glass-bg)] backdrop-blur-xl rounded-3xl border border-[var(--glass-border)] shadow-xl p-8"
           >
             <div className="w-28 h-28 mx-auto rounded-full overflow-hidden mb-6 ring-4 ring-primary/20 shadow-lg">
               <Image
@@ -163,7 +163,7 @@ export default function DashboardPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-10 h-10 sm:w-12 sm:h-12 bg-white/40 dark:bg-black/20 hover:bg-white/50 backdrop-blur-md shadow-sm border border-white/20 transition-all hover:scale-110 active:scale-95"
+                  className="rounded-full w-10 h-10 sm:w-12 sm:h-12 bg-[var(--glass-bg)] hover:bg-white/50 backdrop-blur-md shadow-sm border border-[var(--glass-border)] transition-all hover:scale-110 active:scale-95"
                 >
                   <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/80" />
                 </Button>

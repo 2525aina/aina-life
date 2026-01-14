@@ -243,10 +243,10 @@ export function FriendFormSheet({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="bottom"
-        className="h-[95vh] rounded-t-3xl bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
+        className="h-[95vh] rounded-t-3xl bg-background/95 backdrop-blur-xl border-t border-[var(--glass-border)] p-0 overflow-hidden"
       >
         {/* Header */}
-        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
+        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-[var(--glass-border)] px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -329,17 +329,17 @@ export function FriendFormSheet({
                 <div className="space-y-4 pt-2">
                   <Label className="text-xs font-bold ml-1">年齢・誕生日</Label>
                   <div className="space-y-6">
-                    <div className="flex bg-muted/30 p-1.5 rounded-2xl glass border border-white/10">
+                    <div className="flex bg-muted/30 p-1.5 rounded-2xl glass border border-[var(--glass-border)]">
                       <button
                         type="button"
-                        className={`flex-1 py-2 text-sm rounded-xl transition-all ${birthdayMode === "birthday" ? "bg-background shadow-lg font-bold text-primary border border-white/20" : "text-muted-foreground"}`}
+                        className={`flex-1 py-2 text-sm rounded-xl transition-all ${birthdayMode === "birthday" ? "bg-background shadow-lg font-bold text-primary border border-[var(--glass-border)]" : "text-muted-foreground"}`}
                         onClick={() => setBirthdayMode("birthday")}
                       >
                         誕生日
                       </button>
                       <button
                         type="button"
-                        className={`flex-1 py-2 text-sm rounded-xl transition-all ${birthdayMode === "age" ? "bg-background shadow-lg font-bold text-primary border border-white/20" : "text-muted-foreground"}`}
+                        className={`flex-1 py-2 text-sm rounded-xl transition-all ${birthdayMode === "age" ? "bg-background shadow-lg font-bold text-primary border border-[var(--glass-border)]" : "text-muted-foreground"}`}
                         onClick={() => setBirthdayMode("age")}
                       >
                         年齢から
@@ -417,7 +417,7 @@ export function FriendFormSheet({
                       value={weightUnit}
                       onValueChange={(v: "kg" | "g") => setWeightUnit(v)}
                     >
-                      <SelectTrigger className="w-24 h-14 rounded-2xl bg-white/50 border-white/20 text-lg font-bold">
+                      <SelectTrigger className="w-24 h-14 rounded-2xl bg-[var(--glass-bg)] border-[var(--glass-border)] text-lg font-bold">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -463,7 +463,7 @@ export function FriendFormSheet({
                     value={memo}
                     onChange={(e) => setMemo(e.target.value)}
                     placeholder="フレンドリー、おやつが好き、など"
-                    className="w-full bg-white/50 min-h-[120px] rounded-2xl border border-white/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="w-full bg-[var(--glass-bg)] min-h-[120px] rounded-2xl border border-[var(--glass-border)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                 </div>
               </div>

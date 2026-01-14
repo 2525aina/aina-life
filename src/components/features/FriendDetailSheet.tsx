@@ -33,6 +33,7 @@ import {
   Home,
   X,
 } from "lucide-react";
+import { Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { Friend } from "@/lib/types";
 import Image from "next/image";
@@ -228,9 +229,9 @@ export function FriendDetailSheet({
                 </p>
                 <p className="font-bold">
                   {format(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (friend.metAt as any)?.toDate?.() ||
-                      new Date(friend.metAt as any),
+                    friend.metAt instanceof Timestamp
+                      ? friend.metAt.toDate()
+                      : new Date(friend.metAt),
                     "yyyy年M月d日 (E)",
                     {
                       locale: ja,

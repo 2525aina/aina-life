@@ -83,10 +83,10 @@ export function WeightFormSheet({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="bottom"
-        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
+        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-[var(--glass-border)] p-0 overflow-hidden"
       >
         {/* Header */}
-        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
+        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-[var(--glass-border)] px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -124,14 +124,14 @@ export function WeightFormSheet({
                       placeholder="0.00"
                       value={value}
                       onChange={(e) => setValue(e.target.value)}
-                      className="h-14 text-2xl font-black rounded-2xl bg-white/50 border-white/20 focus:bg-white transition-all pl-4"
+                      className="h-14 text-2xl font-black rounded-2xl bg-[var(--glass-bg)] border-[var(--glass-border)] focus:bg-white transition-all pl-4"
                     />
                   </div>
                   <Select
                     value={unit}
                     onValueChange={(v: "kg" | "g") => setUnit(v)}
                   >
-                    <SelectTrigger className="w-24 h-14 rounded-2xl bg-white/50 border-white/20 text-lg font-bold">
+                    <SelectTrigger className="w-24 h-14 rounded-2xl bg-[var(--glass-bg)] border-[var(--glass-border)] text-lg font-bold">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -150,7 +150,7 @@ export function WeightFormSheet({
                   <DatePickerDropdown
                     date={date}
                     setDate={(d) => d && setDate(d)}
-                    className="w-full h-14 rounded-2xl bg-white/50 border-white/20 text-lg font-bold justify-start px-4"
+                    className="w-full h-14 rounded-2xl bg-[var(--glass-bg)] border-[var(--glass-border)] text-lg font-bold justify-start px-4"
                   />
                 </div>
                 <div className="space-y-4">
@@ -166,7 +166,7 @@ export function WeightFormSheet({
                       newDate.setMinutes(m);
                       setDate(newDate);
                     }}
-                    className="w-full h-14 rounded-2xl bg-white/50 border-white/20 text-lg font-bold justify-start px-4"
+                    className="w-full h-14 rounded-2xl bg-[var(--glass-bg)] border-[var(--glass-border)] text-lg font-bold justify-start px-4"
                   />
                 </div>
               </div>

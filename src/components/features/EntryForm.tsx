@@ -222,7 +222,7 @@ export function EntryForm({
       >
         <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
           {/* Type Switcher */}
-          <div className="glass-capsule p-1.5 flex shadow-lg bg-white/30 dark:bg-black/30 backdrop-blur-xl border border-white/10">
+          <div className="glass-capsule p-1.5 flex shadow-lg bg-white/30 dark:bg-black/30 backdrop-blur-xl border border-[var(--glass-border)]">
             <button
               type="button"
               onClick={() => setType("diary")}
@@ -289,7 +289,7 @@ export function EntryForm({
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-white/10"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-[var(--glass-border)]"
               >
                 <DatePickerDropdown
                   date={endDate}
@@ -323,7 +323,7 @@ export function EntryForm({
                       "flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border",
                       isSelected
                         ? "bg-primary text-white border-primary shadow-lg shadow-primary/25 scale-105"
-                        : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10 hover:border-white/20",
+                        : "bg-[var(--glass-bg)] border-[var(--glass-border)] text-muted-foreground hover:bg-white/10 hover:border-white/20",
                     )}
                   >
                     <span>{tag.emoji}</span>
@@ -407,7 +407,7 @@ export function EntryForm({
                 placeholder="タイトルを入力"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-transparent border-0 border-b border-white/10 rounded-none text-xl font-bold px-0 focus:ring-0 focus:border-primary placeholder:text-muted-foreground/30 py-2 transition-colors"
+                className="w-full bg-transparent border-0 border-b border-[var(--glass-border)] rounded-none text-xl font-bold px-0 focus:ring-0 focus:border-primary placeholder:text-muted-foreground/30 py-2 transition-colors"
               />
               <textarea
                 placeholder="詳細を入力..."
@@ -453,7 +453,7 @@ export function EntryForm({
                 {imageUrls.length < 5 && (
                   <button
                     type="button"
-                    className="aspect-square rounded-xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center hover:border-primary/50 hover:bg-primary/5 transition-all gap-1 group disabled:opacity-50"
+                    className="aspect-square rounded-xl border-2 border-dashed border-[var(--glass-border)] flex flex-col items-center justify-center hover:border-primary/50 hover:bg-primary/5 transition-all gap-1 group disabled:opacity-50"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
                   >

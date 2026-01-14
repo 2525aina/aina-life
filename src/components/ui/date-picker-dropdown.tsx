@@ -49,7 +49,7 @@ export function DatePickerDropdown({
               variant="outline"
               disabled={disabled}
               className={cn(
-                "w-full h-12 justify-start text-left font-normal pl-3 pr-10 rounded-xl bg-white/50 dark:bg-black/20 border-white/20",
+                "w-full h-12 justify-start text-left font-normal pl-3 pr-10 rounded-xl bg-[var(--glass-bg)] border-[var(--glass-border)]",
                 !date && "text-muted-foreground",
               )}
             >

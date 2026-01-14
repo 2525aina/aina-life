@@ -165,7 +165,7 @@ export default function WeightPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass rounded-[2rem] p-5 relative overflow-hidden shadow-xl ring-1 ring-white/20 flex items-center justify-between"
+              className="glass rounded-[2rem] p-5 relative overflow-hidden shadow-xl ring-1 ring-[var(--glass-border)] flex items-center justify-between"
             >
               {/* Decorative background glow */}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-primary opacity-50" />
@@ -191,7 +191,7 @@ export default function WeightPage() {
               {weightChange !== null && (
                 <div
                   className={cn(
-                    "flex flex-col items-end px-3 py-2 rounded-xl text-xs font-bold border border-white/10 backdrop-blur-sm shadow-sm ml-auto",
+                    "flex flex-col items-end px-3 py-2 rounded-xl text-xs font-bold border border-[var(--glass-border)] backdrop-blur-sm shadow-sm ml-auto",
                     weightChange > 0
                       ? "bg-red-500/5 text-red-500"
                       : weightChange < 0
@@ -224,7 +224,7 @@ export default function WeightPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass rounded-[2.5rem] p-6 w-full shadow-2xl ring-1 ring-white/10 relative"
+              className="glass rounded-[2.5rem] p-6 w-full shadow-2xl ring-1 ring-[var(--glass-border)] relative"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
@@ -317,7 +317,7 @@ export default function WeightPage() {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             return (
-                              <div className="glass-capsule px-4 py-2 border border-white/20 shadow-xl !bg-white/80 dark:!bg-black/80 backdrop-blur-xl">
+                              <div className="glass-capsule px-4 py-2 border border-[var(--glass-border)] shadow-xl !bg-white/80 dark:!bg-black/80 backdrop-blur-xl">
                                 <p className="text-[10px] text-muted-foreground font-medium mb-0.5">
                                   {data.fullDate}
                                 </p>
@@ -398,10 +398,10 @@ export default function WeightPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between p-4 rounded-2xl glass hover:bg-white/40 transition-colors border-white/20"
+                    className="flex items-center justify-between p-4 rounded-2xl glass hover:bg-white/40 transition-colors border-[var(--glass-border)]"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs ring-4 ring-white/10">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs ring-4 ring-[var(--glass-border)]">
                         {format(w.date.toDate(), "d")}
                       </div>
                       <div>
@@ -480,7 +480,7 @@ export default function WeightPage() {
         open={!!deletingWeightId}
         onOpenChange={(open) => !open && setDeletingWeightId(null)}
       >
-        <AlertDialogContent className="glass border-white/20">
+        <AlertDialogContent className="glass border-[var(--glass-border)]">
           <AlertDialogHeader>
             <AlertDialogTitle>体重記録を削除</AlertDialogTitle>
             <AlertDialogDescription>

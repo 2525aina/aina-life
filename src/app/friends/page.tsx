@@ -114,7 +114,7 @@ export default function FriendsPage() {
                 placeholder="名前、犬種、飼い主名で検索..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 h-10 bg-white/50 backdrop-blur-sm border-white/20 shadow-sm rounded-xl focus:bg-white transition-all"
+                className="pl-9 h-10 bg-[var(--glass-bg)] backdrop-blur-sm border-[var(--glass-border)] shadow-sm rounded-xl focus:bg-white transition-all"
               />
             </div>
           )}
@@ -144,7 +144,7 @@ export default function FriendsPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group relative aspect-[4/5] rounded-2xl overflow-hidden glass border-white/20 shadow-sm hover:shadow-xl transition-all duration-300"
+                    className="group relative aspect-[4/5] rounded-2xl overflow-hidden glass border-[var(--glass-border)] shadow-sm hover:shadow-xl transition-all duration-300"
                   >
                     {/* Image */}
                     <div className="absolute inset-0 bg-muted">

@@ -192,7 +192,7 @@ export function TimePickerInput({
             variant="outline"
             disabled={disabled}
             className={cn(
-              "w-full justify-start text-left font-bold pl-3 pr-3 rounded-xl bg-white/50 dark:bg-black/20 border-white/20 hover:bg-white/60 dark:hover:bg-black/30 transition-all",
+              "w-full justify-start text-left font-bold pl-3 pr-3 rounded-xl bg-[var(--glass-bg)] border-[var(--glass-border)] hover:bg-white/60 dark:hover:bg-black/30 transition-all",
               sizeClasses[size],
               !time && "text-muted-foreground font-normal",
             )}
@@ -204,7 +204,7 @@ export function TimePickerInput({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto p-6 rounded-2xl glass border-white/20"
+          className="w-auto p-6 rounded-2xl glass border-[var(--glass-border)]"
           align="start"
         >
           <div className="flex items-center gap-2">
@@ -225,7 +225,7 @@ export function TimePickerInput({
             />
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/10 flex justify-end">
+          <div className="mt-4 pt-3 border-t border-[var(--glass-border)] flex justify-end">
             <Button
               size="sm"
               className="rounded-full gradient-primary px-6"

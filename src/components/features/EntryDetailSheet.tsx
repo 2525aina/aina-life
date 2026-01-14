@@ -74,10 +74,10 @@ export function EntryDetailSheet({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="bottom"
-        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
+        className="h-[95vh] rounded-t-[2.5rem] bg-background/95 backdrop-blur-xl border-t border-[var(--glass-border)] p-0 overflow-hidden"
       >
         {/* Header */}
-        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
+        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-[var(--glass-border)] px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -109,7 +109,7 @@ export function EntryDetailSheet({
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="glass border-white/20">
+                    <AlertDialogContent className="glass border-[var(--glass-border)]">
                       <AlertDialogHeader>
                         <AlertDialogTitle>エントリーを削除</AlertDialogTitle>
                         <AlertDialogDescription>
@@ -144,7 +144,7 @@ export function EntryDetailSheet({
           >
             {/* Date & Time Badge */}
             <div className="flex justify-center mb-6">
-              <div className="glass-capsule px-4 py-2 flex flex-wrap items-center justify-center gap-2 text-xs font-bold text-foreground/80 shadow-lg backdrop-blur-xl bg-white/40 dark:bg-black/40 border border-white/20">
+              <div className="glass-capsule px-4 py-2 flex flex-wrap items-center justify-center gap-2 text-xs font-bold text-foreground/80 shadow-lg backdrop-blur-xl bg-white/40 dark:bg-black/40 border border-[var(--glass-border)]">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-primary" />{" "}
                   {format(entryDate, "M/d (E)", { locale: ja })}
@@ -178,7 +178,7 @@ export function EntryDetailSheet({
             {/* Friends */}
             {entry.friendIds && entry.friendIds.length > 0 && (
               <div className="flex justify-center mb-4">
-                <div className="glass-capsule px-3 py-1.5 flex items-center gap-3 bg-white/30 dark:bg-black/30 backdrop-blur-md border border-white/10">
+                <div className="glass-capsule px-3 py-1.5 flex items-center gap-3 bg-white/30 dark:bg-black/30 backdrop-blur-md border border-[var(--glass-border)]">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     With
                   </span>
@@ -232,7 +232,7 @@ export function EntryDetailSheet({
                   return (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 text-foreground text-sm font-bold shadow-sm backdrop-blur-md"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/40 dark:bg-white/5 border border-[var(--glass-border)] text-foreground text-sm font-bold shadow-sm backdrop-blur-md"
                     >
                       <span className="text-base">{tagInfo?.emoji}</span>
                       <span>

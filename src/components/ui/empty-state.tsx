@@ -30,7 +30,7 @@ export function EmptyState({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className={cn(
-        "text-center py-10 px-6 rounded-3xl glass border-dashed border-white/20",
+        "text-center py-10 px-6 rounded-3xl glass border-dashed border-[var(--glass-border)]",
         className,
       )}
     >
