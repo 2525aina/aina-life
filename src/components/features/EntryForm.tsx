@@ -222,7 +222,7 @@ export function EntryForm({
       >
         <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
           {/* Type Switcher */}
-          <div className="glass-capsule p-1.5 flex shadow-lg bg-white/30 dark:bg-black/30 backdrop-blur-xl border border-[var(--glass-border)]">
+          <div className="glass-capsule p-1.5 flex shadow-lg bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)]">
             <button
               type="button"
               onClick={() => setType("diary")}

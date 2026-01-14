@@ -350,7 +350,7 @@ function ProfileContent() {
                     {/* Introduction */}
                     {userProfile?.introduction && (
                       <div className="w-full px-2 sm:px-6">
-                        <div className="relative p-5 rounded-2xl bg-white/5 border border-[var(--glass-border)] text-sm leading-relaxed text-muted-foreground text-left shadow-inner">
+                        <div className="relative p-5 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm leading-relaxed text-muted-foreground text-left shadow-inner">
                           <span className="absolute top-3 left-3 text-primary/20 text-4xl font-serif leading-none">
                             “
                           </span>
@@ -445,7 +445,7 @@ function ProfileContent() {
                     <div className="flex gap-3">
                       <Button
                         variant="ghost"
-                        className="flex-1 rounded-full h-12 bg-white/50 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md shadow-lg"
+                        className="flex-1 rounded-full h-12 bg-[var(--glass-bg)] backdrop-blur-md shadow-lg"
                         onClick={handleCancelEdit}
                       >
                         キャンセル
@@ -508,7 +508,7 @@ function ProfileContent() {
                   </Link>
                 ))}
                 <Link href="/pets/new">
-                  <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--glass-border)] hover:bg-white/20 hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-white/5">
+                  <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--glass-border)] hover:bg-white/20 hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-[var(--glass-bg)]">
                     <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
                       <PawPrint className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
