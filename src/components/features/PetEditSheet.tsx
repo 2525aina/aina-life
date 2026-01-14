@@ -268,8 +268,14 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
     const sortedMembers = [...members].sort((a, b) => {
         if (a.status === 'active' && b.status !== 'active') return -1;
         if (a.status !== 'active' && b.status === 'active') return 1;
+        if (a.role === 'owner' && b.role !== 'owner') return -1;
+        if (a.role !== 'owner' && b.role === 'owner') return 1;
         return 0;
     });
+
+
+    const activeOwnersCount = members.filter(m => m.role === 'owner' && m.status === 'active').length;
+    const canOwnerLeave = activeOwnersCount > 1;
     const getRoleLabel = (role: string) => MEMBER_ROLES.find(r => r.value === role)?.label || role;
     const getRoleIcon = (role: string) => {
         switch (role) {
@@ -421,10 +427,11 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                             <p className="text-xs text-muted-foreground truncate">{member.inviteEmail}</p>
                                         </div>
                                         {/* Role Select & Delete */}
-                                        {canManageMembers && member.status !== 'pending' && member.role !== 'owner' && (
+                                        {canManageMembers && member.status !== 'pending' && (
                                             <div className="flex items-center gap-1">
                                                 <Select
                                                     value={member.role}
+                                                    disabled={member.role === 'owner' && activeOwnersCount <= 1 && member.userId === members.find(m => m.role === 'owner')?.userId}
                                                     onValueChange={(val) => updateMemberRole(member.id, val as MemberRole).catch(() => toast.error("権限変更に失敗しました"))}
                                                 >
                                                     <SelectTrigger className="h-7 w-[70px] text-[10px] border-white/20 bg-white/20">
@@ -497,23 +504,47 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                     <Shield className="w-5 h-5" />
                                     <h3 className="font-bold">危険な操作</h3>
                                 </div>
-                                <p className="text-sm text-muted-foreground">ペットデータを完全に削除します。この操作は取り消せません。</p>
+                                <p className="text-sm text-muted-foreground">これらの操作は取り消すことができません。慎重に操作してください。</p>
                                 {isOwner ? (
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="destructive" className="w-full rounded-full font-bold">削除する</Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
-                                                <AlertDialogDescription>データは復元できません。</AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
-                                                <AlertDialogAction onClick={handleDeletePet} className="bg-destructive rounded-full">削除実行</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                    <div className="space-y-4">
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" className="w-full rounded-full font-bold">削除する</Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>本当に{pet.name}を削除しますか？この操作は取り消せません。</AlertDialogTitle>
+                                                    <AlertDialogDescription>すべてのデータが永久に削除されます。</AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={handleDeletePet} className="bg-destructive rounded-full">削除実行</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+
+                                        {canOwnerLeave && (
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="outline" className="w-full rounded-full font-bold gap-2 text-destructive border-destructive/50 hover:bg-destructive/10">
+                                                        <LogOut className="w-4 h-4" /> 脱退する
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>本当にこのペットのチームから脱退しますか？</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            このペットの共有メンバーから抜けます。
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel className="rounded-full">キャンセル</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => leaveTeam().then(onClose)} className="bg-destructive rounded-full">脱退実行</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        )}
+                                    </div>
                                 ) : (
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
@@ -525,7 +556,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>チームから脱退しますか？</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    脱退すると、再度招待されるまでこのペットの情報にはアクセスできなくなります。
+                                                    このペットの共有メンバーから抜けます。
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
