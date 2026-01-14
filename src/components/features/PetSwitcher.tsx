@@ -12,16 +12,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown, Plus, Settings } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
 import { PetNewSheet } from "@/components/features/PetNewSheet";
-import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { useState, useEffect } from "react";
 
 export function PetSwitcher() {
   const { pets, loading } = usePets();
   const { selectedPet, setSelectedPet } = usePetContext();
   const [isNewPetSheetOpen, setIsNewPetSheetOpen] = useState(false);
-  const [isEditPetSheetOpen, setIsEditPetSheetOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -126,14 +125,16 @@ export function PetSwitcher() {
           ))}
           <DropdownMenuSeparator />
           {selectedPet && (
-            <DropdownMenuItem
-              onClick={() => setIsEditPetSheetOpen(true)}
-              className="gap-3 cursor-pointer"
-            >
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                <Settings className="w-4 h-4" />
-              </div>
-              <span>{selectedPet.name}の設定</span>
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/pets?petId=${selectedPet.id}`}
+                className="gap-3 cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                  <Settings className="w-4 h-4" />
+                </div>
+                <span>{selectedPet.name}の設定</span>
+              </Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
@@ -152,13 +153,8 @@ export function PetSwitcher() {
         open={isNewPetSheetOpen}
         onClose={() => setIsNewPetSheetOpen(false)}
       />
-
-      <PetEditSheet
-        pet={selectedPet}
-        open={isEditPetSheetOpen}
-        onClose={() => setIsEditPetSheetOpen(false)}
-      />
     </>
   );
 }
+
 

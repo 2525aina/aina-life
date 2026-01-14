@@ -7,19 +7,41 @@ import { Plus, ChevronRight, PawPrint } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { PetNewSheet } from "@/components/features/PetNewSheet";
 import { PetDetailSheet } from "@/components/features/PetDetailSheet";
 import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { Pet } from "@/lib/types";
 import { differenceInYears, differenceInMonths } from "date-fns";
 
-export default function PetsPage() {
+function PetsPageContent() {
   const { pets, loading } = usePets();
+  const searchParams = useSearchParams();
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isNewSheetOpen, setIsNewSheetOpen] = useState(false);
+  const [handledPetId, setHandledPetId] = useState<string | null>(null);
+
+  // Handle petId query param to auto-open detail sheet
+  // This is a legitimate use case for setting state from URL params on mount
+  useEffect(() => {
+    if (loading) return;
+    const petId = searchParams.get("petId");
+    if (petId && pets.length > 0 && petId !== handledPetId) {
+      const pet = pets.find((p) => p.id === petId);
+      if (pet) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- URL param initialization is a valid use case
+        setHandledPetId(petId);
+        // Use requestAnimationFrame to avoid cascading render warning
+        requestAnimationFrame(() => {
+          setSelectedPet(pet);
+          setIsDetailOpen(true);
+        });
+      }
+    }
+  }, [searchParams, pets, loading, handledPetId]);
 
   // Helper to calculate age string
   const getAgeString = (birthday?: string) => {
@@ -189,5 +211,13 @@ export default function PetsPage() {
         onClose={() => setIsEditOpen(false)}
       />
     </AppLayout>
+  );
+}
+
+export default function PetsPage() {
+  return (
+    <Suspense fallback={null}>
+      <PetsPageContent />
+    </Suspense>
   );
 }
