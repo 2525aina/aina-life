@@ -62,6 +62,8 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { PetAvatarEditor } from "@/components/features/pet-avatar-editor";
+import { PetEditSheet } from "@/components/features/PetEditSheet";
+import type { Pet } from "@/lib/types";
 
 function ProfileContent() {
   const { user, userProfile, signOut } = useAuth();
@@ -91,6 +93,7 @@ function ProfileContent() {
   const [removeAvatar, setRemoveAvatar] = useState(false);
   const [confirmDeleteAvatarOpen, setConfirmDeleteAvatarOpen] = useState(false);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
 
   useEffect(() => {
     if (userProfile) {
@@ -475,37 +478,39 @@ function ProfileContent() {
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {pets.map((pet) => (
-                  <Link key={pet.id} href={`/pets/settings?id=${pet.id}`}>
-                    <div className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] hover:scale-[1.02] transition-all duration-300 group shadow-sm">
-                      <Avatar className="w-14 h-14 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">
-                        <AvatarImage
-                          src={pet.avatarUrl}
-                          alt={pet.name}
-                          className="object-cover"
+                  <button
+                    key={pet.id}
+                    onClick={() => setEditingPet(pet)}
+                    className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] hover:scale-[1.02] transition-all duration-300 group shadow-sm text-left w-full"
+                  >
+                    <Avatar className="w-14 h-14 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">
+                      <AvatarImage
+                        src={pet.avatarUrl}
+                        alt={pet.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-orange-100 flex items-center justify-center overflow-hidden">
+                        <Image
+                          src="/ogp.webp"
+                          alt="Pet"
+                          width={56}
+                          height={56}
+                          className="w-full h-full object-cover opacity-50 grayscale"
                         />
-                        <AvatarFallback className="bg-orange-100 flex items-center justify-center overflow-hidden">
-                          <Image
-                            src="/ogp.webp"
-                            alt="Pet"
-                            width={56}
-                            height={56}
-                            className="w-full h-full object-cover opacity-50 grayscale"
-                          />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-base truncate group-hover:text-primary transition-colors">
-                          {pet.name}
-                        </p>
-                        <p className="text-xs font-bold text-muted-foreground truncate">
-                          {pet.breed || "犬種未設定"}
-                        </p>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/20 flex items-center justify-center">
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-                      </div>
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-base truncate group-hover:text-primary transition-colors">
+                        {pet.name}
+                      </p>
+                      <p className="text-xs font-bold text-muted-foreground truncate">
+                        {pet.breed || "犬種未設定"}
+                      </p>
                     </div>
-                  </Link>
+                    <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/20 flex items-center justify-center">
+                      <ChevronRight className="w-4 h-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                  </button>
                 ))}
                 <Link href="/pets/new">
                   <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--glass-border)] hover:bg-[var(--glass-border)] hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-[var(--glass-bg)]">
@@ -657,6 +662,13 @@ function ProfileContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Pet Edit Sheet */}
+      <PetEditSheet
+        pet={editingPet}
+        open={!!editingPet}
+        onClose={() => setEditingPet(null)}
+      />
     </div>
   );
 }

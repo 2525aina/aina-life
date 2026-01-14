@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import Image from "next/image";
 import { EntryNewSheet } from "@/components/features/EntryNewSheet";
+import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { useEntries } from "@/hooks/useEntries";
 import { toast } from "sonner";
 import { EntryFormData } from "@/lib/types";
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   const { canEdit } = useMembers(selectedPet?.id || null);
   const { addEntry } = useEntries(selectedPet?.id || null);
   const [isNewSheetOpen, setIsNewSheetOpen] = useState(false);
+  const [isEditPetSheetOpen, setIsEditPetSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showProfileAlert, setShowProfileAlert] = useState(true);
 
@@ -159,15 +161,14 @@ export default function DashboardPage() {
                   <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/80" />
                 </Button>
               </Link>
-              <Link href={`/pets/settings?id=${selectedPet.id}`}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full w-10 h-10 sm:w-12 sm:h-12 bg-[var(--glass-bg)] hover:bg-white/50 backdrop-blur-md shadow-sm border border-[var(--glass-border)] transition-all hover:scale-110 active:scale-95"
-                >
-                  <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/80" />
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditPetSheetOpen(true)}
+                className="rounded-full w-10 h-10 sm:w-12 sm:h-12 bg-[var(--glass-bg)] hover:bg-white/50 backdrop-blur-md shadow-sm border border-[var(--glass-border)] transition-all hover:scale-110 active:scale-95"
+              >
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/80" />
+              </Button>
             </div>
           </div>
         </div>
@@ -236,7 +237,14 @@ export default function DashboardPage() {
           onSave={handleSave}
           isSubmitting={isSubmitting}
         />
+
+        <PetEditSheet
+          pet={selectedPet}
+          open={isEditPetSheetOpen}
+          onClose={() => setIsEditPetSheetOpen(false)}
+        />
       </div>
     </AppLayout>
   );
 }
+
