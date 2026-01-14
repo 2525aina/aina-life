@@ -35,7 +35,7 @@ export function QuickActions() {
           transition={{ delay: 0.1 * index + 0.3 }}
           whileHover={{
             scale: 1.05,
-            backgroundColor: "rgba(255, 255, 255, 0.4)",
+            backgroundColor: "var(--glass-highlight)",
           }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleQuickAction()}
