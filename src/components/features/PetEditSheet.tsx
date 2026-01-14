@@ -345,6 +345,16 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                 setPendingAvatarFile(null);
                 setRemoveAvatar(false);
               }}
+              onBreedSelect={(breed, species, imageUrl) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  species,
+                  breed,
+                }));
+                setAvatarPreview(imageUrl);
+                setPendingAvatarFile(null);
+                setRemoveAvatar(false);
+              }}
               breed={formData.breed}
               disabled={!canEdit || uploading}
             />

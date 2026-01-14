@@ -169,6 +169,20 @@ export function PetNewSheet({ open, onClose }: PetNewSheetProps) {
                 imageUrl={avatarPreview}
                 onImageChange={handleImageChange}
                 onImageRemove={handleImageRemove}
+                onSampleImageSelect={(url) => {
+                  setAvatarPreview(url);
+                  setAvatarFile(null);
+                }}
+                onBreedSelect={(breed, species, imageUrl) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    species,
+                    breed,
+                  }));
+                  setAvatarPreview(imageUrl);
+                  setAvatarFile(null);
+                }}
+                breed={formData.breed}
                 disabled={isSubmitting || uploading}
               />
             </div>

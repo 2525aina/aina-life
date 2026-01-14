@@ -32,7 +32,7 @@ export const BREED_IMAGES: Record<string, BreedImage[]> = {
         // TODO: Unsplash で「shiba inu」を検索して画像URLを追加
         // { url: "https://images.unsplash.com/photo-xxx?w=400&h=400&fit=crop" },
     ],
-    豆柴: [],
+    豆柴: [{url: "http://127.0.0.1:9199/v0/b/aina-life.firebasestorage.app/o/pets%2FxizmhRJDg1fui2vsKLKI%2Favatar%2F1767768078773.webp?alt=media&token=da950ba6-e61b-4677-87dc-5545a11d204e"}],
     秋田犬: [],
     甲斐犬: [],
     紀州犬: [],

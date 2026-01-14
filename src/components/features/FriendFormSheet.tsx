@@ -279,6 +279,12 @@ export function FriendFormSheet({
                   setPreviewUrl(url);
                   setPendingImageFile(null);
                 }}
+                onBreedSelect={(selectedBreed, selectedSpecies, imageUrl) => {
+                  setSpecies(selectedSpecies);
+                  setBreed(selectedBreed);
+                  setPreviewUrl(imageUrl);
+                  setPendingImageFile(null);
+                }}
                 breed={breed}
                 disabled={isSubmitting}
               />

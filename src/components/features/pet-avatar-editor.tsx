@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCropper } from "@/components/ui/image-cropper";
 import { SampleImageButton } from "@/components/ui/sample-image-picker";
+import { BrowseAllImagesButton } from "@/components/ui/breed-image-browser";
 import { Camera, X, PawPrint } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ interface PetAvatarEditorProps {
   onImageChange: (file: File) => void;
   onImageRemove: () => void;
   onSampleImageSelect?: (imageUrl: string) => void;
+  onBreedSelect?: (breed: string, species: string, imageUrl: string) => void;
   breed?: string;
   disabled?: boolean;
   className?: string;
@@ -24,6 +26,7 @@ export function PetAvatarEditor({
   onImageChange,
   onImageRemove,
   onSampleImageSelect,
+  onBreedSelect,
   breed,
   disabled = false,
   className,
@@ -58,6 +61,16 @@ export function PetAvatarEditor({
   const handleSampleImageSelect = (sampleUrl: string) => {
     if (onSampleImageSelect) {
       onSampleImageSelect(sampleUrl);
+    }
+  };
+
+  const handleBreedSelect = (
+    selectedBreed: string,
+    species: string,
+    imageUrl: string
+  ) => {
+    if (onBreedSelect) {
+      onBreedSelect(selectedBreed, species, imageUrl);
     }
   };
 
@@ -118,15 +131,27 @@ export function PetAvatarEditor({
         />
       </div>
 
-      {/* Sample Image Button */}
-      {!disabled && breed && onSampleImageSelect && (
-        <SampleImageButton
-          breed={breed}
-          onSelect={handleSampleImageSelect}
-          className="text-sm"
-        />
+      {/* Buttons */}
+      {!disabled && (
+        <div className="flex flex-col items-center gap-2">
+          {/* Sample Image Button - 品種が選択されている場合 */}
+          {breed && onSampleImageSelect && (
+            <SampleImageButton
+              breed={breed}
+              onSelect={handleSampleImageSelect}
+              className="text-sm"
+            />
+          )}
+
+          {/* Browse All Images Button - 画像から品種を選ぶ */}
+          {onBreedSelect && (
+            <BrowseAllImagesButton
+              onSelect={handleBreedSelect}
+              className="text-sm text-muted-foreground"
+            />
+          )}
+        </div>
       )}
     </div>
   );
 }
-
