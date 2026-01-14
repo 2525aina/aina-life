@@ -50,9 +50,7 @@ export function EntryEditSheet({
             >
               <X className="w-5 h-5" />
             </Button>
-            <SheetTitle className="text-sm font-bold">
-              日記を編集
-            </SheetTitle>
+            <SheetTitle className="text-sm font-bold">日記を編集</SheetTitle>
             <div className="w-9" />
           </div>
         </SheetHeader>

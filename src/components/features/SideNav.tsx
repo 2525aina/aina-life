@@ -17,7 +17,7 @@ export function SideNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden md:flex flex-col fixed left-0 top-14 bottom-0 w-56 bg-background/80 backdrop-blur-xl border-r border-white/10 p-4 z-40">
+    <nav className="hidden md:flex flex-col fixed left-0 top-14 bottom-0 w-56 bg-background/80 backdrop-blur-xl border-r border-[var(--glass-border)] p-4 z-40">
       <div className="space-y-1">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);

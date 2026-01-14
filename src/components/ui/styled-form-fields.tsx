@@ -24,7 +24,7 @@ export const StyledInput = React.forwardRef<HTMLInputElement, StyledInputProps>(
       <Input
         ref={ref}
         className={cn(
-          "h-12 rounded-xl bg-white/50 dark:bg-black/20 border-white/20 focus:scale-[1.01] transition-transform",
+          "h-12 rounded-xl bg-[var(--glass-bg)] border-[var(--glass-border)] focus:scale-[1.01] transition-transform",
           className,
         )}
         {...props}
@@ -59,7 +59,7 @@ export const StyledSelect = ({
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          "h-12 rounded-xl bg-white/50 dark:bg-black/20 border-white/20",
+          "h-12 rounded-xl bg-[var(--glass-bg)] border-[var(--glass-border)]",
           triggerClassName,
         )}
       >
@@ -68,13 +68,13 @@ export const StyledSelect = ({
       <SelectContent className={cn("max-h-[300px]", className)}>
         {options
           ? options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              <div className="flex items-center gap-2">
-                {opt.icon}
-                <span>{opt.label}</span>
-              </div>
-            </SelectItem>
-          ))
+              <SelectItem key={opt.value} value={opt.value}>
+                <div className="flex items-center gap-2">
+                  {opt.icon}
+                  <span>{opt.label}</span>
+                </div>
+              </SelectItem>
+            ))
           : children}
       </SelectContent>
     </Select>

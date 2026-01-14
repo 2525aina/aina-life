@@ -69,12 +69,18 @@ export default function DashboardPage() {
                   <UserIcon className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-sm mb-1">プロフィールを完成させましょう</h3>
+                  <h3 className="font-bold text-sm mb-1">
+                    プロフィールを完成させましょう
+                  </h3>
                   <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
                     ニックネームを設定すると、共有メンバーに分かりやすく表示されます。
                   </p>
                   <Link href="/profile?edit=true">
-                    <Button size="sm" variant="outline" className="rounded-full text-xs h-8 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full text-xs h-8 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600"
+                    >
                       設定する
                     </Button>
                   </Link>
@@ -185,12 +191,18 @@ export default function DashboardPage() {
                   <UserIcon className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-sm mb-1">プロフィールを完成させましょう</h3>
+                  <h3 className="font-bold text-sm mb-1">
+                    プロフィールを完成させましょう
+                  </h3>
                   <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
                     ニックネームを設定すると、共有メンバーに分かりやすく表示されます。
                   </p>
                   <Link href="/profile?edit=true">
-                    <Button size="sm" variant="outline" className="rounded-full text-xs h-8 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full text-xs h-8 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600"
+                    >
                       設定する
                     </Button>
                   </Link>

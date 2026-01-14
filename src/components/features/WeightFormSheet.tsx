@@ -18,7 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePickerDropdown } from "@/components/ui/date-picker-dropdown";
-import { X, Scale, Calendar as CalendarIcon, Loader2, Save } from "lucide-react";
+import {
+  X,
+  Scale,
+  Calendar as CalendarIcon,
+  Loader2,
+  Save,
+} from "lucide-react";
 import { TimePickerInput } from "@/components/ui/time-picker-input";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -99,7 +105,11 @@ export function WeightFormSheet({
 
         <div className="overflow-y-auto h-full pb-32">
           <div className="px-6 py-8">
-            <form id="weight-form" onSubmit={handleSubmit} className="space-y-8">
+            <form
+              id="weight-form"
+              onSubmit={handleSubmit}
+              className="space-y-8"
+            >
               {/* Value & Unit */}
               <div className="space-y-4">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
@@ -161,7 +171,6 @@ export function WeightFormSheet({
                 </div>
               </div>
             </form>
-
           </div>
         </div>
 
@@ -171,7 +180,9 @@ export function WeightFormSheet({
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              const form = document.querySelector("#weight-form") as HTMLFormElement;
+              const form = document.querySelector(
+                "#weight-form",
+              ) as HTMLFormElement;
               if (form) form.requestSubmit();
             }}
             disabled={isSubmitting || !value}

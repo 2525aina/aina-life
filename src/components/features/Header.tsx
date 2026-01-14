@@ -21,7 +21,7 @@ export function Header() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/30 dark:bg-black/30 backdrop-blur-xl border-b border-white/10 transition-colors">
+    <header className="sticky top-0 z-40 bg-white/30 dark:bg-black/30 backdrop-blur-xl border-b border-[var(--glass-border)] transition-colors">
       <div className="flex items-center justify-between h-14 px-4 max-w-2xl mx-auto">
         <PetSwitcher />
         <div className="flex items-center gap-2">

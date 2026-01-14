@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { AppLayout } from "@/components/features/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,13 +42,15 @@ import {
   Settings,
   Edit3,
   Sparkles,
+  Cake,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePets } from "@/hooks/usePets";
 import { StyledInput, GenderSelect } from "@/components/ui/styled-form-fields";
-import { format, parse } from "date-fns";
+import { format, parse, differenceInYears } from "date-fns";
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -61,7 +63,7 @@ import {
 import { db } from "@/lib/firebase";
 import { PetAvatarEditor } from "@/components/features/pet-avatar-editor";
 
-export default function ProfilePage() {
+function ProfileContent() {
   const { user, userProfile, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const { pets } = usePets();
@@ -69,7 +71,6 @@ export default function ProfilePage() {
   const searchParams = useSearchParams();
 
   // プロフィール情報
-  const [displayName, setDisplayName] = useState("");
   const [nickname, setNickname] = useState("");
   const [birthday, setBirthday] = useState<Date | undefined>(undefined);
   const [gender, setGender] = useState<"male" | "female" | "other" | "">("");
@@ -93,7 +94,6 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (userProfile) {
-      setDisplayName(userProfile.displayName || "");
       setNickname(userProfile.nickname || "");
       setBirthday(
         userProfile.birthday
@@ -204,7 +204,6 @@ export default function ProfilePage() {
   const resetForm = () => {
     setIsEditing(false);
     if (userProfile) {
-      setDisplayName(userProfile.displayName || "");
       setNickname(userProfile.nickname || "");
       setBirthday(
         userProfile.birthday
@@ -239,7 +238,7 @@ export default function ProfilePage() {
   }) => (
     <div
       className={cn(
-        "flex items-center justify-between p-4 rounded-2xl glass border-white/20 hover:bg-white/40 transition-all duration-300 group",
+        "flex items-center justify-between p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-white/40 transition-all duration-300 group",
         className,
       )}
     >
@@ -263,345 +262,417 @@ export default function ProfilePage() {
   );
 
   return (
-    <AppLayout>
-      <div className="pb-32">
-        {/* Modern Hero Section */}
-        <div className="relative">
-          {/* Global Header Gradient */}
-          <div className="absolute inset-0 h-[40vh] bg-gradient-to-b from-primary/20 via-primary/5 to-transparent -z-10 rounded-b-[4rem]" />
+    <div className="pb-32">
+      {/* Modern Hero Section */}
+      <div className="relative">
+        {/* Global Header Gradient */}
+        <div className="absolute inset-0 h-[40vh] bg-gradient-to-b from-primary/20 via-primary/5 to-transparent -z-10 rounded-b-[4rem]" />
 
-          <div className="md:container max-w-2xl mx-auto px-4 pt-8">
-            {/* Header Navigation */}
-            <div className="flex items-center justify-end mb-8 relative z-10">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive backdrop-blur-md"
-                onClick={signOut}
-              >
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
+        <div className="md:container max-w-2xl mx-auto px-4 pt-8">
+          {/* Header Navigation */}
+          <div className="flex items-center justify-end mb-8 relative z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive backdrop-blur-md"
+              onClick={signOut}
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
 
-            {/* Profile Header Card */}
-            <div className="flex flex-col items-center mb-10">
-              <PetAvatarEditor
-                imageUrl={displayAvatar}
-                onImageChange={handleCropComplete}
-                onImageRemove={handleRemoveAvatar}
-                disabled={!isEditing || uploading}
-                className="mb-6"
-              />
+          {/* Profile Header Card */}
+          <div className="flex flex-col items-center mb-10">
+            <PetAvatarEditor
+              imageUrl={displayAvatar}
+              onImageChange={handleCropComplete}
+              onImageRemove={handleRemoveAvatar}
+              disabled={!isEditing || uploading}
+              className="mb-6"
+            />
 
-              <AnimatePresence mode="wait">
-                {!isEditing ? (
-                  <motion.div
-                    key="view"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.05 }}
-                    className="flex flex-col items-center relative z-10"
-                  >
-                    {/* Name & Bio */}
-                    <div className="text-center space-y-2 mb-6">
+            <AnimatePresence mode="wait">
+              {!isEditing ? (
+                <motion.div
+                  key="view"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  className="flex flex-col items-center relative z-10"
+                >
+                  {/* Name & Bio */}
+                  <div className="text-center space-y-3 mb-4 w-full max-w-md mx-auto">
+                    <div className="space-y-1">
                       <h1 className="text-3xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 filter drop-shadow-sm">
                         {nickname || "ユーザー"}
                       </h1>
-
-                      {/* Email Badge */}
-                      <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-capsule border border-white/20 text-xs font-bold text-muted-foreground/80 mt-3 shadow-sm">
-                        <Mail className="w-3.5 h-3.5 mr-2 opacity-70" />
-                        {userProfile?.email}
-                      </div>
-
-                      <div className="mt-6">
-                        <Button
-                          variant="outline"
-                          className="rounded-full px-6 border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-all duration-300"
-                          onClick={() => setIsEditing(true)}
-                        >
-                          <Edit3 className="w-4 h-4 mr-2" />
-                          プロフィールを編集
-                        </Button>
-                      </div>
                     </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="edit"
-                    className="w-full max-w-md mt-4 relative z-20"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                  >
-                    <div className="glass rounded-[2rem] p-4 sm:p-6 shadow-xl border-white/20">
-                      <div className="space-y-4">
-                        <div className="grid gap-3 sm:gap-4">
-                          <div>
-                            <Label className="text-xs font-bold text-muted-foreground ml-1">
-                              ニックネーム
-                            </Label>
-                            <StyledInput
-                              value={nickname}
-                              onChange={(e) => setNickname(e.target.value)}
-                              placeholder="ニックネーム"
-                            />
-                          </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                          <div>
-                            <Label className="text-xs font-bold text-muted-foreground ml-1">
-                              性別
-                            </Label>
-                            <GenderSelect
-                              value={gender}
-                              onChange={(v) =>
-                                setGender(v as "male" | "female" | "other" | "")
-                              }
-                              type="human"
-                            />
-                          </div>
-                          <DatePickerDropdown
-                            date={birthday}
-                            setDate={setBirthday}
-                            label="誕生日"
-                          />
+                    {/* Tags Row */}
+                    <div className="flex items-center gap-2 justify-center flex-wrap">
+                      {/* Gender Badge */}
+                      {userProfile?.gender && (
+                        <div
+                          className={cn(
+                            "px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border shadow-sm backdrop-blur-sm",
+                            userProfile.gender === "male"
+                              ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                              : userProfile.gender === "female"
+                                ? "bg-pink-500/10 text-pink-600 border-pink-500/20"
+                                : "bg-gray-500/10 text-gray-600 border-gray-500/20",
+                          )}
+                        >
+                          <span className="text-[10px]">
+                            {userProfile.gender === "male"
+                              ? "MEN"
+                              : userProfile.gender === "female"
+                                ? "WOMEN"
+                                : "OTHER"}
+                          </span>
                         </div>
+                      )}
+
+                      {/* Age Badge */}
+                      {userProfile?.birthday && (
+                        <div className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 bg-orange-500/10 text-orange-600 border border-orange-500/20 shadow-sm backdrop-blur-sm">
+                          <Cake className="w-3.5 h-3.5" />
+                          <span>
+                            {differenceInYears(
+                              new Date(),
+                              new Date(userProfile.birthday),
+                            )}
+                            歳
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Introduction */}
+                    {userProfile?.introduction && (
+                      <div className="w-full px-2 sm:px-6">
+                        <div className="relative p-5 rounded-2xl bg-white/5 border border-[var(--glass-border)] text-sm leading-relaxed text-muted-foreground text-left shadow-inner">
+                          <span className="absolute top-3 left-3 text-primary/20 text-4xl font-serif leading-none">
+                            “
+                          </span>
+                          <p className="relative z-10 px-4 whitespace-pre-wrap">
+                            {userProfile.introduction}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Email Badge */}
+                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-muted/30 border border-[var(--glass-border)] text-[10px] font-medium text-muted-foreground/60">
+                      <Mail className="w-3 h-3 mr-1.5 opacity-50" />
+                      {userProfile?.email}
+                    </div>
+                  </div>
+
+                  <div className="mt-2">
+                    <Button
+                      variant="outline"
+                      className="rounded-full px-6 border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-all duration-300"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      プロフィールを編集
+                    </Button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="edit"
+                  className="w-full max-w-md mt-4 relative z-20"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                >
+                  <div className="glass rounded-[2rem] p-4 sm:p-6 shadow-xl border-[var(--glass-border)]">
+                    <div className="space-y-4">
+                      <div className="grid gap-3 sm:gap-4">
                         <div>
                           <Label className="text-xs font-bold text-muted-foreground ml-1">
-                            自己紹介
+                            ニックネーム
                           </Label>
-                          <textarea
-                            value={introduction}
-                            onChange={(e) => setIntroduction(e.target.value)}
-                            rows={2}
-                            className="w-full rounded-xl border border-white/20 bg-white/50 dark:bg-black/20 dark:border-white/20 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus:bg-background transition-colors resize-none"
-                            placeholder="ひとこと..."
+                          <StyledInput
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            placeholder="ニックネーム"
                           />
                         </div>
                       </div>
-                    </div>
 
-                    {/* Sticky buttons */}
-                    <div className="sticky bottom-24 z-20 pt-4">
-                      <div className="flex gap-3">
-                        <Button
-                          variant="ghost"
-                          className="flex-1 rounded-full h-12 bg-white/50 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md shadow-lg"
-                          onClick={handleCancelEdit}
-                        >
-                          キャンセル
-                        </Button>
-                        <Button
-                          className="flex-1 gradient-primary shadow-2xl rounded-full h-12"
-                          onClick={handleSaveProfile}
-                          disabled={isSaving || !nickname.trim()}
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          {isSaving ? "保存中..." : "保存"}
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Settings Sections - Magazine Style Grid */}
-            <div className="space-y-8">
-              {/* Pets Section */}
-              <section className="space-y-4">
-                <h2 className="text-lg font-black px-1 flex items-center gap-2 text-foreground/80">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  マイファミリー
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {pets.map((pet) => (
-                    <Link key={pet.id} href={`/pets/settings?id=${pet.id}`}>
-                      <div className="flex items-center gap-4 p-4 rounded-2xl glass border-white/20 hover:bg-white/40 hover:scale-[1.02] transition-all duration-300 group shadow-sm">
-                        <Avatar className="w-14 h-14 border-2 border-white/50 shadow-md group-hover:scale-105 transition-transform duration-300">
-                          <AvatarImage
-                            src={pet.avatarUrl}
-                            alt={pet.name}
-                            className="object-cover"
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                          <Label className="text-xs font-bold text-muted-foreground ml-1">
+                            性別
+                          </Label>
+                          <GenderSelect
+                            value={gender}
+                            onChange={(v) =>
+                              setGender(v as "male" | "female" | "other" | "")
+                            }
+                            type="human"
                           />
-                          <AvatarFallback className="bg-orange-100 flex items-center justify-center overflow-hidden">
-                            <Image
-                              src="/ogp.webp"
-                              alt="Pet"
-                              width={56}
-                              height={56}
-                              className="w-full h-full object-cover opacity-50 grayscale"
-                            />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-base truncate group-hover:text-primary transition-colors">
-                            {pet.name}
-                          </p>
-                          <p className="text-xs font-bold text-muted-foreground truncate">
-                            {pet.breed || "犬種未設定"}
-                          </p>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-                        </div>
+                        <DatePickerDropdown
+                          date={birthday}
+                          setDate={setBirthday}
+                          label="誕生日"
+                        />
                       </div>
-                    </Link>
-                  ))}
-                  <Link href="/pets/new">
-                    <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-white/20 hover:bg-white/20 hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-white/5">
-                      <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
-                        <PawPrint className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <div>
+                        <Label className="text-xs font-bold text-muted-foreground ml-1">
+                          自己紹介
+                        </Label>
+                        <textarea
+                          value={introduction}
+                          onChange={(e) => setIntroduction(e.target.value)}
+                          rows={2}
+                          className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus:bg-background transition-colors resize-none"
+                          placeholder="ひとこと..."
+                        />
                       </div>
-                      <span className="text-xs font-bold text-muted-foreground group-hover:text-primary transition-colors">
-                        新しい家族を迎える
-                      </span>
+                    </div>
+                  </div>
+
+                  {/* Sticky buttons */}
+                  <div className="sticky bottom-24 z-20 pt-4">
+                    {!nickname.trim() && (
+                      <p className="text-center text-xs font-bold text-destructive mb-2 animate-pulse">
+                        ニックネームを入力してください
+                      </p>
+                    )}
+                    <div className="flex gap-3">
+                      <Button
+                        variant="ghost"
+                        className="flex-1 rounded-full h-12 bg-white/50 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md shadow-lg"
+                        onClick={handleCancelEdit}
+                      >
+                        キャンセル
+                      </Button>
+                      <Button
+                        className="flex-1 gradient-primary shadow-2xl rounded-full h-12"
+                        onClick={handleSaveProfile}
+                        disabled={isSaving || !nickname.trim()}
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        {isSaving ? "保存中..." : "保存"}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Settings Sections - Magazine Style Grid */}
+          <div className="space-y-8">
+            {/* Pets Section */}
+            <section className="space-y-4">
+              <h2 className="text-lg font-black px-1 flex items-center gap-2 text-foreground/80">
+                <Sparkles className="w-5 h-5 text-primary" />
+                マイファミリー
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {pets.map((pet) => (
+                  <Link key={pet.id} href={`/pets/settings?id=${pet.id}`}>
+                    <div className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-white/40 hover:scale-[1.02] transition-all duration-300 group shadow-sm">
+                      <Avatar className="w-14 h-14 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">
+                        <AvatarImage
+                          src={pet.avatarUrl}
+                          alt={pet.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-orange-100 flex items-center justify-center overflow-hidden">
+                          <Image
+                            src="/ogp.webp"
+                            alt="Pet"
+                            width={56}
+                            height={56}
+                            className="w-full h-full object-cover opacity-50 grayscale"
+                          />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-base truncate group-hover:text-primary transition-colors">
+                          {pet.name}
+                        </p>
+                        <p className="text-xs font-bold text-muted-foreground truncate">
+                          {pet.breed || "犬種未設定"}
+                        </p>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/20 flex items-center justify-center">
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                      </div>
                     </div>
                   </Link>
-                </div>
-              </section>
+                ))}
+                <Link href="/pets/new">
+                  <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--glass-border)] hover:bg-white/20 hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-white/5">
+                    <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                      <PawPrint className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground group-hover:text-primary transition-colors">
+                      新しい家族を迎える
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            </section>
 
-              {/* App Settings */}
-              <section className="space-y-4">
-                <h2 className="text-lg font-black px-1 flex items-center gap-2 text-foreground/80">
-                  <Settings className="w-5 h-5 text-primary" />
-                  アプリ設定
-                </h2>
-                <div className="space-y-3">
-                  <ListItem
-                    icon={theme === "dark" ? Moon : Sun}
-                    label="ダークモード"
-                    subLabel="画面の明度を調整します"
-                    action={
-                      <Switch
-                        checked={theme === "dark"}
-                        onCheckedChange={(c) => setTheme(c ? "dark" : "light")}
-                      />
-                    }
-                  />
-                  <ListItem
-                    icon={Clock}
-                    label="時刻表記"
-                    subLabel={timeFormat}
-                    action={
-                      <Select
-                        value={timeFormat}
-                        onValueChange={(v) =>
-                          handleUpdateSettings("timeFormat", v)
-                        }
-                      >
-                        <SelectTrigger className="w-[100px] h-9 text-xs bg-transparent border-white/20 rounded-lg">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="HH:mm">24時間</SelectItem>
-                          <SelectItem value="h:mm aa">12時間</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    }
-                  />
-                  <ListItem
-                    icon={MessageSquare}
-                    label="通知位置"
-                    subLabel="トースト通知の表示場所"
-                    action={
-                      <Select
-                        value={toastPosition}
-                        onValueChange={(v) =>
-                          handleUpdateSettings("toastPosition", v)
-                        }
-                      >
-                        <SelectTrigger className="w-[100px] h-9 text-xs bg-transparent border-white/20 rounded-lg">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="top-right">右上</SelectItem>
-                          <SelectItem value="top-center">上部中央</SelectItem>
-                          <SelectItem value="bottom-right">右下</SelectItem>
-                          <SelectItem value="bottom-center">
-                            下部中央
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    }
-                  />
-                </div>
-              </section>
+            {/* App Settings */}
+            <section className="space-y-4">
+              <h2 className="text-lg font-black px-1 flex items-center gap-2 text-foreground/80">
+                <Settings className="w-5 h-5 text-primary" />
+                アプリ設定
+              </h2>
+              <div className="space-y-3">
+                <ListItem
+                  icon={theme === "dark" ? Moon : Sun}
+                  label="ダークモード"
+                  subLabel="画面の明度を調整します"
+                  action={
+                    <Switch
+                      checked={theme === "dark"}
+                      onCheckedChange={(c) => setTheme(c ? "dark" : "light")}
+                    />
+                  }
+                />
+                <ListItem
+                  icon={Clock}
+                  label="時刻表記"
+                  subLabel={timeFormat}
+                  action={
+                    <Select
+                      value={timeFormat}
+                      onValueChange={(v) =>
+                        handleUpdateSettings("timeFormat", v)
+                      }
+                    >
+                      <SelectTrigger className="w-[100px] h-9 text-xs bg-transparent border-[var(--glass-border)] rounded-lg">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="HH:mm">24時間</SelectItem>
+                        <SelectItem value="h:mm aa">12時間</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  }
+                />
+                <ListItem
+                  icon={MessageSquare}
+                  label="通知位置"
+                  subLabel="トースト通知の表示場所"
+                  action={
+                    <Select
+                      value={toastPosition}
+                      onValueChange={(v) =>
+                        handleUpdateSettings("toastPosition", v)
+                      }
+                    >
+                      <SelectTrigger className="w-[100px] h-9 text-xs bg-transparent border-[var(--glass-border)] rounded-lg">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="top-right">右上</SelectItem>
+                        <SelectItem value="top-center">上部中央</SelectItem>
+                        <SelectItem value="bottom-right">右下</SelectItem>
+                        <SelectItem value="bottom-center">下部中央</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  }
+                />
+              </div>
+            </section>
 
-              {/* Other Links */}
-              <section className="space-y-4">
-                <h2 className="text-lg font-black px-1 flex items-center gap-2 text-foreground/80">
-                  <span className="w-5 h-5" />
-                  その他
-                </h2>
-                <a
-                  href="https://aina-life-dev.web.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <ListItem
-                    icon={ExternalLink}
-                    label="旧アプリを開く"
-                    subLabel="aina-life-dev.web.app"
-                    action={
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    }
-                  />
-                </a>
-              </section>
-            </div>
+            {/* Other Links */}
+            <section className="space-y-4">
+              <h2 className="text-lg font-black px-1 flex items-center gap-2 text-foreground/80">
+                <span className="w-5 h-5" />
+                その他
+              </h2>
+              <a
+                href="https://aina-life-dev.web.app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ListItem
+                  icon={ExternalLink}
+                  label="旧アプリを開く"
+                  subLabel="aina-life-dev.web.app"
+                  action={
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  }
+                />
+              </a>
+            </section>
           </div>
         </div>
-
-        <Dialog
-          open={confirmDeleteAvatarOpen}
-          onOpenChange={setConfirmDeleteAvatarOpen}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>画像を削除しますか？</DialogTitle>
-              <DialogDescription>
-                プロフィール画像が初期状態に戻ります。この操作は取り消せません。
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setConfirmDeleteAvatarOpen(false)}
-              >
-                キャンセル
-              </Button>
-              <Button variant="destructive" onClick={handleRemoveAvatar}>
-                削除する
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* 編集キャンセル確認ダイアログ */}
-        <Dialog open={confirmCancelOpen} onOpenChange={setConfirmCancelOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>編集を中止しますか？</DialogTitle>
-              <DialogDescription>
-                入力した内容は保存されません。
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setConfirmCancelOpen(false)}
-              >
-                編集を続ける
-              </Button>
-              <Button variant="destructive" onClick={resetForm}>
-                中止する
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
+
+      <Dialog
+        open={confirmDeleteAvatarOpen}
+        onOpenChange={setConfirmDeleteAvatarOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>画像を削除しますか？</DialogTitle>
+            <DialogDescription>
+              プロフィール画像が初期状態に戻ります。この操作は取り消せません。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteAvatarOpen(false)}
+            >
+              キャンセル
+            </Button>
+            <Button variant="destructive" onClick={handleRemoveAvatar}>
+              削除する
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 編集キャンセル確認ダイアログ */}
+      <Dialog open={confirmCancelOpen} onOpenChange={setConfirmCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>編集を中止しますか？</DialogTitle>
+            <DialogDescription>
+              入力した内容は保存されません。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmCancelOpen(false)}
+            >
+              編集を続ける
+            </Button>
+            <Button variant="destructive" onClick={resetForm}>
+              中止する
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <AppLayout>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        }
+      >
+        <ProfileContent />
+      </Suspense>
     </AppLayout>
   );
 }

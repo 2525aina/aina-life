@@ -1,33 +1,33 @@
 {
-    "indexes": [
+  "indexes": [
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
         {
-            "collectionGroup": "members",
-            "queryScope": "COLLECTION_GROUP",
-            "fields": [
-                {
-                    "fieldPath": "userId",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "status",
-                    "order": "ASCENDING"
-                }
-            ]
+          "fieldPath": "userId",
+          "order": "ASCENDING"
         },
         {
-            "collectionGroup": "members",
-            "queryScope": "COLLECTION_GROUP",
-            "fields": [
-                {
-                    "fieldPath": "inviteEmail",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "status",
-                    "order": "ASCENDING"
-                }
-            ]
+          "fieldPath": "status",
+          "order": "ASCENDING"
         }
-    ],
-    "fieldOverrides": []
+      ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "inviteEmail",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
 }

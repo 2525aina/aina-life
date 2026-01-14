@@ -80,10 +80,10 @@ export function useMembers(petId: string | null) {
         ...m,
         userProfile: usersMap[m.userId]
           ? {
-            displayName: usersMap[m.userId].displayName || "",
-            nickname: usersMap[m.userId].nickname,
-            avatarUrl: usersMap[m.userId].avatarUrl,
-          }
+              displayName: usersMap[m.userId].displayName || "",
+              nickname: usersMap[m.userId].nickname,
+              avatarUrl: usersMap[m.userId].avatarUrl,
+            }
           : undefined,
       }));
 

@@ -23,27 +23,30 @@ export function useCustomTasks(petId: string | null) {
   const [tasks, setTasks] = useState<CustomTask[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const seedDefaults = useCallback(async (targetPetId: string, userId: string) => {
-    // 重複実行防止のため、再度getして確認
-    const q = query(collection(db, "pets", targetPetId, "tasks"));
-    const snap = await getDocs(q);
-    if (!snap.empty) return;
+  const seedDefaults = useCallback(
+    async (targetPetId: string, userId: string) => {
+      // 重複実行防止のため、再度getして確認
+      const q = query(collection(db, "pets", targetPetId, "tasks"));
+      const snap = await getDocs(q);
+      if (!snap.empty) return;
 
-    const batch = writeBatch(db);
-    ENTRY_TAGS.forEach((tag, index) => {
-      const newRef = doc(collection(db, "pets", targetPetId, "tasks"));
-      batch.set(newRef, {
-        name: tag.label,
-        emoji: tag.emoji,
-        order: index,
-        createdBy: userId,
-        updatedBy: userId,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+      const batch = writeBatch(db);
+      ENTRY_TAGS.forEach((tag, index) => {
+        const newRef = doc(collection(db, "pets", targetPetId, "tasks"));
+        batch.set(newRef, {
+          name: tag.label,
+          emoji: tag.emoji,
+          order: index,
+          createdBy: userId,
+          updatedBy: userId,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
       });
-    });
-    await batch.commit();
-  }, []);
+      await batch.commit();
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!petId || !user) {

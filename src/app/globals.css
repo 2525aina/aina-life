@@ -53,6 +53,11 @@
   --ring: oklch(0.65 0.2 45);
   --chart-1: oklch(0.65 0.2 45);
   --chart-2: oklch(0.65 0.15 165);
+
+  /* Glass Effect Variables - Light Mode */
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-highlight: rgba(255, 255, 255, 0.4);
 }
 
 .dark {
@@ -74,6 +79,11 @@
   --border: oklch(0.3 0.05 265);
   --input: oklch(0.3 0.05 265);
   --ring: oklch(0.65 0.2 45);
+
+  /* Glass Effect Variables - Dark Mode */
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
 }
 
 @layer base {
@@ -89,11 +99,15 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-sm;
+    @apply backdrop-blur-xl shadow-sm;
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
   }
 
   .glass-capsule {
-    @apply bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-xl shadow-black/5 rounded-full;
+    @apply backdrop-blur-2xl shadow-xl shadow-black/5 rounded-full;
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
   }
 
   .gradient-primary {

@@ -264,7 +264,11 @@ export function FriendFormSheet({
         </SheetHeader>
 
         <div className="overflow-y-auto h-full pb-32">
-          <form id="friend-form" onSubmit={handleSubmit} className="px-6 py-8 space-y-10">
+          <form
+            id="friend-form"
+            onSubmit={handleSubmit}
+            className="px-6 py-8 space-y-10"
+          >
             {/* Image Upload */}
             <div className="flex justify-center">
               <PetAvatarEditor
@@ -515,7 +519,6 @@ export function FriendFormSheet({
                 </div>
               </div>
             </section>
-
           </form>
         </div>
 
@@ -525,7 +528,9 @@ export function FriendFormSheet({
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              const form = document.querySelector("#friend-form") as HTMLFormElement;
+              const form = document.querySelector(
+                "#friend-form",
+              ) as HTMLFormElement;
               if (form) form.requestSubmit();
             }}
             disabled={isSubmitting}

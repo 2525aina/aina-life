@@ -71,7 +71,7 @@ export function HeroSection() {
       >
         <div className="relative">
           <div className="absolute inset-0 bg-white/30 blur-xl rounded-full scale-110" />
-          <Avatar className="w-24 h-24 border-4 border-white/20 shadow-2xl relative z-10">
+          <Avatar className="w-24 h-24 border-4 border border-[var(--glass-border)] shadow-2xl relative z-10">
             <AvatarImage
               src={selectedPet.avatarUrl}
               alt={selectedPet.name}

@@ -141,7 +141,7 @@ export default function CalendarPage() {
         <div className="px-4 pt-6 space-y-6">
           {/* Header Controls */}
           <div className="flex items-center justify-between z-10 relative">
-            <div className="glass-capsule p-1 flex items-center space-x-1 shadow-lg bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/10">
+            <div className="glass-capsule p-1 flex items-center space-x-1 shadow-lg bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)]">
               {(["month", "week", "day"] as const).map((mode) => (
                 <button
                   key={mode}
@@ -188,7 +188,7 @@ export default function CalendarPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-              "glass rounded-[2rem] p-4 overflow-hidden shadow-xl ring-1 ring-white/20",
+              "glass rounded-[2rem] p-4 overflow-hidden shadow-xl ring-1 ring-[var(--glass-border)]",
               viewMode === "day" && "hidden",
             )}
           >
@@ -344,7 +344,7 @@ export default function CalendarPage() {
                               "flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300",
                               isSchedule
                                 ? "bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800"
-                                : "glass border-white/40 dark:border-white/10",
+                                : "glass border-[var(--glass-border)]",
                             )}
                           >
                             <div className="flex flex-col items-center flex-shrink-0 w-20">

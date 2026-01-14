@@ -79,10 +79,10 @@ export function FriendDetailSheet({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="bottom"
-        className="h-[90vh] rounded-t-3xl bg-background/95 backdrop-blur-xl border-t border-white/20 p-0 overflow-hidden"
+        className="h-[90vh] rounded-t-3xl bg-background/95 backdrop-blur-xl border-t border-[var(--glass-border)] p-0 overflow-hidden"
       >
         {/* Header */}
-        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
+        <SheetHeader className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-[var(--glass-border)] px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -143,7 +143,7 @@ export function FriendDetailSheet({
 
         <div className="overflow-y-auto h-full pb-20 px-4 py-6 space-y-6">
           {/* Hero Section */}
-          <div className="relative aspect-square w-full bg-muted overflow-hidden rounded-3xl shadow-lg ring-1 ring-white/20">
+          <div className="relative aspect-square w-full bg-muted overflow-hidden rounded-3xl shadow-lg ring-1 ring-[var(--glass-border)]">
             {friend.images?.[0] ? (
               <Image
                 src={friend.images[0]}
@@ -164,7 +164,7 @@ export function FriendDetailSheet({
             )}
             <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/20 to-transparent text-white">
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold border border-white/10 uppercase tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold border border-[var(--glass-border)] uppercase tracking-wider">
                   {friend.breed || "犬種不明"}
                 </span>
                 {friend.gender !== "unknown" && (
@@ -217,7 +217,7 @@ export function FriendDetailSheet({
           </div>
 
           {/* Encounter Info */}
-          <div className="glass rounded-3xl p-6 shadow-xl border-white/20 space-y-4">
+          <div className="glass rounded-3xl p-6 shadow-xl border-[var(--glass-border)] space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                 <Calendar className="w-5 h-5" />
@@ -229,7 +229,8 @@ export function FriendDetailSheet({
                 <p className="font-bold">
                   {format(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (friend.metAt as any)?.toDate?.() || new Date(friend.metAt as any),
+                    (friend.metAt as any)?.toDate?.() ||
+                      new Date(friend.metAt as any),
                     "yyyy年M月d日 (E)",
                     {
                       locale: ja,
@@ -259,50 +260,50 @@ export function FriendDetailSheet({
             friend.ownerDetails ||
             friend.contact ||
             friend.address) && (
-              <div className="space-y-3">
-                <h3 className="font-bold text-sm text-muted-foreground flex items-center gap-2 px-2 uppercase tracking-widest">
-                  <User className="w-4 h-4" /> 飼い主情報
-                </h3>
-                <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-white/20 space-y-3 shadow-lg">
-                  {friend.ownerName && (
-                    <div className="flex items-start gap-3">
-                      <span className="font-bold min-w-[4rem] text-muted-foreground">
-                        お名前
-                      </span>
-                      <span className="font-medium text-foreground">
-                        {friend.ownerName}
-                      </span>
-                    </div>
-                  )}
-                  {friend.ownerDetails && (
-                    <div className="flex items-start gap-3">
-                      <span className="font-bold min-w-[4rem] text-muted-foreground">
-                        特徴
-                      </span>
-                      <span className="font-medium text-foreground">
-                        {friend.ownerDetails}
-                      </span>
-                    </div>
-                  )}
-                  {friend.contact && (
-                    <div className="flex items-start gap-3">
-                      <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                      <span className="font-medium text-foreground">
-                        {friend.contact}
-                      </span>
-                    </div>
-                  )}
-                  {friend.address && (
-                    <div className="flex items-start gap-3">
-                      <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                      <span className="font-medium text-foreground">
-                        {friend.address}
-                      </span>
-                    </div>
-                  )}
-                </div>
+            <div className="space-y-3">
+              <h3 className="font-bold text-sm text-muted-foreground flex items-center gap-2 px-2 uppercase tracking-widest">
+                <User className="w-4 h-4" /> 飼い主情報
+              </h3>
+              <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] space-y-3 shadow-lg">
+                {friend.ownerName && (
+                  <div className="flex items-start gap-3">
+                    <span className="font-bold min-w-[4rem] text-muted-foreground">
+                      お名前
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {friend.ownerName}
+                    </span>
+                  </div>
+                )}
+                {friend.ownerDetails && (
+                  <div className="flex items-start gap-3">
+                    <span className="font-bold min-w-[4rem] text-muted-foreground">
+                      特徴
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {friend.ownerDetails}
+                    </span>
+                  </div>
+                )}
+                {friend.contact && (
+                  <div className="flex items-start gap-3">
+                    <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                    <span className="font-medium text-foreground">
+                      {friend.contact}
+                    </span>
+                  </div>
+                )}
+                {friend.address && (
+                  <div className="flex items-start gap-3">
+                    <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                    <span className="font-medium text-foreground">
+                      {friend.address}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+          )}
 
           {/* Features/Memo */}
           {friend.features && (
@@ -310,7 +311,7 @@ export function FriendDetailSheet({
               <h3 className="font-bold text-sm text-muted-foreground px-2 uppercase tracking-widest">
                 メモ・特徴
               </h3>
-              <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-white/20 shadow-lg whitespace-pre-wrap font-medium">
+              <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] shadow-lg whitespace-pre-wrap font-medium">
                 {friend.features}
               </div>
             </div>

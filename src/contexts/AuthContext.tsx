@@ -14,12 +14,7 @@ import {
   GoogleAuthProvider,
   signOut as firebaseSignOut,
 } from "firebase/auth";
-import {
-  doc,
-  setDoc,
-  serverTimestamp,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import type { User } from "@/lib/types";
 
