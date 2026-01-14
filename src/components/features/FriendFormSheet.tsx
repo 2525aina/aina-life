@@ -275,6 +275,11 @@ export function FriendFormSheet({
                 imageUrl={previewUrl}
                 onImageChange={handleImageChange}
                 onImageRemove={handleRemoveImage}
+                onSampleImageSelect={(url) => {
+                  setPreviewUrl(url);
+                  setPendingImageFile(null);
+                }}
+                breed={breed}
                 disabled={isSubmitting}
               />
             </div>

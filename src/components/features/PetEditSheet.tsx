@@ -340,6 +340,12 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
               imageUrl={displayAvatar}
               onImageChange={handleImageChange}
               onImageRemove={() => setRemoveAvatar(true)}
+              onSampleImageSelect={(url) => {
+                setAvatarPreview(url);
+                setPendingAvatarFile(null);
+                setRemoveAvatar(false);
+              }}
+              breed={formData.breed}
               disabled={!canEdit || uploading}
             />
           </div>
@@ -579,7 +585,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                             member.role === "owner" &&
                             activeOwnersCount <= 1 &&
                             member.userId ===
-                              members.find((m) => m.role === "owner")?.userId
+                            members.find((m) => m.role === "owner")?.userId
                           }
                           onValueChange={(val) =>
                             updateMemberRole(

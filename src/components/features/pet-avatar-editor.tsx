@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCropper } from "@/components/ui/image-cropper";
+import { SampleImageButton } from "@/components/ui/sample-image-picker";
 import { Camera, X, PawPrint } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +11,8 @@ interface PetAvatarEditorProps {
   imageUrl?: string | null;
   onImageChange: (file: File) => void;
   onImageRemove: () => void;
+  onSampleImageSelect?: (imageUrl: string) => void;
+  breed?: string;
   disabled?: boolean;
   className?: string;
   avatarClassName?: string;
@@ -20,6 +23,8 @@ export function PetAvatarEditor({
   imageUrl,
   onImageChange,
   onImageRemove,
+  onSampleImageSelect,
+  breed,
   disabled = false,
   className,
   avatarClassName,
@@ -50,60 +55,78 @@ export function PetAvatarEditor({
     setOriginalImageSrc(null);
   };
 
+  const handleSampleImageSelect = (sampleUrl: string) => {
+    if (onSampleImageSelect) {
+      onSampleImageSelect(sampleUrl);
+    }
+  };
+
   return (
-    <div className={cn("relative group", className)}>
-      <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-orange-400 rounded-full opacity-30 blur-xl group-hover:opacity-40 transition duration-1000 animate-pulse" />
+    <div className={cn("flex flex-col items-center gap-4", className)}>
+      <div className="relative group">
+        <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-orange-400 rounded-full opacity-30 blur-xl group-hover:opacity-40 transition duration-1000 animate-pulse" />
 
-      <Avatar
-        className={cn(
-          "w-32 h-32 md:w-40 md:h-40 border-4 border-[var(--glass-border)] shadow-2xl relative z-10",
-          avatarClassName,
-        )}
-      >
-        <AvatarImage src={imageUrl || undefined} className="object-cover" />
-        <AvatarFallback className="bg-[var(--glass-bg)] text-4xl backdrop-blur-md">
-          <PawPrint className="w-16 h-16 text-primary/50" />
-        </AvatarFallback>
-      </Avatar>
+        <Avatar
+          className={cn(
+            "w-32 h-32 md:w-40 md:h-40 border-4 border-[var(--glass-border)] shadow-2xl relative z-10",
+            avatarClassName,
+          )}
+        >
+          <AvatarImage src={imageUrl || undefined} className="object-cover" />
+          <AvatarFallback className="bg-[var(--glass-bg)] text-4xl backdrop-blur-md">
+            <PawPrint className="w-16 h-16 text-primary/50" />
+          </AvatarFallback>
+        </Avatar>
 
-      {!disabled && (
-        <>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={disabled}
-            className="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 hover:scale-110 transition-all z-20"
-          >
-            <Camera className="w-5 h-5" />
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageSelect}
-            disabled={disabled}
-          />
-
-          {imageUrl && showRemoveButton && (
+        {!disabled && (
+          <>
             <button
               type="button"
-              onClick={onImageRemove}
+              onClick={() => fileInputRef.current?.click()}
               disabled={disabled}
-              className="absolute -top-2 -right-2 w-9 h-9 rounded-full bg-destructive text-white flex items-center justify-center shadow-lg hover:bg-destructive/90 hover:scale-110 transition-all z-20"
+              className="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 hover:scale-110 transition-all z-20"
             >
-              <X className="w-5 h-5" />
+              <Camera className="w-5 h-5" />
             </button>
-          )}
-        </>
-      )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageSelect}
+              disabled={disabled}
+            />
 
-      <ImageCropper
-        open={cropperOpen}
-        imageSrc={originalImageSrc}
-        onCropComplete={handleCropComplete}
-        onCancel={handleCropCancel}
-      />
+            {imageUrl && showRemoveButton && (
+              <button
+                type="button"
+                onClick={onImageRemove}
+                disabled={disabled}
+                className="absolute -top-2 -right-2 w-9 h-9 rounded-full bg-destructive text-white flex items-center justify-center shadow-lg hover:bg-destructive/90 hover:scale-110 transition-all z-20"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </>
+        )}
+
+        <ImageCropper
+          open={cropperOpen}
+          imageSrc={originalImageSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      </div>
+
+      {/* Sample Image Button */}
+      {!disabled && breed && onSampleImageSelect && (
+        <SampleImageButton
+          breed={breed}
+          onSelect={handleSampleImageSelect}
+          className="text-sm"
+        />
+      )}
     </div>
   );
 }
+
