@@ -204,7 +204,7 @@ export function EntryForm({
               variant="ghost"
               size="icon"
               onClick={() => router.back()}
-              className="rounded-full w-10 h-10 hover:bg-white/10 backdrop-blur-md"
+              className="rounded-full w-10 h-10 hover:bg-[var(--glass-border)] backdrop-blur-md"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
@@ -230,7 +230,7 @@ export function EntryForm({
                 "flex-1 py-3 rounded-full text-sm font-bold transition-all duration-300",
                 type === "diary"
                   ? "bg-primary text-white shadow-lg shadow-primary/30"
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/10",
+                  : "text-muted-foreground hover:text-foreground hover:bg-[var(--glass-border)]",
               )}
             >
               日記

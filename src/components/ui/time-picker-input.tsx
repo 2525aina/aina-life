@@ -192,7 +192,7 @@ export function TimePickerInput({
             variant="outline"
             disabled={disabled}
             className={cn(
-              "w-full justify-start text-left font-bold pl-3 pr-3 rounded-xl bg-[var(--glass-bg)] border-[var(--glass-border)] hover:bg-white/60 dark:hover:bg-black/30 transition-all",
+              "w-full justify-start text-left font-bold pl-3 pr-3 rounded-xl bg-[var(--glass-bg)] border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] transition-all",
               sizeClasses[size],
               !time && "text-muted-foreground font-normal",
             )}

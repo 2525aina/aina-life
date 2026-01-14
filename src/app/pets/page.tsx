@@ -87,7 +87,7 @@ export default function PetsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     onClick={() => handlePetClick(pet)}
-                    className="group relative overflow-hidden bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] p-4 rounded-[2.5rem] flex items-center gap-5 cursor-pointer hover:bg-white/60 transition-all shadow-sm hover:shadow-lg"
+                    className="group relative overflow-hidden bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] p-4 rounded-[2.5rem] flex items-center gap-5 cursor-pointer hover:bg-[var(--glass-highlight)] transition-all shadow-sm hover:shadow-lg"
                   >
                     {/* Avatar */}
                     <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-muted flex-shrink-0 shadow-md">
@@ -137,7 +137,7 @@ export default function PetsPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
-                        <span className="bg-white/30 px-2 py-0.5 rounded-md border border-[var(--glass-border)]">
+                        <span className="bg-[var(--glass-bg)] px-2 py-0.5 rounded-md border border-[var(--glass-border)]">
                           {pet.breed || "種類未設定"}
                         </span>
                         {pet.birthday && (
@@ -146,7 +146,7 @@ export default function PetsPage() {
                       </div>
                     </div>
 
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-muted-foreground/50 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-white/20 dark:bg-black/20 flex items-center justify-center text-muted-foreground/50 group-hover:bg-primary group-hover:text-white transition-colors">
                       <ChevronRight className="w-4 h-4 ml-0.5" />
                     </div>
                   </motion.div>

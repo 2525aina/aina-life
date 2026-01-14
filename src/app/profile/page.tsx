@@ -238,7 +238,7 @@ function ProfileContent() {
   }) => (
     <div
       className={cn(
-        "flex items-center justify-between p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-white/40 transition-all duration-300 group",
+        "flex items-center justify-between p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] transition-all duration-300 group",
         className,
       )}
     >
@@ -476,7 +476,7 @@ function ProfileContent() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {pets.map((pet) => (
                   <Link key={pet.id} href={`/pets/settings?id=${pet.id}`}>
-                    <div className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-white/40 hover:scale-[1.02] transition-all duration-300 group shadow-sm">
+                    <div className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] hover:scale-[1.02] transition-all duration-300 group shadow-sm">
                       <Avatar className="w-14 h-14 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">
                         <AvatarImage
                           src={pet.avatarUrl}
@@ -508,7 +508,7 @@ function ProfileContent() {
                   </Link>
                 ))}
                 <Link href="/pets/new">
-                  <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--glass-border)] hover:bg-white/20 hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-[var(--glass-bg)]">
+                  <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 border-dashed border-[var(--glass-border)] hover:bg-[var(--glass-border)] hover:border-primary/30 transition-all duration-300 cursor-pointer h-full group bg-[var(--glass-bg)]">
                     <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
                       <PawPrint className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>

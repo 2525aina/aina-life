@@ -150,7 +150,7 @@ export default function CalendarPage() {
                     "px-5 py-2.5 min-h-[44px] rounded-full text-sm font-bold transition-all duration-300",
                     viewMode === mode
                       ? "bg-primary text-white shadow-md shadow-primary/30"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/10",
+                      : "text-muted-foreground hover:text-foreground hover:bg-[var(--glass-border)]",
                   )}
                 >
                   {mode === "month" ? "月" : mode === "week" ? "週" : "日"}
@@ -163,7 +163,7 @@ export default function CalendarPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate("prev")}
-                className="rounded-full w-10 h-10 hover:bg-white/20 text-foreground/80 hover:text-foreground backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
+                className="rounded-full w-10 h-10 hover:bg-[var(--glass-border)] text-foreground/80 hover:text-foreground backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
               >
                 <ChevronLeft className="w-6 h-6" />
               </Button>
@@ -176,7 +176,7 @@ export default function CalendarPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate("next")}
-                className="rounded-full w-10 h-10 hover:bg-white/20 text-foreground/80 hover:text-foreground backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
+                className="rounded-full w-10 h-10 hover:bg-[var(--glass-border)] text-foreground/80 hover:text-foreground backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
               >
                 <ChevronRight className="w-6 h-6" />
               </Button>
@@ -229,7 +229,7 @@ export default function CalendarPage() {
                       "relative aspect-[4/5] rounded-xl flex flex-col items-center justify-start pt-2 transition-all duration-300 group outline-none",
                       isSelected
                         ? "bg-primary/10 ring-2 ring-primary/30"
-                        : "hover:bg-white/10 dark:hover:bg-white/5",
+                        : "hover:bg-[var(--glass-border)]",
                       !isCurrentMonth && viewMode === "month" && "opacity-20",
                     )}
                   >

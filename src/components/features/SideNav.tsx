@@ -31,7 +31,7 @@ export function SideNav() {
                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
                 isActive
                   ? "bg-primary/10 text-primary font-bold"
-                  : "text-muted-foreground hover:bg-white/10 hover:text-foreground",
+                  : "text-muted-foreground hover:bg-[var(--glass-border)] hover:text-foreground",
               )}
             >
               <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
