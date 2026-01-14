@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { usePets } from "@/hooks/usePets";
 import { StyledInput, GenderSelect } from "@/components/ui/styled-form-fields";
 import { format, parse } from "date-fns";
@@ -65,6 +66,7 @@ export default function ProfilePage() {
   const { theme, setTheme } = useTheme();
   const { pets } = usePets();
   const { uploadUserAvatar, uploading } = useImageUpload();
+  const searchParams = useSearchParams();
 
   // プロフィール情報
   const [displayName, setDisplayName] = useState("");
@@ -106,6 +108,13 @@ export default function ProfilePage() {
       }
     }
   }, [userProfile]);
+
+  // Handle edit query param
+  useEffect(() => {
+    if (searchParams.get("edit") === "true") {
+      setIsEditing(true);
+    }
+  }, [searchParams]);
 
   const handleUpdateSettings = async (key: string, value: string) => {
     if (!user) return;
@@ -152,7 +161,6 @@ export default function ProfilePage() {
       }
 
       await updateDoc(doc(db, "users", user.uid), {
-        displayName: displayName.trim() || userProfile?.displayName,
         nickname: nickname.trim() || null,
         birthday: birthday ? format(birthday, "yyyy-MM-dd") : null,
         gender: gender || null,
@@ -176,7 +184,6 @@ export default function ProfilePage() {
   // 変更があるかどうかを判定
   const hasChanges = () => {
     if (pendingAvatarFile || removeAvatar) return true;
-    if (displayName !== (userProfile?.displayName || "")) return true;
     if (nickname !== (userProfile?.nickname || "")) return true;
     if (gender !== (userProfile?.gender || "")) return true;
     if (introduction !== (userProfile?.introduction || "")) return true;
@@ -298,13 +305,8 @@ export default function ProfilePage() {
                     {/* Name & Bio */}
                     <div className="text-center space-y-2 mb-6">
                       <h1 className="text-3xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 filter drop-shadow-sm">
-                        {nickname || displayName}
+                        {nickname || "ユーザー"}
                       </h1>
-                      {nickname && (
-                        <p className="text-sm font-bold text-muted-foreground tracking-wide">
-                          {displayName}
-                        </p>
-                      )}
 
                       {/* Email Badge */}
                       <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-capsule border border-white/20 text-xs font-bold text-muted-foreground/80 mt-3 shadow-sm">
@@ -334,16 +336,6 @@ export default function ProfilePage() {
                     <div className="glass rounded-[2rem] p-4 sm:p-6 shadow-xl border-white/20">
                       <div className="space-y-4">
                         <div className="grid gap-3 sm:gap-4">
-                          <div>
-                            <Label className="text-xs font-bold text-muted-foreground ml-1">
-                              表示名
-                            </Label>
-                            <StyledInput
-                              value={displayName}
-                              onChange={(e) => setDisplayName(e.target.value)}
-                              placeholder="お名前"
-                            />
-                          </div>
                           <div>
                             <Label className="text-xs font-bold text-muted-foreground ml-1">
                               ニックネーム
@@ -403,7 +395,7 @@ export default function ProfilePage() {
                         <Button
                           className="flex-1 gradient-primary shadow-2xl rounded-full h-12"
                           onClick={handleSaveProfile}
-                          disabled={isSaving || !displayName.trim()}
+                          disabled={isSaving || !nickname.trim()}
                         >
                           <Save className="w-4 h-4 mr-2" />
                           {isSaving ? "保存中..." : "保存"}

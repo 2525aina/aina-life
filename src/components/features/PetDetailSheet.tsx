@@ -347,12 +347,12 @@ export function PetDetailSheet({ pet, open, onClose, onEdit }: PetDetailSheetPro
                                                 <Avatar className="w-10 h-10 border-2 border-background ring-1 ring-white/10 shrink-0">
                                                     <AvatarImage src={member.userProfile?.avatarUrl} />
                                                     <AvatarFallback className="text-[10px]">
-                                                        {member.userProfile?.displayName?.slice(0, 2) || "U"}
+                                                        {(member.userProfile?.nickname || "U").slice(0, 2)}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1 min-w-0 text-left">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-sm truncate">{member.userProfile?.displayName || "ユーザー"}</span>
+                                                        <span className="font-bold text-sm truncate">{member.userProfile?.nickname || "ユーザー"}</span>
                                                         <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full whitespace-nowrap">
                                                             {getRoleLabel(member.role)}
                                                         </span>
@@ -372,13 +372,13 @@ export function PetDetailSheet({ pet, open, onClose, onEdit }: PetDetailSheetPro
                                         <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
                                             <Avatar className="w-20 h-20 border-4 border-background shadow-xl">
                                                 <AvatarImage src={selectedMember?.userProfile?.avatarUrl} />
-                                                <AvatarFallback>{selectedMember?.userProfile?.displayName?.slice(0, 2) || "U"}</AvatarFallback>
+                                                <AvatarFallback>{(selectedMember?.userProfile?.nickname || "U").slice(0, 2)}</AvatarFallback>
                                             </Avatar>
                                         </div>
                                     </div>
                                     <div className="pt-12 pb-6 px-6 text-center space-y-4">
                                         <div>
-                                            <h3 className="font-exbold text-xl">{selectedMember?.userProfile?.displayName || "ユーザー"}</h3>
+                                            <h3 className="font-exbold text-xl">{selectedMember?.userProfile?.nickname || "ユーザー"}</h3>
                                             <p className="text-sm text-muted-foreground">{selectedMember?.inviteEmail}</p>
                                         </div>
 

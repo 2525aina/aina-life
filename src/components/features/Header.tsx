@@ -66,7 +66,7 @@ export function Header() {
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5">
                 <p className="font-medium truncate">
-                  {userProfile?.displayName}
+                  {userProfile?.nickname || "ユーザー"}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
                   {userProfile?.email}

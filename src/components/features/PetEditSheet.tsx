@@ -419,7 +419,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-sm truncate">{member.userProfile?.displayName || member.petName || "User"}</span>
+                                                <span className="font-bold text-sm truncate">{member.userProfile?.nickname || member.petName || "ユーザー"}</span>
                                                 {member.status === 'pending' && <span className="text-[10px] bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full flex items-center gap-1"><Mail className="w-3 h-3" />招待中</span>}
                                                 {member.status === 'active' && getRoleIcon(member.role)}
                                                 {member.status === 'active' && <span className="text-[10px] bg-primary/10 px-2 py-0.5 rounded-full text-primary">{getRoleLabel(member.role)}</span>}
@@ -456,7 +456,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>メンバー削除</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                {member.userProfile?.displayName || "このメンバー"}を削除しますか？
+                                                                {member.userProfile?.nickname || "このメンバー"}を削除しますか？
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>

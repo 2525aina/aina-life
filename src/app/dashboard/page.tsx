@@ -17,13 +17,20 @@ import { EntryNewSheet } from "@/components/features/EntryNewSheet";
 import { useEntries } from "@/hooks/useEntries";
 import { toast } from "sonner";
 import { EntryFormData } from "@/lib/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { User as UserIcon, X } from "lucide-react";
 
 export default function DashboardPage() {
   const { selectedPet } = usePetContext();
+  const { userProfile } = useAuth();
   const { canEdit } = useMembers(selectedPet?.id || null);
   const { addEntry } = useEntries(selectedPet?.id || null);
   const [isNewSheetOpen, setIsNewSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showProfileAlert, setShowProfileAlert] = useState(true);
+
+  // プロフィール未設定（ニックネームがない）のチェック
+  const isProfileIncomplete = !userProfile?.nickname;
 
   const handleSave = async (data: EntryFormData) => {
     setIsSubmitting(true);
@@ -44,6 +51,37 @@ export default function DashboardPage() {
       <AppLayout>
         <div className="p-4 space-y-6 flex flex-col items-center justify-center min-h-[70vh]">
           <PendingInvitations />
+          {/* Profile Alert (No Pet State) */}
+          {isProfileIncomplete && showProfileAlert && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-sm mx-auto p-4 glass border-orange-500/20 bg-orange-500/5 rounded-2xl relative text-left mb-4"
+            >
+              <button
+                onClick={() => setShowProfileAlert(false)}
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground p-2"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-orange-500/10 rounded-full text-orange-500">
+                  <UserIcon className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-sm mb-1">プロフィールを完成させましょう</h3>
+                  <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                    ニックネームを設定すると、共有メンバーに分かりやすく表示されます。
+                  </p>
+                  <Link href="/profile?edit=true">
+                    <Button size="sm" variant="outline" className="rounded-full text-xs h-8 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600">
+                      設定する
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -129,6 +167,38 @@ export default function DashboardPage() {
         </div>
 
         <div className="px-2">
+          {/* Profile Alert */}
+          {isProfileIncomplete && showProfileAlert && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 mx-2 p-4 glass border-orange-500/20 bg-orange-500/5 rounded-2xl relative"
+            >
+              <button
+                onClick={() => setShowProfileAlert(false)}
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground p-2"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-orange-500/10 rounded-full text-orange-500">
+                  <UserIcon className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-sm mb-1">プロフィールを完成させましょう</h3>
+                  <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                    ニックネームを設定すると、共有メンバーに分かりやすく表示されます。
+                  </p>
+                  <Link href="/profile?edit=true">
+                    <Button size="sm" variant="outline" className="rounded-full text-xs h-8 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600">
+                      設定する
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Timeline */}
           <TimelineView />
         </div>
