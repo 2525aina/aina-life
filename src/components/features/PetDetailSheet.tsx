@@ -129,7 +129,7 @@ export function PetDetailSheet({
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="glass border-white/20">
+                  <AlertDialogContent className="glass border-[var(--glass-border)]">
                     <AlertDialogHeader>
                       <AlertDialogTitle>ペットを削除</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -286,52 +286,52 @@ export function PetDetailSheet({
                 {(pet.color ||
                   pet.medicalNotes ||
                   (pet.vetInfo && pet.vetInfo.length > 0)) && (
-                  <div className="glass rounded-[2rem] p-6 shadow-lg border-[var(--glass-border)] space-y-4">
-                    {pet.color && (
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                          <Heart className="w-5 h-5" />
+                    <div className="glass rounded-[2rem] p-6 shadow-lg border-[var(--glass-border)] space-y-4">
+                      {pet.color && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <Heart className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+                              毛色
+                            </p>
+                            <p className="font-bold">{pet.color}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                            毛色
+                      )}
+                      {pet.medicalNotes && (
+                        <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
+                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
+                            メモ・医療情報
                           </p>
-                          <p className="font-bold">{pet.color}</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                            {pet.medicalNotes}
+                          </p>
                         </div>
-                      </div>
-                    )}
-                    {pet.medicalNotes && (
-                      <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
-                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
-                          メモ・医療情報
-                        </p>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                          {pet.medicalNotes}
-                        </p>
-                      </div>
-                    )}
-                    {pet.vetInfo && pet.vetInfo.length > 0 && (
-                      <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
-                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
-                          かかりつけ医
-                        </p>
-                        <div className="space-y-2">
-                          {pet.vetInfo.map((vet, idx) => (
-                            <div
-                              key={idx}
-                              className="flex justify-between items-center text-sm"
-                            >
-                              <span className="font-bold">{vet.name}</span>
-                              <span className="text-muted-foreground">
-                                {vet.phone}
-                              </span>
-                            </div>
-                          ))}
+                      )}
+                      {pet.vetInfo && pet.vetInfo.length > 0 && (
+                        <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
+                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
+                            かかりつけ医
+                          </p>
+                          <div className="space-y-2">
+                            {pet.vetInfo.map((vet, idx) => (
+                              <div
+                                key={idx}
+                                className="flex justify-between items-center text-sm"
+                              >
+                                <span className="font-bold">{vet.name}</span>
+                                <span className="text-muted-foreground">
+                                  {vet.phone}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
                 <div className="px-2 pt-4">
                   <Button
                     onClick={onEdit}
@@ -508,7 +508,7 @@ export function PetDetailSheet({
                             <LogOut className="w-4 h-4" /> 脱退する
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="glass border-white/20 rounded-[2rem]">
+                        <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
                           <AlertDialogHeader>
                             <AlertDialogTitle>
                               チームから脱退しますか？
