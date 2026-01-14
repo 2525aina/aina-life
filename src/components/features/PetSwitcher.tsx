@@ -12,15 +12,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown, Plus, Settings } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import { PetNewSheet } from "@/components/features/PetNewSheet";
+import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { useState, useEffect } from "react";
 
 export function PetSwitcher() {
   const { pets, loading } = usePets();
   const { selectedPet, setSelectedPet } = usePetContext();
   const [isNewPetSheetOpen, setIsNewPetSheetOpen] = useState(false);
+  const [isEditPetSheetOpen, setIsEditPetSheetOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -74,35 +75,12 @@ export function PetSwitcher() {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="gap-2 h-10 px-3">
-          <Avatar className="w-7 h-7">
-            <AvatarImage src={selectedPet?.avatarUrl} alt={selectedPet?.name} />
-            <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden relative">
-              <Image
-                src="/ogp.webp"
-                alt="Pet"
-                fill
-                className="object-cover opacity-50 grayscale"
-              />
-            </AvatarFallback>
-          </Avatar>
-          <span className="font-medium max-w-[100px] truncate">
-            {selectedPet?.name || "ペットを選択"}
-          </span>
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
-        {pets.map((pet) => (
-          <DropdownMenuItem
-            key={pet.id}
-            onClick={() => setSelectedPet(pet)}
-            className="gap-3 cursor-pointer"
-          >
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={pet.avatarUrl} alt={pet.name} />
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="gap-2 h-10 px-3">
+            <Avatar className="w-7 h-7">
+              <AvatarImage src={selectedPet?.avatarUrl} alt={selectedPet?.name} />
               <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden relative">
                 <Image
                   src="/ogp.webp"
@@ -112,44 +90,75 @@ export function PetSwitcher() {
                 />
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{pet.name}</p>
-              {pet.breed && (
-                <p className="text-xs text-muted-foreground truncate">
-                  {pet.breed}
-                </p>
-              )}
-            </div>
-          </DropdownMenuItem>
-        ))}
-        <DropdownMenuSeparator />
-        {selectedPet && (
-          <DropdownMenuItem asChild>
-            <Link
-              href={`/pets/settings?id=${selectedPet.id}`}
+            <span className="font-medium max-w-[100px] truncate">
+              {selectedPet?.name || "ペットを選択"}
+            </span>
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-56">
+          {pets.map((pet) => (
+            <DropdownMenuItem
+              key={pet.id}
+              onClick={() => setSelectedPet(pet)}
+              className="gap-3 cursor-pointer"
+            >
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={pet.avatarUrl} alt={pet.name} />
+                <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden relative">
+                  <Image
+                    src="/ogp.webp"
+                    alt="Pet"
+                    fill
+                    className="object-cover opacity-50 grayscale"
+                  />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{pet.name}</p>
+                {pet.breed && (
+                  <p className="text-xs text-muted-foreground truncate">
+                    {pet.breed}
+                  </p>
+                )}
+              </div>
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          {selectedPet && (
+            <DropdownMenuItem
+              onClick={() => setIsEditPetSheetOpen(true)}
               className="gap-3 cursor-pointer"
             >
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                 <Settings className="w-4 h-4" />
               </div>
               <span>{selectedPet.name}の設定</span>
-            </Link>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem
+            className="gap-3 cursor-pointer"
+            onClick={() => setIsNewPetSheetOpen(true)}
+          >
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <Plus className="w-4 h-4" />
+            </div>
+            <span>新しいペットを追加</span>
           </DropdownMenuItem>
-        )}
-        <DropdownMenuItem
-          className="gap-3 cursor-pointer"
-          onClick={() => setIsNewPetSheetOpen(true)}
-        >
-          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-            <Plus className="w-4 h-4" />
-          </div>
-          <span>新しいペットを追加</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <PetNewSheet
         open={isNewPetSheetOpen}
         onClose={() => setIsNewPetSheetOpen(false)}
       />
-    </DropdownMenu>
+
+      <PetEditSheet
+        pet={selectedPet}
+        open={isEditPetSheetOpen}
+        onClose={() => setIsEditPetSheetOpen(false)}
+      />
+    </>
   );
 }
+

@@ -1,17 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Settings } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePetContext } from "@/contexts/PetContext";
+import { PetEditSheet } from "@/components/features/PetEditSheet";
 
 export function HeroSection() {
   const { selectedPet } = usePetContext();
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const now = new Date();
   const hour = now.getHours();
 
@@ -24,72 +26,80 @@ export function HeroSection() {
   if (!selectedPet) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/90 to-primary/70 text-primary-foreground p-6 shadow-xl"
-    >
-      {/* Background Decorations */}
-      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl opacity-50 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-black/5 rounded-full blur-2xl opacity-30 pointer-events-none" />
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/90 to-primary/70 text-primary-foreground p-6 shadow-xl"
+      >
+        {/* Background Decorations */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl opacity-50 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-black/5 rounded-full blur-2xl opacity-30 pointer-events-none" />
 
-      <div className="relative z-10 flex items-start justify-between">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col"
-          >
-            <span className="text-sm font-medium opacity-90 mb-1">
-              {format(now, "M月d日 EEEE", { locale: ja })}
-            </span>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">
-              {greeting},<br />
-              <span className="text-4xl">{selectedPet.name}</span>
-            </h1>
-          </motion.div>
-        </div>
+        <div className="relative z-10 flex items-start justify-between">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col"
+            >
+              <span className="text-sm font-medium opacity-90 mb-1">
+                {format(now, "M月d日 EEEE", { locale: ja })}
+              </span>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">
+                {greeting},<br />
+                <span className="text-4xl">{selectedPet.name}</span>
+              </h1>
+            </motion.div>
+          </div>
 
-        <Link href={`/pets/settings?id=${selectedPet.id}`}>
           <Button
             variant="ghost"
             size="icon"
+            onClick={() => setIsEditSheetOpen(true)}
             className="text-primary-foreground/80 hover:text-white hover:bg-white/20 rounded-full"
           >
             <Settings className="w-5 h-5" />
           </Button>
-        </Link>
-      </div>
-
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.3, type: "spring" }}
-        className="mt-6 flex justify-center"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 bg-white/30 blur-xl rounded-full scale-110" />
-          <Avatar className="w-24 h-24 border-4 border border-[var(--glass-border)] shadow-2xl relative z-10">
-            <AvatarImage
-              src={selectedPet.avatarUrl}
-              alt={selectedPet.name}
-              className="object-cover"
-            />
-            <AvatarFallback className="bg-white/20 flex items-center justify-center overflow-hidden relative">
-              <Image
-                src="/ogp.webp"
-                alt="Pet"
-                fill
-                className="object-cover opacity-50 grayscale"
-              />
-            </AvatarFallback>
-          </Avatar>
-          {/* Status Indicator (Mockup for now) */}
-          <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-400 border-4 border-primary rounded-full z-20 shadow-lg" />
         </div>
+
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, type: "spring" }}
+          className="mt-6 flex justify-center"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-white/30 blur-xl rounded-full scale-110" />
+            <Avatar className="w-24 h-24 border-4 border border-[var(--glass-border)] shadow-2xl relative z-10">
+              <AvatarImage
+                src={selectedPet.avatarUrl}
+                alt={selectedPet.name}
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-white/20 flex items-center justify-center overflow-hidden relative">
+                <Image
+                  src="/ogp.webp"
+                  alt="Pet"
+                  fill
+                  className="object-cover opacity-50 grayscale"
+                />
+              </AvatarFallback>
+            </Avatar>
+            {/* Status Indicator (Mockup for now) */}
+            <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-400 border-4 border-primary rounded-full z-20 shadow-lg" />
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+
+      <PetEditSheet
+        pet={selectedPet}
+        open={isEditSheetOpen}
+        onClose={() => setIsEditSheetOpen(false)}
+      />
+    </>
   );
 }
+
