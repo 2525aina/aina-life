@@ -65,8 +65,9 @@ export function CalendarView() {
             return eachDayOfInterval({ start, end });
         }
         if (viewMode === "week") {
-            const start = startOfWeek(currentDate, { weekStartsOn: 0 });
-            const end = endOfWeek(currentDate, { weekStartsOn: 0 });
+            // "Week" mode is actually "3 Days" mode now
+            const start = currentDate; // Start from current selected date
+            const end = addDays(currentDate, 2); // Show 3 days
             return eachDayOfInterval({ start, end });
         }
         return [currentDate];
@@ -178,8 +179,8 @@ export function CalendarView() {
         } else if (viewMode === "week") {
             const newDate =
                 direction === "prev"
-                    ? subWeeks(currentDate, 1)
-                    : addWeeks(currentDate, 1);
+                    ? subDays(currentDate, 3)
+                    : addDays(currentDate, 3);
             setCurrentDate(newDate);
             setSelectedDate(newDate);
         } else {
@@ -230,7 +231,7 @@ export function CalendarView() {
                                     : "text-muted-foreground hover:text-foreground hover:bg-[var(--glass-border)]",
                             )}
                         >
-                            {mode === "month" ? "月" : mode === "week" ? "週" : "日"}
+                            {mode === "month" ? "月" : mode === "week" ? "3日" : "日"}
                         </button>
                     ))}
                 </div>
@@ -269,27 +270,48 @@ export function CalendarView() {
                     viewMode === "day" && "hidden",
                 )}
             >
-                <div className="grid grid-cols-7 mb-2 opacity-60">
-                    {weekDays.map((day, i) => (
-                        <div
-                            key={day}
-                            className={cn(
-                                "text-center text-[10px] font-bold py-2",
-                                i === 0 && "text-red-500",
-                                i === 6 && "text-blue-500",
-                            )}
-                        >
-                            {day}
-                        </div>
-                    ))}
-                </div>
+                {/* Header for Month/3-Day view */}
+                {viewMode === "month" ? (
+                    <div className="grid grid-cols-7 mb-2 opacity-60">
+                        {weekDays.map((day, i) => (
+                            <div
+                                key={day}
+                                className={cn(
+                                    "text-center text-[10px] font-bold py-2",
+                                    i === 0 && "text-red-500",
+                                    i === 6 && "text-blue-500",
+                                )}
+                            >
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-3 mb-2 opacity-60">
+                        {calendarDays.map((day) => {
+                            const dayIndex = day.getDay();
+                            return (
+                                <div
+                                    key={day.toString()}
+                                    className={cn(
+                                        "text-center text-[10px] font-bold py-2",
+                                        dayIndex === 0 && "text-red-500",
+                                        dayIndex === 6 && "text-blue-500",
+                                    )}
+                                >
+                                    {format(day, "E", { locale: ja })}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
 
                 <div
                     className={cn(
-                        "grid grid-cols-7 gap-px bg-[var(--glass-border)] border border-[var(--glass-border)] rounded-2xl overflow-hidden",
+                        "grid gap-px bg-[var(--glass-border)] border border-[var(--glass-border)] rounded-2xl overflow-hidden",
                         viewMode === "month"
-                            ? "auto-rows-[minmax(120px,1fr)]"
-                            : "min-h-[500px] auto-rows-[1fr]",
+                            ? "grid-cols-7 auto-rows-[minmax(120px,1fr)]"
+                            : "grid-cols-3 min-h-[500px] auto-rows-[1fr]",
                     )}
                 >
                     {calendarDays.map((day) => {
