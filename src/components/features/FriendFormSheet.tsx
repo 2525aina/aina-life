@@ -36,6 +36,7 @@ import {
   Save,
 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
+import { ensureDate } from "@/lib/utils/date-utils";
 import { format } from "date-fns";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { Friend } from "@/lib/types";
@@ -134,11 +135,11 @@ export function FriendFormSheet({
         setBreed(friend.breed || "");
         setGender(friend.gender || "unknown");
         setColor(friend.color || "");
-        setBirthday(friend.birthday?.toDate());
+        setBirthday(ensureDate(friend.birthday) || undefined);
         setBirthdayMode("birthday");
         setWeight(friend.weight?.toString() || "");
         setWeightUnit(friend.weightUnit || "kg");
-        setMetAt(friend.metAt.toDate());
+        setMetAt(ensureDate(friend.metAt) || new Date());
         setLocation(friend.location || "");
         setMemo(friend.features || "");
         setOwnerName(friend.ownerName || "");
