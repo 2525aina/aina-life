@@ -1,0 +1,28 @@
+
+> aina-life@0.1.0 lint
+> eslint
+
+
+/Users/nakajimadaichi/huku/ebi/firebase/aina-life/src/components/dashboard/CalendarView.tsx
+   21:5   warning  'addWeeks' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   22:5   warning  'subWeeks' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+  139:8   warning  React Hook useMemo has a missing dependency: 'viewMode'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  142:11  warning  'entriesByDate' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+  158:23  warning  'e' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  198:9   warning  React Hook useMemo has a missing dependency: 'getDayEntries'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  476:53  error    'endDate' is never reassigned. Use 'const' instead                                                              prefer-const
+
+/Users/nakajimadaichi/huku/ebi/firebase/aina-life/src/components/dashboard/EntryCard.tsx
+  3:10  warning  'useMemo' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/nakajimadaichi/huku/ebi/firebase/aina-life/src/components/dashboard/TimelineView.tsx
+   5:8   warning  'Image' is defined but never used                   @typescript-eslint/no-unused-vars
+   6:10  warning  'format' is defined but never used                  @typescript-eslint/no-unused-vars
+  12:10  warning  'ENTRY_TAGS' is defined but never used              @typescript-eslint/no-unused-vars
+  14:3   warning  'CheckCircle2' is defined but never used            @typescript-eslint/no-unused-vars
+  15:3   warning  'Circle' is defined but never used                  @typescript-eslint/no-unused-vars
+  36:10  warning  'DEFAULT_FALLBACK_IMAGE' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 14 problems (1 error, 13 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

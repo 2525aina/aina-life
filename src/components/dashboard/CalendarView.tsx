@@ -18,8 +18,6 @@ import {
     isSameDay,
     addMonths,
     subMonths,
-    addWeeks,
-    subWeeks,
     addDays,
     subDays,
     startOfDay,
@@ -471,29 +469,39 @@ export function CalendarView() {
 
                                             const positionedEntries = dayRawEntries.map(entry => {
                                                 const startDate = entry.date.toDate();
-                                                let endDate = entry.timeType === "range" && entry.endDate
-                                                    ? entry.endDate.toDate()
-                                                    : addDays(startDate, 0);
+                                                const isRange = entry.timeType === "range" && !!entry.endDate;
 
-                                                if (!entry.endDate) {
-                                                    endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-                                                }
+                                                const endDate = isRange
+                                                    ? entry.endDate!.toDate()
+                                                    : startDate; // Point events end at the same time conceptually
 
+                                                // Determine visual height
+                                                // Range: actual duration (min 30px)
+                                                // Point: fixed height for visual chip (e.g. 28px)
                                                 const startMinutes = startDate.getHours() * 60 + startDate.getMinutes();
-                                                const endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
-                                                const duration = Math.max(30, endMinutes - startMinutes);
+                                                let endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
+
+                                                let visualHeight = 28; // Default for point
+                                                if (isRange) {
+                                                    visualHeight = Math.max(30, endMinutes - startMinutes);
+                                                } else {
+                                                    // For layout calculation, point events occupy space to avoid overlap
+                                                    // We treat them as effectively occupying their visual height in time
+                                                    endMinutes = startMinutes + visualHeight;
+                                                }
 
                                                 return {
                                                     entry,
                                                     top: startMinutes,
-                                                    height: duration,
-                                                    end: startMinutes + duration,
+                                                    height: visualHeight,
+                                                    end: endMinutes, // Use visual end for collision detection
                                                     colIndex: 0,
-                                                    totalCols: 1
+                                                    totalCols: 1,
+                                                    isRange
                                                 };
-                                            }).sort((a, b) => a.top - b.top || b.height - a.height); // Sort by start time, then duration
+                                            }).sort((a, b) => a.top - b.top || b.height - a.height);
 
-                                            // 2. Cluster overlapping events
+                                            // 2. Cluster overlapping events (Logic is Same)
                                             const clusters: typeof positionedEntries[] = [];
                                             let currentCluster: typeof positionedEntries = [];
 
@@ -501,7 +509,6 @@ export function CalendarView() {
                                                 if (currentCluster.length === 0) {
                                                     currentCluster.push(item);
                                                 } else {
-                                                    // Check if this item overlaps with the *entire cluster range*
                                                     const clusterEnd = Math.max(...currentCluster.map(c => c.end));
                                                     if (item.top < clusterEnd) {
                                                         currentCluster.push(item);
@@ -513,12 +520,11 @@ export function CalendarView() {
                                             });
                                             if (currentCluster.length > 0) clusters.push(currentCluster);
 
-                                            // 3. Assign columns within each cluster (Simple Greedy Packing)
+                                            // 3. Assign columns (Logic is Same)
                                             const finalLayout: typeof positionedEntries = [];
 
                                             clusters.forEach(cluster => {
-                                                const columns: number[] = []; // stores end time of last event in each column
-
+                                                const columns: number[] = [];
                                                 cluster.forEach(item => {
                                                     let placed = false;
                                                     for (let i = 0; i < columns.length; i++) {
@@ -534,8 +540,6 @@ export function CalendarView() {
                                                         columns.push(item.end);
                                                     }
                                                 });
-
-                                                // Update totalCols for all items in this cluster to share width
                                                 const maxCols = columns.length;
                                                 cluster.forEach(item => {
                                                     item.totalCols = maxCols;
@@ -544,13 +548,13 @@ export function CalendarView() {
                                             });
 
                                             // 4. Render
-                                            return finalLayout.map(({ entry, top, height, colIndex, totalCols }) => {
+                                            return finalLayout.map(({ entry, top, height, colIndex, totalCols, isRange }) => {
                                                 const tagInfo =
                                                     tasks.find((t) => t.name === entry.tags[0]) ||
                                                     ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
                                                 const isSchedule = entry.type === "schedule";
+                                                const isCompleted = isSchedule && entry.isCompleted;
 
-                                                // Width calculation with small gap
                                                 const widthPercent = 100 / totalCols;
                                                 const leftPercent = colIndex * widthPercent;
 
@@ -567,24 +571,37 @@ export function CalendarView() {
                                                             top: `${top}px`,
                                                             height: `${height}px`,
                                                             left: `${leftPercent}%`,
-                                                            width: `calc(${widthPercent}% - 2px)`, // -2px for gap
+                                                            width: `calc(${widthPercent}% - 2px)`,
                                                         }}
                                                         className={cn(
-                                                            "absolute rounded-md px-2 py-1 text-left border overflow-hidden shadow-sm transition-all hover:brightness-95 hover:z-20 hover:scale-[1.02]",
-                                                            isSchedule
-                                                                ? "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-800"
-                                                                : "bg-orange-100 text-orange-900 border-orange-200 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-800",
-                                                            entry.isCompleted && "opacity-60 saturate-0"
+                                                            "absolute px-2 text-left overflow-hidden transition-all hover:brightness-95 hover:z-20 hover:scale-[1.02]",
+                                                            isCompleted && "opacity-60 saturate-0",
+                                                            // Style differentiation
+                                                            isRange
+                                                                ? cn(
+                                                                    "rounded-md border py-1 shadow-sm",
+                                                                    isSchedule
+                                                                        ? "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-800"
+                                                                        : "bg-orange-100 text-orange-900 border-orange-200 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-800"
+                                                                )
+                                                                : cn(
+                                                                    "rounded-full flex items-center shadow-sm border py-0.5",
+                                                                    "bg-white border-gray-200 text-foreground hover:border-primary/50 dark:bg-zinc-800 dark:border-zinc-700"
+                                                                )
                                                         )}
                                                     >
-                                                        <div className="flex flex-col h-full">
-                                                            <div className="flex items-center gap-1 text-xs font-bold leading-none truncate">
-                                                                <span className="text-[10px] opacity-70 font-mono">
+                                                        <div className={cn("flex items-center h-full w-full", isRange ? "flex-col items-start" : "flex-row gap-2")}>
+                                                            {/* Time & Title */}
+                                                            <div className={cn("flex items-center gap-1 text-xs font-bold leading-none truncate w-full", isRange ? "" : "justify-start")}>
+                                                                <span className="text-[10px] opacity-70 font-mono shrink-0">
                                                                     {format(entry.date.toDate(), "H:mm")}
                                                                 </span>
+                                                                {!isRange && <span className="shrink-0 text-sm">{tagInfo?.emoji}</span>}
                                                                 <span className="truncate">{entry.title || entry.tags[0]}</span>
                                                             </div>
-                                                            {height > 40 && (
+
+                                                            {/* Extra info only for large Ranges */}
+                                                            {isRange && height > 40 && (
                                                                 <div className="text-[10px] opacity-80 mt-0.5 truncate flex items-center gap-1">
                                                                     <span>{tagInfo?.emoji}</span>
                                                                     <span>{entry.tags.join(", ")}</span>
