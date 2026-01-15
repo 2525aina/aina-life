@@ -35,7 +35,9 @@ import {
   Shield,
   LogOut,
   Settings,
+  Mail,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Pet, Member, MEMBER_ROLES } from "@/lib/types";
 import Image from "next/image";
@@ -45,7 +47,7 @@ import { useMembers } from "@/hooks/useMembers";
 import { usePets } from "@/hooks/usePets";
 import { useCustomTasks } from "@/hooks/useCustomTasks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getRoleLabel } from "@/lib/memberUtils";
+import { getRoleLabel, getRoleIcon } from "@/lib/memberUtils";
 
 interface PetDetailSheetProps {
   pet: Pet | null;
@@ -284,52 +286,52 @@ export function PetDetailSheet({
                 {(pet.color ||
                   pet.medicalNotes ||
                   (pet.vetInfo && pet.vetInfo.length > 0)) && (
-                  <div className="glass rounded-[2rem] p-6 shadow-lg border-[var(--glass-border)] space-y-4">
-                    {pet.color && (
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                          <Heart className="w-5 h-5" />
+                    <div className="glass rounded-[2rem] p-6 shadow-lg border-[var(--glass-border)] space-y-4">
+                      {pet.color && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <Heart className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+                              毛色
+                            </p>
+                            <p className="font-bold">{pet.color}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                            毛色
+                      )}
+                      {pet.medicalNotes && (
+                        <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
+                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
+                            メモ・医療情報
                           </p>
-                          <p className="font-bold">{pet.color}</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                            {pet.medicalNotes}
+                          </p>
                         </div>
-                      </div>
-                    )}
-                    {pet.medicalNotes && (
-                      <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
-                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
-                          メモ・医療情報
-                        </p>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                          {pet.medicalNotes}
-                        </p>
-                      </div>
-                    )}
-                    {pet.vetInfo && pet.vetInfo.length > 0 && (
-                      <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
-                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
-                          かかりつけ医
-                        </p>
-                        <div className="space-y-2">
-                          {pet.vetInfo.map((vet, idx) => (
-                            <div
-                              key={idx}
-                              className="flex justify-between items-center text-sm"
-                            >
-                              <span className="font-bold">{vet.name}</span>
-                              <span className="text-muted-foreground">
-                                {vet.phone}
-                              </span>
-                            </div>
-                          ))}
+                      )}
+                      {pet.vetInfo && pet.vetInfo.length > 0 && (
+                        <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
+                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
+                            かかりつけ医
+                          </p>
+                          <div className="space-y-2">
+                            {pet.vetInfo.map((vet, idx) => (
+                              <div
+                                key={idx}
+                                className="flex justify-between items-center text-sm"
+                              >
+                                <span className="font-bold">{vet.name}</span>
+                                <span className="text-muted-foreground">
+                                  {vet.phone}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
                 <div className="px-2 pt-4">
                   <Button
                     onClick={onEdit}
@@ -383,41 +385,69 @@ export function PetDetailSheet({
                       共有メンバー
                     </h3>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {members
-                      .filter((m) => m.status === "active")
-                      .map((member) => (
-                        <div
+                      .filter((m) => m.status === "active" || m.status === "pending")
+                      .map((member, index) => (
+                        <motion.div
                           key={member.id}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: index * 0.05 }}
                           onClick={() => setSelectedMember(member)}
-                          className="flex items-center gap-3 p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors cursor-pointer active:scale-95"
+                          className="group relative aspect-[4/5] rounded-2xl overflow-hidden glass border-[var(--glass-border)] shadow-sm cursor-pointer active:scale-95 transition-all"
                         >
-                          <Avatar className="w-10 h-10 border-2 border-background ring-1 ring-white/10 shrink-0">
-                            <AvatarImage src={member.userProfile?.avatarUrl} />
-                            <AvatarFallback className="text-[10px]">
-                              {(member.userProfile?.nickname || "U").slice(
-                                0,
-                                2,
-                              )}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0 text-left">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-sm truncate">
-                                {member.userProfile?.nickname || "ユーザー"}
-                              </span>
-                              <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full whitespace-nowrap">
-                                {getRoleLabel(member.role)}
-                              </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {member.inviteEmail}
-                            </p>
+                          {/* Background Avatar */}
+                          <div className="absolute inset-0 bg-muted">
+                            {member.userProfile?.avatarUrl || member.petAvatarUrl ? (
+                              <Image
+                                src={member.userProfile?.avatarUrl || member.petAvatarUrl!}
+                                alt={member.userProfile?.nickname || "User"}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                                <Image
+                                  src={DEFAULT_FALLBACK_IMAGE}
+                                  alt="No image"
+                                  width={48}
+                                  height={48}
+                                  className="opacity-20 grayscale"
+                                />
+                              </div>
+                            )}
                           </div>
-                        </div>
+
+                          {/* Overlay Gradient */}
+                          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                          {/* Content Overlay */}
+                          <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+                            <div className="flex flex-col gap-0.5">
+                              <h4 className="font-bold text-sm truncate">
+                                {member.userProfile?.nickname || member.petName || "ユーザー"}
+                              </h4>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {member.status === "pending" && (
+                                  <span className="text-[8px] bg-yellow-500/80 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1 backdrop-blur-md font-bold">
+                                    <Mail className="w-2.5 h-2.5" />
+                                    招待中
+                                  </span>
+                                )}
+                                {member.status === "active" && (
+                                  <span className="text-[8px] bg-white/20 text-white px-1.5 py-0.5 rounded-full backdrop-blur-md font-bold flex items-center gap-0.5 border border-white/10 uppercase tracking-wider">
+                                    {getRoleIcon(member.role)}
+                                    {getRoleLabel(member.role)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
                       ))}
                     {members.length === 0 && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground col-span-2 text-center py-8">
                         なし
                       </span>
                     )}

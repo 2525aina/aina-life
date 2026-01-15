@@ -33,6 +33,10 @@ import { UserPlus, Trash2, X, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { MEMBER_ROLES, MemberRole, Member, Pet } from "@/lib/types";
 import { getRoleLabel, getRoleIcon } from "@/lib/memberUtils";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
+import { cn } from "@/lib/utils";
 
 interface PetMembersTabProps {
   pet: Pet;
@@ -132,137 +136,167 @@ export function PetMembersTab({
         )}
       </div>
 
-      <div className="space-y-3">
-        {sortedMembers.map((member) => (
-          <div
+      <div className="grid grid-cols-2 gap-3">
+        {sortedMembers.map((member, index) => (
+          <motion.div
             key={member.id}
-            className="flex items-center gap-3 p-3 rounded-2xl glass border-[var(--glass-border)]"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.05 }}
+            className="group relative aspect-[4/5] rounded-2xl overflow-hidden glass border-[var(--glass-border)] shadow-sm"
           >
-            <Avatar className="w-10 h-10 border border-[var(--glass-border)]">
-              <AvatarImage
-                src={member.userProfile?.avatarUrl || member.petAvatarUrl}
-              />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-sm truncate">
-                  {member.userProfile?.nickname || member.petName || "ユーザー"}
-                </span>
-                {member.status === "pending" && (
-                  <span className="text-[10px] bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Mail className="w-3 h-3" />
-                    招待中
-                  </span>
-                )}
-                {member.status === "active" && getRoleIcon(member.role)}
-                {member.status === "active" && (
-                  <span className="text-[10px] bg-primary/10 px-2 py-0.5 rounded-full text-primary">
-                    {getRoleLabel(member.role)}
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground truncate">
-                {member.inviteEmail}
-              </p>
+            {/* Background Image / Avatar */}
+            <div className="absolute inset-0 bg-muted">
+              {member.userProfile?.avatarUrl || member.petAvatarUrl ? (
+                <Image
+                  src={member.userProfile?.avatarUrl || member.petAvatarUrl!}
+                  alt={member.userProfile?.nickname || "User"}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                  <Image
+                    src={DEFAULT_FALLBACK_IMAGE}
+                    alt="No image"
+                    width={48}
+                    height={48}
+                    className="opacity-20 grayscale"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Role Select & Delete */}
-            {canManageMembers && member.status !== "pending" && (
-              <div className="flex items-center gap-1">
-                <Select
-                  value={member.role}
-                  disabled={member.role === "owner" && activeOwnersCount <= 1}
-                  onValueChange={(val) =>
-                    updateMemberRole(member.id, val as MemberRole).catch(() =>
-                      toast.error("権限変更に失敗しました"),
-                    )
-                  }
-                >
-                  <SelectTrigger className="h-7 w-[70px] text-[10px] border-[var(--glass-border)] bg-[var(--glass-bg)]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MEMBER_ROLES.map((role) => (
-                      <SelectItem
-                        key={role.value}
-                        value={role.value}
-                        className="text-xs"
-                      >
-                        {role.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Overlay Gradient */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>メンバー削除</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {member.userProfile?.nickname || "このメンバー"}
-                        を削除しますか？
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="rounded-full">
-                        キャンセル
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => removeMember(member.id)}
-                        className="bg-destructive rounded-full"
+            {/* Management Controls (Top Right Overlay) */}
+            {canManageMembers && (
+              <div className="absolute top-2 right-2 flex gap-1 z-10">
+                {member.status !== "pending" ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full bg-black/20 hover:bg-red-500/80 text-white border border-white/20 backdrop-blur-md transition-all active:scale-95"
                       >
-                        削除
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>メンバー削除</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {member.userProfile?.nickname || "このメンバー"}
+                          を削除しますか？
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-full">
+                          キャンセル
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => removeMember(member.id)}
+                          className="bg-destructive rounded-full"
+                        >
+                          削除
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full bg-black/20 hover:bg-red-500/80 text-white border border-white/20 backdrop-blur-md transition-all active:scale-95"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>招待を取り消し</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          招待を取り消しますか？
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-full">
+                          キャンセル
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => removeMember(member.id)}
+                          className="bg-destructive rounded-full"
+                        >
+                          取り消し
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             )}
 
-            {/* Cancel Invite */}
-            {canManageMembers && member.status === "pending" && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>招待を取り消し</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      招待を取り消しますか？
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-full">
-                      キャンセル
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => removeMember(member.id)}
-                      className="bg-destructive rounded-full"
+            {/* Content Overlay */}
+            <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h4 className="font-bold text-sm truncate max-w-[100px]">
+                    {member.userProfile?.nickname ||
+                      member.petName ||
+                      "ユーザー"}
+                  </h4>
+                  {member.status === "pending" && (
+                    <span className="text-[8px] bg-yellow-500/80 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1 backdrop-blur-md font-bold">
+                      <Mail className="w-2.5 h-2.5" />
+                      招待中
+                    </span>
+                  )}
+                  {member.status === "active" && (
+                    <span className="text-[8px] bg-white/20 text-white px-1.5 py-0.5 rounded-full backdrop-blur-md font-bold flex items-center gap-0.5 border border-white/10 uppercase tracking-wider">
+                      {getRoleIcon(member.role)}
+                      {getRoleLabel(member.role)}
+                    </span>
+                  )}
+                </div>
+
+                {/* Role Select in card overlay if managing */}
+                {canManageMembers && member.status !== "pending" && (
+                  <div className="mt-1">
+                    <Select
+                      value={member.role}
+                      disabled={
+                        member.role === "owner" && activeOwnersCount <= 1
+                      }
+                      onValueChange={(val) =>
+                        updateMemberRole(member.id, val as MemberRole).catch(
+                          () => toast.error("権限変更に失敗しました"),
+                        )
+                      }
                     >
-                      取り消し
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
+                      <SelectTrigger className="h-6 w-full text-[9px] bg-white/20 border-white/20 text-white font-bold rounded-lg px-2 backdrop-blur-md hover:bg-white/30 transition-all">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="glass border-[var(--glass-border)]">
+                        {MEMBER_ROLES.map((role) => (
+                          <SelectItem
+                            key={role.value}
+                            value={role.value}
+                            className="text-[10px]"
+                          >
+                            {role.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
         ))}
       </div>
     </div>

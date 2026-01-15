@@ -20,8 +20,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { handleError } from "@/lib/errorHandler";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-export function PendingInvitations() {
+interface PendingInvitationsProps {
+  className?: string;
+}
+
+export function PendingInvitations({ className }: PendingInvitationsProps) {
   const { invitations, loading } = usePendingInvitations();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -31,7 +36,7 @@ export function PendingInvitations() {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
+      className={className}
     >
       <Card className="border-primary/50 bg-primary/5">
         <CardHeader className="pb-2">

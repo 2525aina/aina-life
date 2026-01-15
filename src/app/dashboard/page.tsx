@@ -53,14 +53,14 @@ export default function DashboardPage() {
     return (
       <AppLayout>
         <div className="p-4 space-y-6 flex flex-col items-center justify-center min-h-[70vh]">
-          <PendingInvitations />
+          <PendingInvitations className="w-full max-w-md mx-auto mb-6" />
 
-          <ProfileAlert className="w-full max-w-sm mx-auto mb-4" />
+          <ProfileAlert className="w-full max-w-md mx-auto mb-4" />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12 w-full max-w-sm bg-[var(--glass-bg)] backdrop-blur-xl rounded-3xl border border-[var(--glass-border)] shadow-xl p-8"
+            className="text-center py-12 w-full max-w-md bg-[var(--glass-bg)] backdrop-blur-xl rounded-3xl border border-[var(--glass-border)] shadow-xl p-8"
           >
             <div className="w-28 h-28 mx-auto rounded-full overflow-hidden mb-6 ring-4 ring-primary/20 shadow-lg">
               <Image
@@ -104,7 +104,7 @@ export default function DashboardPage() {
         <div className="fixed bottom-0 right-0 w-[80%] h-[50%] bg-blue-400/5 rounded-full blur-[100px] -z-20 pointer-events-none" />
 
         <div className="sticky top-14 z-20 px-4 pt-4 pb-4 bg-gradient-to-b from-background via-background/95 to-transparent backdrop-blur-sm">
-          <PendingInvitations />
+          <PendingInvitations className="max-w-md mx-auto mb-4" />
 
           {/* Header */}
           <div className="flex items-end justify-between relative mt-2">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="px-2">
-          <ProfileAlert className="mb-4 mx-2" />
+          <ProfileAlert className="max-w-md mx-auto mb-4" />
 
           {/* View Content */}
           <motion.div
