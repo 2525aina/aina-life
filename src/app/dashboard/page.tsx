@@ -22,6 +22,9 @@ import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 import { ProfileAlert } from "@/components/features/ProfileAlert";
 import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
+import { cn } from "@/lib/utils";
+import { CalendarView } from "@/components/dashboard/CalendarView";
+import { List } from "lucide-react";
 
 export default function DashboardPage() {
   const { selectedPet } = usePetContext();
@@ -29,6 +32,7 @@ export default function DashboardPage() {
   const { addEntry } = useEntries(selectedPet?.id || null);
   const [isNewSheetOpen, setIsNewSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [viewMode, setViewMode] = useState<"timeline" | "calendar">("timeline");
 
   const handleSave = async (data: EntryFormData) => {
     setIsSubmitting(true);
@@ -45,6 +49,7 @@ export default function DashboardPage() {
   };
 
   if (!selectedPet) {
+    // ... (No pet state remains same)
     return (
       <AppLayout>
         <div className="p-4 space-y-6 flex flex-col items-center justify-center min-h-[70vh]">
@@ -114,15 +119,31 @@ export default function DashboardPage() {
               </h1>
             </div>
             <div className="flex gap-2 sm:gap-3">
-              <Link href="/calendar">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full w-10 h-10 sm:w-12 sm:h-12 bg-[var(--glass-bg)] hover:bg-white/50 backdrop-blur-md shadow-sm border border-[var(--glass-border)] transition-all hover:scale-110 active:scale-95"
+              <div className="glass-capsule p-1 flex items-center bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]">
+                <button
+                  onClick={() => setViewMode("timeline")}
+                  className={cn(
+                    "p-2 rounded-full transition-all duration-300",
+                    viewMode === "timeline"
+                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-[var(--glass-border)]",
+                  )}
                 >
-                  <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/80" />
-                </Button>
-              </Link>
+                  <List className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
+                <button
+                  onClick={() => setViewMode("calendar")}
+                  className={cn(
+                    "p-2 rounded-full transition-all duration-300",
+                    viewMode === "calendar"
+                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-[var(--glass-border)]",
+                  )}
+                >
+                  <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
+              </div>
+
               <Link href={getPetDetailUrl(selectedPet.id)}>
                 <Button
                   variant="ghost"
@@ -139,8 +160,15 @@ export default function DashboardPage() {
         <div className="px-2">
           <ProfileAlert className="mb-4 mx-2" />
 
-          {/* Timeline */}
-          <TimelineView />
+          {/* View Content */}
+          <motion.div
+            key={viewMode}
+            initial={{ opacity: 0, x: viewMode === "calendar" ? 20 : -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
+            {viewMode === "timeline" ? <TimelineView /> : <CalendarView />}
+          </motion.div>
         </div>
 
         {/* FAB - sticky above footer */}
