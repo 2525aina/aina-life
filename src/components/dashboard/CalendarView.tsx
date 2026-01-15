@@ -18,6 +18,8 @@ import {
   isSameDay,
   addMonths,
   subMonths,
+  addDays,
+  subDays,
   startOfDay,
   isWithinInterval,
 } from "date-fns";
@@ -107,6 +109,19 @@ export function CalendarView() {
     setCurrentMonth((prev) =>
       dir === "prev" ? subMonths(prev, 1) : addMonths(prev, 1),
     );
+  };
+
+  const navigateDate = (dir: "prev" | "next") => {
+    if (!selectedDate) return;
+    const nextDate =
+      dir === "next" ? addDays(selectedDate, 1) : subDays(selectedDate, 1);
+    setSelectedDate(nextDate);
+
+    // If nextDate is not in currentMonth, update currentMonth to show it
+    if (!isSameMonth(nextDate, currentMonth)) {
+      setDirection(dir === "next" ? 1 : -1);
+      setCurrentMonth(startOfMonth(nextDate));
+    }
   };
 
   const goToToday = () => {
@@ -311,26 +326,53 @@ export function CalendarView() {
         open={!!selectedDate}
         onOpenChange={(open) => !open && setSelectedDate(null)}
       >
-        <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] px-4">
+        <SheetContent
+          side="bottom"
+          className="rounded-t-3xl h-[50dvh] px-4 flex flex-col"
+        >
           <SheetHeader className="pb-4 pt-2">
-            <SheetTitle className="text-xl font-bold">
-              {selectedDate &&
-                format(selectedDate, "M月d日 (E)", { locale: ja })}
-            </SheetTitle>
-            {selectedDate && (
-              <p className="text-sm text-muted-foreground">
-                {format(selectedDate, "yyyy年", { locale: ja })}
-              </p>
-            )}
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigateDate("prev")}
+                className="rounded-full w-10 h-10 hover:bg-[var(--glass-border)] text-foreground/70 hover:text-foreground transition-all active:scale-95"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </Button>
+
+              <div className="text-center flex-1">
+                <SheetTitle className="text-xl font-bold">
+                  {selectedDate &&
+                    format(selectedDate, "M月d日 (E)", { locale: ja })}
+                </SheetTitle>
+                {selectedDate && (
+                  <p className="text-sm text-muted-foreground">
+                    {format(selectedDate, "yyyy年", { locale: ja })}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigateDate("next")}
+                className="rounded-full w-10 h-10 hover:bg-[var(--glass-border)] text-foreground/70 hover:text-foreground transition-all active:scale-95"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </Button>
+            </div>
           </SheetHeader>
 
-          <div className="overflow-y-auto max-h-[60vh] pb-8 space-y-3 px-1">
+          <div className="overflow-y-auto flex-1 pb-8 space-y-3 px-1">
             <AnimatePresence mode="wait">
               {selectedDateEntries.length === 0 ? (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
+                  key={`empty-${selectedDate?.toISOString()}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className="flex flex-col items-center justify-center py-12 text-center"
                 >
                   <div className="w-16 h-16 mb-4 rounded-full bg-gradient-to-tr from-primary/10 to-primary/5 flex items-center justify-center">
@@ -342,9 +384,11 @@ export function CalendarView() {
                 </motion.div>
               ) : (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  key={`list-${selectedDate?.toISOString()}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className="space-y-2"
                 >
                   {selectedDateEntries.map((entry) => {
