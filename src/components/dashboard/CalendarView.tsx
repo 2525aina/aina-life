@@ -469,7 +469,8 @@ export function CalendarView() {
 
                                             const positionedEntries = dayRawEntries.map(entry => {
                                                 const startDate = entry.date.toDate();
-                                                const isRange = entry.timeType === "range" && !!entry.endDate;
+                                                // If an end date exists, treat it as a range event regardless of timeType to be safe
+                                                const isRange = !!entry.endDate;
 
                                                 const endDate = isRange
                                                     ? entry.endDate!.toDate()
