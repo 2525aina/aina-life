@@ -239,6 +239,18 @@ export function CalendarView() {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                            const today = new Date();
+                            setCurrentDate(today);
+                            setSelectedDate(today);
+                        }}
+                        className="rounded-full px-4 font-bold text-primary hover:bg-primary/10 hover:text-primary mr-2 bg-primary/5 border border-primary/20 backdrop-blur-sm transition-all active:scale-95"
+                    >
+                        今日
+                    </Button>
+                    <Button
+                        variant="ghost"
                         size="icon"
                         onClick={() => navigate("prev")}
                         className="rounded-full w-10 h-10 hover:bg-[var(--glass-border)] text-foreground/80 hover:text-foreground backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
