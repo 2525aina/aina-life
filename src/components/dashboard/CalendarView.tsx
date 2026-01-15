@@ -464,66 +464,137 @@ export function CalendarView() {
                                             <div key={hour} className="h-[60px] border-b border-[var(--glass-border)] mb-0 box-border" />
                                         ))}
 
-                                        {/* Events */}
-                                        {entries.filter(entry => isSameDay(entry.date.toDate(), day)).map(entry => {
-                                            const startDate = entry.date.toDate();
-                                            let endDate = entry.timeType === "range" && entry.endDate
-                                                ? entry.endDate.toDate()
-                                                : addDays(startDate, 0); // fallback
+                                        {/* Events with Overlap Handling */}
+                                        {(() => {
+                                            // 1. Prepare events with basic geometry
+                                            const dayRawEntries = entries.filter(entry => isSameDay(entry.date.toDate(), day));
 
-                                            // For vertical view, if no end time, assume 1 hour duration for visual clarity
-                                            if (!entry.endDate) {
-                                                endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-                                            }
+                                            const positionedEntries = dayRawEntries.map(entry => {
+                                                const startDate = entry.date.toDate();
+                                                let endDate = entry.timeType === "range" && entry.endDate
+                                                    ? entry.endDate.toDate()
+                                                    : addDays(startDate, 0);
 
-                                            // Calculate position
-                                            const startMinutes = startDate.getHours() * 60 + startDate.getMinutes();
-                                            const endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
-                                            const duration = Math.max(30, endMinutes - startMinutes); // Min height 30px
+                                                if (!entry.endDate) {
+                                                    endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+                                                }
 
-                                            const top = startMinutes; // 1px = 1min
-                                            const height = duration;
+                                                const startMinutes = startDate.getHours() * 60 + startDate.getMinutes();
+                                                const endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
+                                                const duration = Math.max(30, endMinutes - startMinutes);
 
-                                            const tagInfo =
-                                                tasks.find((t) => t.name === entry.tags[0]) ||
-                                                ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
-                                            const isSchedule = entry.type === "schedule";
+                                                return {
+                                                    entry,
+                                                    top: startMinutes,
+                                                    height: duration,
+                                                    end: startMinutes + duration,
+                                                    colIndex: 0,
+                                                    totalCols: 1
+                                                };
+                                            }).sort((a, b) => a.top - b.top || b.height - a.height); // Sort by start time, then duration
 
-                                            return (
-                                                <button
-                                                    key={entry.id}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setSelectedEntry(entry);
-                                                        setSheetMode("detail");
-                                                        setSelectedDate(day);
-                                                    }}
-                                                    style={{ top: `${top}px`, height: `${height}px` }}
-                                                    className={cn(
-                                                        "absolute left-[2px] right-[2px] rounded-md px-2 py-1 text-left border overflow-hidden shadow-sm transition-all hover:brightness-95 hover:z-20",
-                                                        isSchedule
-                                                            ? "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-800"
-                                                            : "bg-orange-100 text-orange-900 border-orange-200 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-800",
-                                                        entry.isCompleted && "opacity-60 saturate-0"
-                                                    )}
-                                                >
-                                                    <div className="flex flex-col h-full">
-                                                        <div className="flex items-center gap-1 text-xs font-bold leading-nonetruncate">
-                                                            <span className="text-[10px] opacity-70 font-mono">
-                                                                {format(startDate, "H:mm")}
-                                                            </span>
-                                                            <span className="truncate">{entry.title || entry.tags[0]}</span>
-                                                        </div>
-                                                        {height > 40 && (
-                                                            <div className="text-[10px] opacity-80 mt-0.5 truncate flex items-center gap-1">
-                                                                <span>{tagInfo?.emoji}</span>
-                                                                <span>{entry.tags.join(", ")}</span>
-                                                            </div>
+                                            // 2. Cluster overlapping events
+                                            const clusters: typeof positionedEntries[] = [];
+                                            let currentCluster: typeof positionedEntries = [];
+
+                                            positionedEntries.forEach((item) => {
+                                                if (currentCluster.length === 0) {
+                                                    currentCluster.push(item);
+                                                } else {
+                                                    // Check if this item overlaps with the *entire cluster range*
+                                                    const clusterEnd = Math.max(...currentCluster.map(c => c.end));
+                                                    if (item.top < clusterEnd) {
+                                                        currentCluster.push(item);
+                                                    } else {
+                                                        clusters.push(currentCluster);
+                                                        currentCluster = [item];
+                                                    }
+                                                }
+                                            });
+                                            if (currentCluster.length > 0) clusters.push(currentCluster);
+
+                                            // 3. Assign columns within each cluster (Simple Greedy Packing)
+                                            const finalLayout: typeof positionedEntries = [];
+
+                                            clusters.forEach(cluster => {
+                                                const columns: number[] = []; // stores end time of last event in each column
+
+                                                cluster.forEach(item => {
+                                                    let placed = false;
+                                                    for (let i = 0; i < columns.length; i++) {
+                                                        if (columns[i] <= item.top) {
+                                                            item.colIndex = i;
+                                                            columns[i] = item.end;
+                                                            placed = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (!placed) {
+                                                        item.colIndex = columns.length;
+                                                        columns.push(item.end);
+                                                    }
+                                                });
+
+                                                // Update totalCols for all items in this cluster to share width
+                                                const maxCols = columns.length;
+                                                cluster.forEach(item => {
+                                                    item.totalCols = maxCols;
+                                                    finalLayout.push(item);
+                                                });
+                                            });
+
+                                            // 4. Render
+                                            return finalLayout.map(({ entry, top, height, colIndex, totalCols }) => {
+                                                const tagInfo =
+                                                    tasks.find((t) => t.name === entry.tags[0]) ||
+                                                    ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
+                                                const isSchedule = entry.type === "schedule";
+
+                                                // Width calculation with small gap
+                                                const widthPercent = 100 / totalCols;
+                                                const leftPercent = colIndex * widthPercent;
+
+                                                return (
+                                                    <button
+                                                        key={entry.id}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedEntry(entry);
+                                                            setSheetMode("detail");
+                                                            setSelectedDate(day);
+                                                        }}
+                                                        style={{
+                                                            top: `${top}px`,
+                                                            height: `${height}px`,
+                                                            left: `${leftPercent}%`,
+                                                            width: `calc(${widthPercent}% - 2px)`, // -2px for gap
+                                                        }}
+                                                        className={cn(
+                                                            "absolute rounded-md px-2 py-1 text-left border overflow-hidden shadow-sm transition-all hover:brightness-95 hover:z-20 hover:scale-[1.02]",
+                                                            isSchedule
+                                                                ? "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-800"
+                                                                : "bg-orange-100 text-orange-900 border-orange-200 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-800",
+                                                            entry.isCompleted && "opacity-60 saturate-0"
                                                         )}
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
+                                                    >
+                                                        <div className="flex flex-col h-full">
+                                                            <div className="flex items-center gap-1 text-xs font-bold leading-none truncate">
+                                                                <span className="text-[10px] opacity-70 font-mono">
+                                                                    {format(entry.date.toDate(), "H:mm")}
+                                                                </span>
+                                                                <span className="truncate">{entry.title || entry.tags[0]}</span>
+                                                            </div>
+                                                            {height > 40 && (
+                                                                <div className="text-[10px] opacity-80 mt-0.5 truncate flex items-center gap-1">
+                                                                    <span>{tagInfo?.emoji}</span>
+                                                                    <span>{entry.tags.join(", ")}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            });
+                                        })()}
 
                                         {/* Current Time Indicator (if today) */}
                                         {isSameDay(day, new Date()) && (
