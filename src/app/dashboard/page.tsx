@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { EntryFormData } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { User as UserIcon, X } from "lucide-react";
+import { getPetDetailUrl } from "@/lib/utils/pet-urls";
 
 export default function DashboardPage() {
   const { selectedPet } = usePetContext();
@@ -159,7 +160,7 @@ export default function DashboardPage() {
                   <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/80" />
                 </Button>
               </Link>
-              <Link href={`/pets?petId=${selectedPet.id}`}>
+              <Link href={getPetDetailUrl(selectedPet.id)}>
                 <Button
                   variant="ghost"
                   size="icon"

@@ -53,6 +53,7 @@ import { StyledInput, GenderSelect } from "@/components/ui/styled-form-fields";
 import { format, parse, differenceInYears } from "date-fns";
 
 import { cn } from "@/lib/utils";
+import { getPetDetailUrl } from "@/lib/utils/pet-urls";
 import { toast } from "sonner";
 import {
   doc,
@@ -477,7 +478,7 @@ function ProfileContent() {
                 {pets.map((pet) => (
                   <Link
                     key={pet.id}
-                    href={`/pets?petId=${pet.id}`}
+                    href={getPetDetailUrl(pet.id)}
                     className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] hover:scale-[1.02] transition-all duration-300 group shadow-sm text-left w-full"
                   >
                     <Avatar className="w-14 h-14 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">

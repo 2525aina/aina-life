@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePetContext } from "@/contexts/PetContext";
+import { getPetDetailUrl } from "@/lib/utils/pet-urls";
 
 export function HeroSection() {
   const { selectedPet } = usePetContext();
@@ -52,7 +53,7 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <Link href={`/pets?petId=${selectedPet.id}`}>
+        <Link href={getPetDetailUrl(selectedPet.id)}>
           <Button
             variant="ghost"
             size="icon"

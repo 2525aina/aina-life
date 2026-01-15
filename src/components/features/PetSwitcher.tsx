@@ -17,6 +17,8 @@ import Image from "next/image";
 import { PetNewSheet } from "@/components/features/PetNewSheet";
 import { useState, useEffect } from "react";
 
+import { getPetDetailUrl } from "@/lib/utils/pet-urls";
+
 export function PetSwitcher() {
   const { pets, loading } = usePets();
   const { selectedPet, setSelectedPet } = usePetContext();
@@ -127,7 +129,7 @@ export function PetSwitcher() {
           {selectedPet && (
             <DropdownMenuItem asChild>
               <Link
-                href={`/pets?petId=${selectedPet.id}`}
+                href={getPetDetailUrl(selectedPet.id)}
                 className="gap-3 cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
