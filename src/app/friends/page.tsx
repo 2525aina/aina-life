@@ -114,8 +114,8 @@ export default function FriendsPage() {
 
           {/* Friends Grid */}
           {loading ? (
-            <div className="grid grid-cols-2 gap-3">
-              {[...Array(4)].map((_, i) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
                   className="aspect-[4/5] bg-muted/20 animate-pulse rounded-2xl"
@@ -123,7 +123,7 @@ export default function FriendsPage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {filteredFriends.map((friend: Friend, index: number) => (
                 <div
                   key={friend.id}
