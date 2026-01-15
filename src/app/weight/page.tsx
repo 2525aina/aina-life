@@ -19,7 +19,6 @@ import {
 import { format, subMonths, isAfter, startOfDay } from "date-fns";
 import { ja } from "date-fns/locale";
 import {
-  Plus,
   TrendingUp,
   TrendingDown,
   Minus,
@@ -31,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { StickyFab } from "@/components/ui/sticky-fab";
 import {
   AreaChart,
   Area,
@@ -42,6 +42,8 @@ import {
 } from "recharts";
 import { WeightFormSheet } from "@/components/features/WeightFormSheet";
 import { WeightItem } from "@/lib/types";
+
+import { HeaderGradient } from "@/components/ui/header-gradient";
 
 export default function WeightPage() {
   const { selectedPet } = usePetContext();
@@ -145,7 +147,7 @@ export default function WeightPage() {
     <AppLayout>
       <div className="relative min-h-screen pb-32">
         {/* Global Header Gradient */}
-        <div className="absolute inset-0 h-[40vh] bg-gradient-to-b from-primary/20 via-primary/5 to-transparent -z-10 rounded-b-[4rem]" />
+        <HeaderGradient />
 
         <div className="px-4 pt-6 space-y-8">
           {/* Header */}
@@ -448,20 +450,13 @@ export default function WeightPage() {
 
         {/* Sticky FAB */}
         {canEdit && (
-          <div className="sticky bottom-24 z-20 flex justify-center px-4 pt-6">
-            <motion.button
-              onClick={() => {
-                setEditingWeight(null);
-                setIsSheetOpen(true);
-              }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-8 h-14 rounded-full bg-gradient-to-r from-primary to-orange-500 shadow-xl shadow-primary/30 text-white font-bold transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:brightness-110"
-            >
-              <Plus className="w-5 h-5" />
-              <span>体重を記録</span>
-            </motion.button>
-          </div>
+          <StickyFab
+            onClick={() => {
+              setEditingWeight(null);
+              setIsSheetOpen(true);
+            }}
+            label="体重を記録"
+          />
         )}
 
         <WeightFormSheet

@@ -339,10 +339,7 @@ function ProfileContent() {
                       {userProfile?.birthday && (
                         <div className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 bg-orange-500/10 text-orange-600 border border-orange-500/20 shadow-sm backdrop-blur-sm">
                           <Cake className="w-3.5 h-3.5" />
-                          <span>
-                            {calculateAge(userProfile.birthday)}
-                            歳
-                          </span>
+                          <span>{calculateAge(userProfile.birthday)}歳</span>
                         </div>
                       )}
                     </div>

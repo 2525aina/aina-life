@@ -82,7 +82,10 @@ export function PetSwitcher() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="gap-2 h-10 px-3">
             <Avatar className="w-7 h-7">
-              <AvatarImage src={selectedPet?.avatarUrl} alt={selectedPet?.name} />
+              <AvatarImage
+                src={selectedPet?.avatarUrl}
+                alt={selectedPet?.name}
+              />
               <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden relative">
                 <Image
                   src={DEFAULT_FALLBACK_IMAGE}
@@ -159,5 +162,3 @@ export function PetSwitcher() {
     </>
   );
 }
-
-

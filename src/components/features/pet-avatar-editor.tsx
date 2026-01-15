@@ -67,7 +67,7 @@ export function PetAvatarEditor({
   const handleBreedSelect = (
     selectedBreed: string,
     species: string,
-    imageUrl: string
+    imageUrl: string,
   ) => {
     if (onBreedSelect) {
       onBreedSelect(selectedBreed, species, imageUrl);

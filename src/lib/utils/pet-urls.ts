@@ -8,5 +8,5 @@
  * @returns URL path to /pets page with petId query param
  */
 export function getPetDetailUrl(petId: string): string {
-    return `/pets?petId=${petId}`;
+  return `/pets?petId=${petId}`;
 }

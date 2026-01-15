@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/features/AppLayout";
 import { usePetContext } from "@/contexts/PetContext";
 import { useMembers } from "@/hooks/useMembers";
 import { useFriends } from "@/hooks/useFriends";
-import { Plus, MapPin, Calendar, Search } from "lucide-react";
+import { MapPin, Calendar, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -16,6 +16,7 @@ import { FriendFormSheet } from "@/components/features/FriendFormSheet";
 import { toast } from "sonner";
 import { Friend } from "@/lib/types";
 import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
+import { StickyFab } from "@/components/ui/sticky-fab";
 
 // キャッシュから復元されたTimestampを安全にDateに変換
 function toDate(
@@ -47,6 +48,8 @@ interface FriendFormData {
   contact: string;
   address: string;
 }
+
+import { HeaderGradient } from "@/components/ui/header-gradient";
 
 export default function FriendsPage() {
   const { selectedPet } = usePetContext();
@@ -91,7 +94,7 @@ export default function FriendsPage() {
     <AppLayout>
       <div className="relative min-h-screen pb-32">
         {/* Global Header Gradient */}
-        <div className="absolute inset-0 h-[30vh] bg-gradient-to-b from-primary/20 via-primary/5 to-transparent -z-10 rounded-b-[3rem]" />
+        <HeaderGradient className="h-[30vh] rounded-b-[3rem]" />
 
         <div className="px-4 pt-6 space-y-6">
           {/* Header */}
@@ -211,20 +214,13 @@ export default function FriendsPage() {
 
         {/* FAB - sticky above footer */}
         {canEdit && (
-          <div className="sticky bottom-24 z-20 flex justify-center px-4 pt-6">
-            <motion.button
-              onClick={() => {
-                setSelectedFriend(null);
-                setIsFormOpen(true);
-              }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-8 h-14 rounded-full bg-gradient-to-r from-primary to-orange-500 shadow-xl shadow-primary/30 text-white font-bold transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:brightness-110"
-            >
-              <Plus className="w-5 h-5" />
-              <span>友達を追加</span>
-            </motion.button>
-          </div>
+          <StickyFab
+            onClick={() => {
+              setSelectedFriend(null);
+              setIsFormOpen(true);
+            }}
+            label="友達を追加"
+          />
         )}
 
         {/* Friend Summary Sheets */}

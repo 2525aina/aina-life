@@ -9,16 +9,17 @@ import { differenceInYears, differenceInMonths } from "date-fns";
  * @returns Age string like "3歳" or "6ヶ月"
  */
 export function getAgeString(birthday: string | Date | undefined): string {
-    if (!birthday) return "";
+  if (!birthday) return "";
 
-    const birthDate = typeof birthday === "string" ? new Date(birthday) : birthday;
-    const now = new Date();
+  const birthDate =
+    typeof birthday === "string" ? new Date(birthday) : birthday;
+  const now = new Date();
 
-    const years = differenceInYears(now, birthDate);
-    if (years > 0) return `${years}歳`;
+  const years = differenceInYears(now, birthDate);
+  if (years > 0) return `${years}歳`;
 
-    const months = differenceInMonths(now, birthDate);
-    return `${months}ヶ月`;
+  const months = differenceInMonths(now, birthDate);
+  return `${months}ヶ月`;
 }
 
 /**
@@ -27,6 +28,7 @@ export function getAgeString(birthday: string | Date | undefined): string {
  * @returns Age in years
  */
 export function calculateAge(birthday: string | Date): number {
-    const birthDate = typeof birthday === "string" ? new Date(birthday) : birthday;
-    return differenceInYears(new Date(), birthDate);
+  const birthDate =
+    typeof birthday === "string" ? new Date(birthday) : birthday;
+  return differenceInYears(new Date(), birthDate);
 }

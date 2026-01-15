@@ -595,7 +595,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                             member.role === "owner" &&
                             activeOwnersCount <= 1 &&
                             member.userId ===
-                            members.find((m) => m.role === "owner")?.userId
+                              members.find((m) => m.role === "owner")?.userId
                           }
                           onValueChange={(val) =>
                             updateMemberRole(
