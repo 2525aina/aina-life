@@ -275,220 +275,271 @@ export function CalendarView() {
 
             {/* Calendar Grid Container */}
             <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                key={viewMode + format(currentDate, "yyyy-MM-dd")}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={cn(
-                    "glass rounded-[2rem] p-4 overflow-hidden shadow-xl ring-1 ring-[var(--glass-border)]",
-                    viewMode === "day" && "hidden",
+                    "glass rounded-[2rem] overflow-hidden shadow-xl ring-1 ring-[var(--glass-border)]",
+                    viewMode === "month" ? "p-4" : "p-0 flex flex-col h-[600px]", // Use fixed height for scrollable vertical view
                 )}
             >
-                {/* Header for Month/3-Day view */}
-                {viewMode === "month" ? (
-                    <div className="grid grid-cols-7 mb-2 opacity-60">
-                        {weekDays.map((day, i) => (
-                            <div
-                                key={day}
-                                className={cn(
-                                    "text-center text-[10px] font-bold py-2",
-                                    i === 0 && "text-red-500",
-                                    i === 6 && "text-blue-500",
-                                )}
-                            >
-                                {day}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-3 mb-2 opacity-60">
-                        {calendarDays.map((day) => {
-                            const dayIndex = day.getDay();
-                            return (
+                {/* === MONTH VIEW RENDERING === */}
+                {viewMode === "month" && (
+                    <>
+                        <div className="grid grid-cols-7 mb-2 opacity-60">
+                            {weekDays.map((day, i) => (
                                 <div
-                                    key={day.toString()}
+                                    key={day}
                                     className={cn(
                                         "text-center text-[10px] font-bold py-2",
-                                        dayIndex === 0 && "text-red-500",
-                                        dayIndex === 6 && "text-blue-500",
+                                        i === 0 && "text-red-500",
+                                        i === 6 && "text-blue-500",
                                     )}
                                 >
-                                    {format(day, "E", { locale: ja })}
+                                    {day}
                                 </div>
-                            );
-                        })}
-                    </div>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-px bg-[var(--glass-border)] border border-[var(--glass-border)] rounded-2xl overflow-hidden auto-rows-[minmax(120px,1fr)]">
+                            {calendarDays.map((day) => {
+                                const dateKey = format(day, "yyyy-MM-dd");
+                                const isToday = isSameDay(day, new Date());
+                                const isSelected = isSameDay(day, selectedDate);
+                                const isCurrentMonth = isSameMonth(day, currentDate);
+                                const dayOfWeek = day.getDay();
+
+                                // Slots for month view
+                                const daySlots = slotsByDate[dateKey] || Array(4).fill(null);
+                                const allDayEntries = getDayEntries(day);
+                                const renderedSlots = daySlots.slice(0, 4);
+                                const hiddenCount = Math.max(0, allDayEntries.length - renderedSlots.filter(Boolean).length);
+
+                                return (
+                                    <div
+                                        key={dateKey}
+                                        onClick={() => setSelectedDate(day)}
+                                        className={cn(
+                                            "relative flex flex-col items-stretch justify-start p-1 transition-all duration-200 group outline-none min-h-[120px]",
+                                            isSelected
+                                                ? "bg-primary/5"
+                                                : "bg-[var(--glass-bg)] hover:bg-white/40",
+                                            !isCurrentMonth && "opacity-50 bg-muted/10",
+                                        )}
+                                    >
+                                        <div className="flex justify-center mb-1">
+                                            <span
+                                                className={cn(
+                                                    "text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full",
+                                                    isToday
+                                                        ? "bg-primary text-white shadow-md scale-110"
+                                                        : "text-muted-foreground",
+                                                    dayOfWeek === 0 && !isToday && "text-red-400",
+                                                    dayOfWeek === 6 && !isToday && "text-blue-400",
+                                                )}
+                                            >
+                                                {format(day, "d")}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex-1 flex flex-col gap-0.5 pt-1">
+                                            {renderedSlots.map((entry, idx) => {
+                                                if (!entry) return <div key={`empty-${idx}`} className="h-[22px]" />;
+
+                                                const tagInfo =
+                                                    tasks.find((t) => t.name === entry.tags[0]) ||
+                                                    ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
+                                                const isSchedule = entry.type === "schedule";
+                                                const isCompleted = isSchedule && entry.isCompleted;
+                                                const startDate = startOfDay(entry.date.toDate());
+                                                const endDate = entry.timeType === "range" && entry.endDate ? startOfDay(entry.endDate.toDate()) : startDate;
+                                                const isMultiDay = !isSameDay(startDate, endDate);
+                                                const isStartDay = isSameDay(day, startDate);
+                                                const isEndDay = isSameDay(day, endDate);
+                                                const startTimeStr = format(entry.date.toDate(), "H:mm");
+
+                                                return (
+                                                    <button
+                                                        key={`${entry.id}-${dateKey}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedEntry(entry);
+                                                            setSheetMode("detail");
+                                                            setSelectedDate(day);
+                                                        }}
+                                                        className={cn(
+                                                            "w-full text-left px-1.5 h-[22px] flex items-center text-[10px] font-medium truncate transition-all hover:brightness-95 relative z-10",
+                                                            isCompleted
+                                                                ? "bg-muted text-muted-foreground line-through opacity-70"
+                                                                : isSchedule
+                                                                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
+                                                                    : "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-200",
+                                                            isMultiDay && !isStartDay && "rounded-l-none border-l-0 ml-[-1px]",
+                                                            isMultiDay && !isEndDay && "rounded-r-none border-r-0 mr-[-1px]",
+                                                            (!isMultiDay || (isStartDay && isEndDay)) && "rounded-md",
+                                                            isMultiDay && isStartDay && !isEndDay && "rounded-l-md rounded-r-none",
+                                                            isMultiDay && !isStartDay && isEndDay && "rounded-r-md rounded-l-none",
+                                                        )}
+                                                    >
+                                                        {(isStartDay || !isMultiDay) && (
+                                                            <span className="font-mono font-bold mr-1 opacity-80 text-[9px] leading-none">
+                                                                {startTimeStr}
+                                                            </span>
+                                                        )}
+                                                        <span className="mr-1 inline-block leading-none">
+                                                            {tagInfo?.emoji}
+                                                        </span>
+                                                        <span className="font-bold truncate leading-none">
+                                                            {entry.title || entry.tags[0]}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                            {hiddenCount > 0 && (
+                                                <span className="text-[9px] text-center text-muted-foreground font-medium hover:text-primary cursor-pointer mt-0.5 h-[14px]">
+                                                    他 {hiddenCount} 件
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </>
                 )}
 
-                <div
-                    className={cn(
-                        "grid gap-px bg-[var(--glass-border)] border border-[var(--glass-border)] rounded-2xl overflow-hidden",
-                        viewMode === "month"
-                            ? "grid-cols-7 auto-rows-[minmax(120px,1fr)]"
-                            : "grid-cols-3 min-h-[500px] auto-rows-[1fr]",
-                    )}
-                >
-                    {calendarDays.map((day) => {
-                        const dateKey = format(day, "yyyy-MM-dd");
-                        const isToday = isSameDay(day, new Date());
-                        const isSelected = isSameDay(day, selectedDate);
-                        const isCurrentMonth = isSameMonth(day, currentDate);
-                        const dayOfWeek = day.getDay();
-
-                        // Use calculated slots for layout
-                        // Determine max items based on view mode
-                        const MAX_DISPLAY = viewMode === "week" ? 12 : 4;
-                        const daySlots = slotsByDate[dateKey] || Array(MAX_DISPLAY).fill(null);
-
-                        // For week view, we might want to show more than the pre-calculated 4 slots if possible
-                        // But currently slotsByDate is fixed at MAX_SLOTS=4 constant.
-                        // Ideally we should increase MAX_SLOTS in the calculation if we want more in week view.
-                        // For now, let's keep it consistent but allow the container to stretch.
-
-                        const allDayEntries = getDayEntries(day);
-                        // Count hidden items relative to what we actually render
-                        // Note: The slot calculation above uses a fixed size.
-                        // To properly show more items in week view, we need to update the useMemo calculation logic too.
-                        // For this step, we will reuse the logic but just enable the rich view.
-
-                        const renderedSlots = daySlots.slice(0, MAX_DISPLAY);
-                        const hiddenCount = Math.max(0, allDayEntries.length - renderedSlots.filter(Boolean).length);
-
-                        // Rich desktop-like calendar cell (Month AND Week)
-                        if (viewMode === "month" || viewMode === "week") {
-                            return (
-                                <div
-                                    key={dateKey}
-                                    onClick={() => setSelectedDate(day)}
-                                    className={cn(
-                                        "relative flex flex-col items-stretch justify-start p-1 transition-all duration-200 group outline-none",
-                                        viewMode === "month" ? "min-h-[120px]" : "min-h-full border-b last:border-b-0", // Week view takes full height
-                                        isSelected
-                                            ? "bg-primary/5"
-                                            : "bg-[var(--glass-bg)] hover:bg-white/40",
-                                        !isCurrentMonth && viewMode === "month" && "opacity-50 bg-muted/10",
-                                    )}
-                                >
-                                    <div className="flex justify-center mb-1">
-                                        <span
-                                            className={cn(
-                                                "text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full",
-                                                isToday
-                                                    ? "bg-primary text-white shadow-md scale-110"
-                                                    : "text-muted-foreground",
-                                                dayOfWeek === 0 && !isToday && "text-red-400",
-                                                dayOfWeek === 6 && !isToday && "text-blue-400",
-                                            )}
-                                        >
+                {/* === VERTICAL TIMELINE VIEW (Week/3-Day & Day) === */}
+                {viewMode !== "month" && (
+                    <div className="flex flex-col h-full bg-[var(--glass-bg)]">
+                        {/* 1. Header Row (Dates) */}
+                        <div className="flex border-b border-[var(--glass-border)] ml-14 bg-[var(--glass-bg)] z-20 sticky top-0 backdrop-blur-md">
+                            {calendarDays.map((day) => {
+                                const isToday = isSameDay(day, new Date());
+                                const dayOfWeek = day.getDay();
+                                return (
+                                    <div
+                                        key={day.toString()}
+                                        className="flex-1 text-center py-3 border-r border-[var(--glass-border)] last:border-r-0"
+                                    >
+                                        <div className={cn("text-[10px] font-bold",
+                                            dayOfWeek === 0 && "text-red-500",
+                                            dayOfWeek === 6 && "text-blue-500",
+                                            !dayOfWeek && "text-muted-foreground/70"
+                                        )}>
+                                            {format(day, "E", { locale: ja })}
+                                        </div>
+                                        <div className={cn(
+                                            "text-lg font-bold w-8 h-8 mx-auto flex items-center justify-center rounded-full mt-0.5",
+                                            isToday ? "bg-primary text-white shadow-md" : "text-foreground"
+                                        )}>
                                             {format(day, "d")}
-                                        </span>
+                                        </div>
                                     </div>
+                                );
+                            })}
+                        </div>
 
-                                    {/* Render Slots */}
-                                    <div className="flex-1 flex flex-col gap-0.5 pt-1">
-                                        {renderedSlots.map((entry, idx) => {
-                                            if (!entry) {
-                                                return <div key={`empty-${idx}`} className="h-[22px]" />;
+                        {/* 2. Scrollable Time Grid */}
+                        <div className="flex-1 overflow-y-auto relative scrollbar-hide">
+                            <div className="flex min-h-[1440px] relative"> {/* 1440px = 1px per minute */}
+
+                                {/* Time Axis */}
+                                <div className="w-14 flex-none border-r border-[var(--glass-border)] bg-[var(--glass-bg)] sticky left-0 z-10">
+                                    {Array.from({ length: 24 }).map((_, hour) => (
+                                        <div key={hour} className="h-[60px] relative border-b border-transparent"> {/* 60px per hour */}
+                                            <span className="absolute -top-2.5 right-2 text-[10px] text-muted-foreground font-mono">
+                                                {hour}:00
+                                            </span>
+                                            <div className="absolute top-0 right-0 w-2 h-px bg-[var(--glass-border)]" />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Day Columns */}
+                                {calendarDays.map((day) => (
+                                    <div key={day.toString()} className="flex-1 relative border-r border-[var(--glass-border)] last:border-r-0 bg-white/5">
+                                        {/* Horizontal Grid Lines */}
+                                        {Array.from({ length: 24 }).map((_, hour) => (
+                                            <div key={hour} className="h-[60px] border-b border-[var(--glass-border)] mb-0 box-border" />
+                                        ))}
+
+                                        {/* Events */}
+                                        {entries.filter(entry => isSameDay(entry.date.toDate(), day)).map(entry => {
+                                            const startDate = entry.date.toDate();
+                                            let endDate = entry.timeType === "range" && entry.endDate
+                                                ? entry.endDate.toDate()
+                                                : addDays(startDate, 0); // fallback
+
+                                            // For vertical view, if no end time, assume 1 hour duration for visual clarity
+                                            if (!entry.endDate) {
+                                                endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
                                             }
+
+                                            // Calculate position
+                                            const startMinutes = startDate.getHours() * 60 + startDate.getMinutes();
+                                            const endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
+                                            const duration = Math.max(30, endMinutes - startMinutes); // Min height 30px
+
+                                            const top = startMinutes; // 1px = 1min
+                                            const height = duration;
 
                                             const tagInfo =
                                                 tasks.find((t) => t.name === entry.tags[0]) ||
                                                 ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
                                             const isSchedule = entry.type === "schedule";
-                                            const isCompleted = isSchedule && entry.isCompleted;
-
-                                            const startDate = startOfDay(entry.date.toDate());
-                                            const endDate =
-                                                entry.timeType === "range" && entry.endDate
-                                                    ? startOfDay(entry.endDate.toDate())
-                                                    : startDate;
-                                            const isMultiDay = !isSameDay(startDate, endDate);
-                                            const isStartDay = isSameDay(day, startDate);
-                                            const isEndDay = isSameDay(day, endDate);
-
-                                            const startTimeStr = format(entry.date.toDate(), "H:mm");
 
                                             return (
                                                 <button
-                                                    key={`${entry.id}-${dateKey}`}
+                                                    key={entry.id}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setSelectedEntry(entry);
                                                         setSheetMode("detail");
                                                         setSelectedDate(day);
                                                     }}
+                                                    style={{ top: `${top}px`, height: `${height}px` }}
                                                     className={cn(
-                                                        "w-full text-left px-1.5 h-[22px] flex items-center text-[10px] font-medium truncate transition-all hover:brightness-95 relative z-10",
-                                                        isCompleted
-                                                            ? "bg-muted text-muted-foreground line-through opacity-70"
-                                                            : isSchedule
-                                                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
-                                                                : "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-200",
-                                                        isMultiDay && !isStartDay && "rounded-l-none border-l-0 ml-[-1px]",
-                                                        isMultiDay && !isEndDay && "rounded-r-none border-r-0 mr-[-1px]",
-                                                        (!isMultiDay || (isStartDay && isEndDay)) && "rounded-md",
-                                                        isMultiDay && isStartDay && !isEndDay && "rounded-l-md rounded-r-none",
-                                                        isMultiDay && !isStartDay && isEndDay && "rounded-r-md rounded-l-none",
+                                                        "absolute left-[2px] right-[2px] rounded-md px-2 py-1 text-left border overflow-hidden shadow-sm transition-all hover:brightness-95 hover:z-20",
+                                                        isSchedule
+                                                            ? "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-800"
+                                                            : "bg-orange-100 text-orange-900 border-orange-200 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-800",
+                                                        entry.isCompleted && "opacity-60 saturate-0"
                                                     )}
                                                 >
-                                                    {(isStartDay || !isMultiDay) && (
-                                                        <span className="font-mono font-bold mr-1 opacity-80 text-[9px] leading-none">
-                                                            {startTimeStr}
-                                                        </span>
-                                                    )}
-                                                    <span className="mr-1 inline-block leading-none">
-                                                        {tagInfo?.emoji}
-                                                    </span>
-                                                    <span className="font-bold truncate leading-none">
-                                                        {entry.title || entry.tags[0]}
-                                                    </span>
+                                                    <div className="flex flex-col h-full">
+                                                        <div className="flex items-center gap-1 text-xs font-bold leading-nonetruncate">
+                                                            <span className="text-[10px] opacity-70 font-mono">
+                                                                {format(startDate, "H:mm")}
+                                                            </span>
+                                                            <span className="truncate">{entry.title || entry.tags[0]}</span>
+                                                        </div>
+                                                        {height > 40 && (
+                                                            <div className="text-[10px] opacity-80 mt-0.5 truncate flex items-center gap-1">
+                                                                <span>{tagInfo?.emoji}</span>
+                                                                <span>{entry.tags.join(", ")}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </button>
                                             );
                                         })}
-                                        {hiddenCount > 0 && (
-                                            <span className="text-[9px] text-center text-muted-foreground font-medium hover:text-primary cursor-pointer mt-0.5 h-[14px]">
-                                                他 {hiddenCount} 件
-                                            </span>
+
+                                        {/* Current Time Indicator (if today) */}
+                                        {isSameDay(day, new Date()) && (
+                                            <div
+                                                className="absolute w-full h-px bg-red-500 z-10 pointer-events-none"
+                                                style={{ top: `${new Date().getHours() * 60 + new Date().getMinutes()}px` }}
+                                            >
+                                                <div className="absolute -left-1 -top-1 w-2 h-2 bg-red-500 rounded-full" />
+                                            </div>
                                         )}
                                     </div>
-                                </div>
-                            );
-                        }
-
-                        // Fallback (simple dot view)
-                        const dayEntries = getDayEntries(day); // Re-fetch for simple view
-                        return (
-                            <button
-                                key={dateKey}
-                                onClick={() => setSelectedDate(day)}
-                                className={cn(
-                                    "relative aspect-[4/5] rounded-xl flex flex-col items-center justify-start pt-2 transition-all duration-300 group outline-none",
-                                    isSelected
-                                        ? "bg-primary/10 ring-2 ring-primary/30"
-                                        : "hover:bg-[var(--glass-border)]",
-                                    !isCurrentMonth && "opacity-20",
-                                )}
-                            >
-                                <span
-                                    className={cn(
-                                        "text-xs font-semibold z-10 w-6 h-6 flex items-center justify-center rounded-full transition-all",
-                                        isToday
-                                            ? "bg-gradient-to-tr from-primary to-orange-400 text-white shadow-lg shadow-primary/30 scale-110"
-                                            : "text-foreground/80",
-                                        dayOfWeek === 0 && !isToday && "text-red-400",
-                                        dayOfWeek === 6 && !isToday && "text-blue-400",
-                                    )}
-                                >
-                                    {format(day, "d")}
-                                </span>
-
-                                {dayEntries.length > 0 && (
-                                    <div className="mt-1.5 flex flex-wrap justify-center gap-0.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                    </div>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </motion.div>
 
             {/* Selected Date Details */}
