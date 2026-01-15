@@ -210,8 +210,8 @@ export function CalendarView() {
 
                 <div
                     className={cn(
-                        "grid grid-cols-7 gap-1",
-                        viewMode === "month" ? "auto-rows-[1fr]" : "h-32",
+                        "grid grid-cols-7 gap-px bg-[var(--glass-border)] border border-[var(--glass-border)] rounded-2xl overflow-hidden",
+                        viewMode === "month" ? "auto-rows-[minmax(120px,1fr)]" : "h-auto",
                     )}
                 >
                     {calendarDays.map((day) => {
@@ -222,6 +222,80 @@ export function CalendarView() {
                         const isCurrentMonth = isSameMonth(day, currentDate);
                         const dayOfWeek = day.getDay();
 
+                        // Month View: Rich desktop-like calendar cell
+                        if (viewMode === "month") {
+                            return (
+                                <div
+                                    key={dateKey}
+                                    onClick={() => setSelectedDate(day)}
+                                    className={cn(
+                                        "relative flex flex-col items-stretch justify-start p-1 transition-all duration-200 group outline-none min-h-[120px]",
+                                        isSelected
+                                            ? "bg-primary/5"
+                                            : "bg-[var(--glass-bg)] hover:bg-white/40",
+                                        !isCurrentMonth && "opacity-50 bg-muted/10",
+                                    )}
+                                >
+                                    <div className="flex justify-center mb-1">
+                                        <span
+                                            className={cn(
+                                                "text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full",
+                                                isToday
+                                                    ? "bg-primary text-white shadow-md scale-110"
+                                                    : "text-muted-foreground",
+                                                dayOfWeek === 0 && !isToday && "text-red-400",
+                                                dayOfWeek === 6 && !isToday && "text-blue-400",
+                                            )}
+                                        >
+                                            {format(day, "d")}
+                                        </span>
+                                    </div>
+
+                                    {/* Event Bars */}
+                                    <div className="flex-1 flex flex-col gap-1 overflow-y-auto overflow-x-hidden content-start">
+                                        {dayEntries.slice(0, 4).map((entry) => {
+                                            const tagInfo =
+                                                tasks.find((t) => t.name === entry.tags[0]) ||
+                                                ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
+                                            const isSchedule = entry.type === "schedule";
+                                            const isCompleted = isSchedule && entry.isCompleted;
+
+                                            return (
+                                                <button
+                                                    key={entry.id}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedEntry(entry);
+                                                        setSheetMode("detail");
+                                                        setSelectedDate(day);
+                                                    }}
+                                                    className={cn(
+                                                        "w-full text-left px-1.5 py-0.5 rounded text-[10px] font-medium truncate transition-all hover:scale-[1.02]",
+                                                        isCompleted
+                                                            ? "bg-muted text-muted-foreground line-through opacity-70"
+                                                            : isSchedule
+                                                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50"
+                                                                : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border border-orange-200/50",
+                                                    )}
+                                                >
+                                                    <span className="mr-1 inline-block">
+                                                        {tagInfo?.emoji}
+                                                    </span>
+                                                    {entry.title || entry.tags[0]}
+                                                </button>
+                                            );
+                                        })}
+                                        {dayEntries.length > 4 && (
+                                            <span className="text-[9px] text-center text-muted-foreground font-medium hover:text-primary cursor-pointer">
+                                                他 {dayEntries.length - 4} 件
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        // Fallback for other views (week/day - keep simple for now or update later)
                         return (
                             <button
                                 key={dateKey}
@@ -231,7 +305,7 @@ export function CalendarView() {
                                     isSelected
                                         ? "bg-primary/10 ring-2 ring-primary/30"
                                         : "hover:bg-[var(--glass-border)]",
-                                    !isCurrentMonth && viewMode === "month" && "opacity-20",
+                                    !isCurrentMonth && "opacity-20",
                                 )}
                             >
                                 <span
@@ -247,24 +321,10 @@ export function CalendarView() {
                                     {format(day, "d")}
                                 </span>
 
-                                {/* Indicators */}
+                                {/* Simple Indicators for non-month views */}
                                 {dayEntries.length > 0 && (
-                                    <div className="mt-1.5 flex flex-wrap justify-center content-start gap-0.5 px-1 w-full h-full overflow-hidden opacity-80">
-                                        {dayEntries.slice(0, 4).map((e) => {
-                                            const tagInfo =
-                                                tasks.find((t) => t.name === e.tags[0]) ||
-                                                ENTRY_TAGS.find((t) => t.value === e.tags[0]);
-                                            return (
-                                                <span key={e.id} className="text-[8px] leading-none">
-                                                    {tagInfo?.emoji || "•"}
-                                                </span>
-                                            );
-                                        })}
-                                        {dayEntries.length > 4 && (
-                                            <span className="text-[8px] leading-none text-muted-foreground">
-                                                +
-                                            </span>
-                                        )}
+                                    <div className="mt-1.5 flex flex-wrap justify-center gap-0.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                                     </div>
                                 )}
                             </button>
