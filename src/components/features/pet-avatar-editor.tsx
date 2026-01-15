@@ -3,9 +3,9 @@
 import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCropper } from "@/components/ui/image-cropper";
-import { SampleImageButton } from "@/components/ui/sample-image-picker";
-import { BrowseAllImagesButton } from "@/components/ui/breed-image-browser";
-import { Camera, X, PawPrint } from "lucide-react";
+import { AvatarSelectionModal } from "@/components/features/avatar-selection-modal";
+import { Camera, X, PawPrint, ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface PetAvatarEditorProps {
@@ -36,6 +36,7 @@ export function PetAvatarEditor({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [originalImageSrc, setOriginalImageSrc] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
@@ -132,24 +133,26 @@ export function PetAvatarEditor({
       </div>
 
       {/* Buttons */}
-      {!disabled && (
+      {/* Buttons */}
+      {!disabled && (onSampleImageSelect || onBreedSelect) && (
         <div className="flex flex-col items-center gap-2">
-          {/* Sample Image Button - 品種が選択されている場合 */}
-          {breed && onSampleImageSelect && (
-            <SampleImageButton
-              breed={breed}
-              onSelect={handleSampleImageSelect}
-              className="text-sm"
-            />
-          )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsModalOpen(true)}
+            className="text-sm rounded-full px-6"
+          >
+            <ImageIcon className="w-4 h-4 mr-2" />
+            画像ライブラリから選ぶ
+          </Button>
 
-          {/* Browse All Images Button - 画像から品種を選ぶ */}
-          {onBreedSelect && (
-            <BrowseAllImagesButton
-              onSelect={handleBreedSelect}
-              className="text-sm text-muted-foreground"
-            />
-          )}
+          <AvatarSelectionModal
+            open={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSampleSelect={handleSampleImageSelect}
+            onBreedSelect={handleBreedSelect}
+            currentBreed={breed}
+          />
         </div>
       )}
     </div>

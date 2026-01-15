@@ -230,8 +230,8 @@ export function FriendDetailSheet({
                 <p className="font-bold">
                   {ensureDate(friend.metAt)
                     ? format(ensureDate(friend.metAt)!, "yyyy年M月d日 (E)", {
-                      locale: ja,
-                    })
+                        locale: ja,
+                      })
                     : "不明"}
                 </p>
               </div>
@@ -257,50 +257,50 @@ export function FriendDetailSheet({
             friend.ownerDetails ||
             friend.contact ||
             friend.address) && (
-              <div className="space-y-3">
-                <h3 className="font-bold text-sm text-muted-foreground flex items-center gap-2 px-2 uppercase tracking-widest">
-                  <User className="w-4 h-4" /> 飼い主情報
-                </h3>
-                <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] space-y-3 shadow-lg">
-                  {friend.ownerName && (
-                    <div className="flex items-start gap-3">
-                      <span className="font-bold min-w-[4rem] text-muted-foreground">
-                        お名前
-                      </span>
-                      <span className="font-medium text-foreground">
-                        {friend.ownerName}
-                      </span>
-                    </div>
-                  )}
-                  {friend.ownerDetails && (
-                    <div className="flex items-start gap-3">
-                      <span className="font-bold min-w-[4rem] text-muted-foreground">
-                        特徴
-                      </span>
-                      <span className="font-medium text-foreground">
-                        {friend.ownerDetails}
-                      </span>
-                    </div>
-                  )}
-                  {friend.contact && (
-                    <div className="flex items-start gap-3">
-                      <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                      <span className="font-medium text-foreground">
-                        {friend.contact}
-                      </span>
-                    </div>
-                  )}
-                  {friend.address && (
-                    <div className="flex items-start gap-3">
-                      <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                      <span className="font-medium text-foreground">
-                        {friend.address}
-                      </span>
-                    </div>
-                  )}
-                </div>
+            <div className="space-y-3">
+              <h3 className="font-bold text-sm text-muted-foreground flex items-center gap-2 px-2 uppercase tracking-widest">
+                <User className="w-4 h-4" /> 飼い主情報
+              </h3>
+              <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] space-y-3 shadow-lg">
+                {friend.ownerName && (
+                  <div className="flex items-start gap-3">
+                    <span className="font-bold min-w-[4rem] text-muted-foreground">
+                      お名前
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {friend.ownerName}
+                    </span>
+                  </div>
+                )}
+                {friend.ownerDetails && (
+                  <div className="flex items-start gap-3">
+                    <span className="font-bold min-w-[4rem] text-muted-foreground">
+                      特徴
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {friend.ownerDetails}
+                    </span>
+                  </div>
+                )}
+                {friend.contact && (
+                  <div className="flex items-start gap-3">
+                    <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                    <span className="font-medium text-foreground">
+                      {friend.contact}
+                    </span>
+                  </div>
+                )}
+                {friend.address && (
+                  <div className="flex items-start gap-3">
+                    <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                    <span className="font-medium text-foreground">
+                      {friend.address}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+          )}
 
           {/* Features/Memo */}
           {friend.features && (

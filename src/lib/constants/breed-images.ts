@@ -1,3 +1,4 @@
+import { SPECIES_DATA } from "@/lib/constants/species";
 /**
  * 品種別サンプル画像URL
  *
@@ -231,4 +232,99 @@ export function getBreedImages(breed: string): BreedImage[] {
 export function hasBreedImages(breed: string): boolean {
   const images = BREED_IMAGES[breed];
   return images !== undefined && images.length > 0;
+}
+
+/**
+ * 品種からspeciesを逆引きするヘルパー
+ */
+export function findSpeciesForBreed(
+  breed: string,
+): { species: string; label: string } | null {
+  // 犬
+  const dogs = SPECIES_DATA.mammals.categories.dogs;
+  if ((dogs.breeds as readonly string[]).includes(breed)) {
+    return { species: dogs.species, label: dogs.label };
+  }
+
+  // 猫
+  const cats = SPECIES_DATA.mammals.categories.cats;
+  if ((cats.breeds as readonly string[]).includes(breed)) {
+    return { species: cats.species, label: cats.label };
+  }
+
+  // 小動物
+  const smallMammals = SPECIES_DATA.mammals.categories.small_mammals.categories;
+  for (const category of Object.values(smallMammals)) {
+    if ((category.breeds as readonly string[]).includes(breed)) {
+      return { species: breed, label: category.label };
+    }
+  }
+
+  // 鳥類
+  const birds = SPECIES_DATA.birds.categories.parrots_and_finches;
+  if ((birds.breeds as readonly string[]).includes(breed)) {
+    return { species: breed, label: birds.label };
+  }
+
+  // 爬虫類
+  for (const category of Object.values(SPECIES_DATA.reptiles.categories)) {
+    if ((category.breeds as readonly string[]).includes(breed)) {
+      return { species: breed, label: category.label };
+    }
+  }
+
+  // 両生類
+  const amphibians = SPECIES_DATA.amphibians.categories.frogs_and_salamanders;
+  if ((amphibians.breeds as readonly string[]).includes(breed)) {
+    return { species: breed, label: amphibians.label };
+  }
+
+  // 魚類
+  for (const category of Object.values(SPECIES_DATA.fish.categories)) {
+    if ((category.breeds as readonly string[]).includes(breed)) {
+      return { species: breed, label: category.label };
+    }
+  }
+
+  // 無脊椎動物
+  const invertebrates =
+    SPECIES_DATA.invertebrates.categories.insects_and_others;
+  if ((invertebrates.breeds as readonly string[]).includes(breed)) {
+    return { species: breed, label: invertebrates.label };
+  }
+
+  return null;
+}
+
+/**
+ * 画像が登録されている品種のみを取得
+ */
+export function getAvailableBreeds(): {
+  breed: string;
+  species: string;
+  speciesLabel: string;
+  images: BreedImage[];
+}[] {
+  const result: {
+    breed: string;
+    species: string;
+    speciesLabel: string;
+    images: BreedImage[];
+  }[] = [];
+
+  for (const [breed, images] of Object.entries(BREED_IMAGES)) {
+    if (images && images.length > 0) {
+      const speciesInfo = findSpeciesForBreed(breed);
+      if (speciesInfo) {
+        result.push({
+          breed,
+          species: speciesInfo.species,
+          speciesLabel: speciesInfo.label,
+          images,
+        });
+      }
+    }
+  }
+
+  return result;
 }

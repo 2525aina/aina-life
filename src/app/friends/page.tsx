@@ -19,7 +19,6 @@ import { Friend } from "@/lib/types";
 import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 import { StickyFab } from "@/components/ui/sticky-fab";
 
-
 interface FriendFormData {
   name: string;
   species: string;
