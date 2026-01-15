@@ -48,7 +48,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Header />
       <SideNav />
       <div className="md:pl-56">
-        <main className="relative z-10 pb-32 max-w-[1600px] mx-auto px-4">
+        <main className="relative z-10 pb-32 w-full max-w-none mx-auto px-4">
           {children}
         </main>
       </div>
