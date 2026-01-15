@@ -10,11 +10,7 @@ import {
   getAvailableBreeds,
 } from "@/lib/constants/breed-images";
 import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface AvatarSelectionModalProps {
   open: boolean;

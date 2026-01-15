@@ -2,17 +2,14 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { format } from "date-fns";
+
 import { usePetContext } from "@/contexts/PetContext";
 import { useEntries } from "@/hooks/useEntries";
 import { useFriends } from "@/hooks/useFriends";
 import { useCustomTasks } from "@/hooks/useCustomTasks";
 import { useMembers } from "@/hooks/useMembers";
-import { ENTRY_TAGS, Entry } from "@/lib/types";
+import { Entry } from "@/lib/types";
 import {
-  CheckCircle2,
-  Circle,
   Clock,
   ChevronDown,
   Sparkles,
@@ -33,7 +30,6 @@ import {
 import { db } from "@/lib/firebase";
 import { EntryDetailSheet } from "@/components/features/EntryDetailSheet";
 import { EntryEditSheet } from "@/components/features/EntryEditSheet";
-import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 // Section Header Component
 function SectionHeader({
@@ -47,7 +43,7 @@ function SectionHeader({
   icon: React.ReactNode;
   title: string;
   count: number;
-  color?: "primary" | "blue" | "green" | "amber";
+  color?: "primary" | "blue" | "green" | "red";
   isOpen?: boolean;
   onToggle?: () => void;
 }) {
@@ -55,7 +51,7 @@ function SectionHeader({
     primary: "from-primary/20 to-primary/5 text-primary",
     blue: "from-blue-500/20 to-blue-500/5 text-blue-500",
     green: "from-green-500/20 to-green-500/5 text-green-500",
-    amber: "from-amber-500/20 to-amber-500/5 text-amber-600",
+    red: "from-red-500/20 to-red-500/5 text-red-600",
   };
 
   return (
@@ -268,7 +264,7 @@ export function TimelineView() {
               icon={<AlertTriangle className="w-4 h-4" />}
               title="期限切れの予定"
               count={overdueSchedules.length}
-              color="amber"
+              color="red"
               isOpen={showOverdue}
               onToggle={() => setShowOverdue(!showOverdue)}
             />
