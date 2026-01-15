@@ -45,6 +45,7 @@ import { useMembers } from "@/hooks/useMembers";
 import { usePets } from "@/hooks/usePets";
 import { useCustomTasks } from "@/hooks/useCustomTasks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getRoleLabel } from "@/lib/memberUtils";
 
 interface PetDetailSheetProps {
   pet: Pet | null;
@@ -69,9 +70,6 @@ export function PetDetailSheet({
     (m) => m.role === "owner" && m.status === "active",
   ).length;
   const canOwnerLeave = activeOwnersCount > 1;
-
-  const getRoleLabel = (role: string) =>
-    MEMBER_ROLES.find((r) => r.value === role)?.label || role;
 
   if (!pet) return null;
 
