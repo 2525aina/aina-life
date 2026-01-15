@@ -23,6 +23,7 @@ import {
     addDays,
     subDays,
     startOfDay,
+    isWithinInterval,
 } from "date-fns";
 import { ja } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -54,32 +55,8 @@ export function CalendarView() {
     const [sheetMode, setSheetMode] = useState<"detail" | "edit" | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Calendar view data - Fetch all entries to ensure full data availability and consistency
+    // Calendar view data
     const { entries, loading } = useEntries(selectedPet?.id || null);
-
-    // Group entries by date
-    const entriesByDate = useMemo(() => {
-        const grouped: Record<string, typeof entries> = {};
-
-        entries.forEach((entry) => {
-            const startDate = startOfDay(entry.date.toDate());
-            const endDate =
-                entry.timeType === "range" && entry.endDate
-                    ? startOfDay(entry.endDate.toDate())
-                    : startDate;
-
-            const daysToAdd = eachDayOfInterval({ start: startDate, end: endDate });
-            daysToAdd.forEach((day) => {
-                const dateKey = format(day, "yyyy-MM-dd");
-                if (!grouped[dateKey]) grouped[dateKey] = [];
-                if (!grouped[dateKey].find((e) => e.id === entry.id)) {
-                    grouped[dateKey].push(entry);
-                }
-            });
-        });
-
-        return grouped;
-    }, [entries]);
 
     const calendarDays = useMemo(() => {
         if (viewMode === "month") {
@@ -94,6 +71,104 @@ export function CalendarView() {
         }
         return [currentDate];
     }, [currentDate, viewMode]);
+
+    // Calculate Layout Slots for consistent vertical alignment
+    const slotsByDate = useMemo(() => {
+        const slots: Record<string, (Entry | null)[]> = {};
+        // Week view can show more rows as it has more vertical space
+        const MAX_SLOTS = viewMode === "week" ? 12 : 4;
+
+        // Initialize slots for all visible days
+        calendarDays.forEach((day) => {
+            slots[format(day, "yyyy-MM-dd")] = Array(MAX_SLOTS).fill(null);
+        });
+
+        // Sort entries: earlier start time first, then longer duration
+        const sortedEntries = [...entries].sort((a, b) => {
+            const startA = a.date.toMillis();
+            const startB = b.date.toMillis();
+            if (startA !== startB) return startA - startB;
+            const endA =
+                a.timeType === "range" && a.endDate
+                    ? a.endDate.toMillis()
+                    : a.date.toMillis();
+            const endB =
+                b.timeType === "range" && b.endDate
+                    ? b.endDate.toMillis()
+                    : b.date.toMillis();
+            return endB - startB - (endA - startA); // Longer first
+        });
+
+        sortedEntries.forEach((entry) => {
+            const startDate = startOfDay(entry.date.toDate());
+            const endDate =
+                entry.timeType === "range" && entry.endDate
+                    ? startOfDay(entry.endDate.toDate())
+                    : startDate;
+
+            // Find all days this entry spans within the current view
+            const spanDays = eachDayOfInterval({
+                start: startDate,
+                end: endDate,
+            }).filter((d) => slots[format(d, "yyyy-MM-dd")] !== undefined);
+
+            if (spanDays.length === 0) return;
+
+            // Find the first available slot index that is free across ALL span days
+            let assignedIndex = -1;
+            for (let i = 0; i < MAX_SLOTS; i++) {
+                const isSlotFree = spanDays.every(
+                    (d) => slots[format(d, "yyyy-MM-dd")][i] === null,
+                );
+                if (isSlotFree) {
+                    assignedIndex = i;
+                    break;
+                }
+            }
+
+            // Assign to slot if found
+            if (assignedIndex !== -1) {
+                spanDays.forEach((d) => {
+                    slots[format(d, "yyyy-MM-dd")][assignedIndex] = entry;
+                });
+            }
+        });
+
+        return slots;
+    }, [entries, calendarDays]);
+
+    // Simple entries mapping for filtering/counting
+    const entriesByDate = useMemo(() => {
+        const grouped: Record<string, Entry[]> = {};
+        entries.forEach((entry) => {
+            const startDate = startOfDay(entry.date.toDate());
+            const endDate =
+                entry.timeType === "range" && entry.endDate
+                    ? startOfDay(entry.endDate.toDate())
+                    : startDate;
+            eachDayOfInterval({ start: startDate, end: endDate }).forEach((day) => {
+                const key = format(day, "yyyy-MM-dd");
+                if (!grouped[key]) grouped[key] = [];
+                if (!grouped[key].find((e) => e.id === entry.id)) push(entry);
+                grouped[key].push(entry);
+            });
+        });
+        return grouped;
+        function push(e: Entry) { } // Dummy helper for type inference or logic
+    }, [entries]);
+
+    // Helper to get raw entries for a specific day (used for "more" count and validation)
+    const getDayEntries = (date: Date) => {
+        const target = startOfDay(date);
+        return entries.filter((entry) => {
+            const start = startOfDay(entry.date.toDate());
+            const end =
+                entry.timeType === "range" && entry.endDate
+                    ? startOfDay(entry.endDate.toDate())
+                    : start;
+            return isWithinInterval(target, { start, end });
+        });
+    };
 
     const navigate = (direction: "prev" | "next") => {
         if (viewMode === "month") {
@@ -118,9 +193,10 @@ export function CalendarView() {
     };
 
     const selectedDateEntries = useMemo(
-        () => entriesByDate[format(selectedDate, "yyyy-MM-dd")] || [],
-        [selectedDate, entriesByDate],
+        () => getDayEntries(selectedDate),
+        [selectedDate, entries],
     );
+
     const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
     const handleToggleComplete = async (
@@ -211,29 +287,50 @@ export function CalendarView() {
                 <div
                     className={cn(
                         "grid grid-cols-7 gap-px bg-[var(--glass-border)] border border-[var(--glass-border)] rounded-2xl overflow-hidden",
-                        viewMode === "month" ? "auto-rows-[minmax(120px,1fr)]" : "h-auto",
+                        viewMode === "month"
+                            ? "auto-rows-[minmax(120px,1fr)]"
+                            : "min-h-[500px] auto-rows-[1fr]",
                     )}
                 >
                     {calendarDays.map((day) => {
                         const dateKey = format(day, "yyyy-MM-dd");
-                        const dayEntries = entriesByDate[dateKey] || [];
                         const isToday = isSameDay(day, new Date());
                         const isSelected = isSameDay(day, selectedDate);
                         const isCurrentMonth = isSameMonth(day, currentDate);
                         const dayOfWeek = day.getDay();
 
-                        // Month View: Rich desktop-like calendar cell
-                        if (viewMode === "month") {
+                        // Use calculated slots for layout
+                        // Determine max items based on view mode
+                        const MAX_DISPLAY = viewMode === "week" ? 12 : 4;
+                        const daySlots = slotsByDate[dateKey] || Array(MAX_DISPLAY).fill(null);
+
+                        // For week view, we might want to show more than the pre-calculated 4 slots if possible
+                        // But currently slotsByDate is fixed at MAX_SLOTS=4 constant.
+                        // Ideally we should increase MAX_SLOTS in the calculation if we want more in week view.
+                        // For now, let's keep it consistent but allow the container to stretch.
+
+                        const allDayEntries = getDayEntries(day);
+                        // Count hidden items relative to what we actually render
+                        // Note: The slot calculation above uses a fixed size.
+                        // To properly show more items in week view, we need to update the useMemo calculation logic too.
+                        // For this step, we will reuse the logic but just enable the rich view.
+
+                        const renderedSlots = daySlots.slice(0, MAX_DISPLAY);
+                        const hiddenCount = Math.max(0, allDayEntries.length - renderedSlots.filter(Boolean).length);
+
+                        // Rich desktop-like calendar cell (Month AND Week)
+                        if (viewMode === "month" || viewMode === "week") {
                             return (
                                 <div
                                     key={dateKey}
                                     onClick={() => setSelectedDate(day)}
                                     className={cn(
-                                        "relative flex flex-col items-stretch justify-start p-1 transition-all duration-200 group outline-none min-h-[120px]",
+                                        "relative flex flex-col items-stretch justify-start p-1 transition-all duration-200 group outline-none",
+                                        viewMode === "month" ? "min-h-[120px]" : "min-h-full border-b last:border-b-0", // Week view takes full height
                                         isSelected
                                             ? "bg-primary/5"
                                             : "bg-[var(--glass-bg)] hover:bg-white/40",
-                                        !isCurrentMonth && "opacity-50 bg-muted/10",
+                                        !isCurrentMonth && viewMode === "month" && "opacity-50 bg-muted/10",
                                     )}
                                 >
                                     <div className="flex justify-center mb-1">
@@ -251,18 +348,33 @@ export function CalendarView() {
                                         </span>
                                     </div>
 
-                                    {/* Event Bars */}
-                                    <div className="flex-1 flex flex-col gap-1 overflow-y-auto overflow-x-hidden content-start">
-                                        {dayEntries.slice(0, 4).map((entry) => {
+                                    {/* Render Slots */}
+                                    <div className="flex-1 flex flex-col gap-0.5 pt-1">
+                                        {renderedSlots.map((entry, idx) => {
+                                            if (!entry) {
+                                                return <div key={`empty-${idx}`} className="h-[22px]" />;
+                                            }
+
                                             const tagInfo =
                                                 tasks.find((t) => t.name === entry.tags[0]) ||
                                                 ENTRY_TAGS.find((t) => t.value === entry.tags[0]);
                                             const isSchedule = entry.type === "schedule";
                                             const isCompleted = isSchedule && entry.isCompleted;
 
+                                            const startDate = startOfDay(entry.date.toDate());
+                                            const endDate =
+                                                entry.timeType === "range" && entry.endDate
+                                                    ? startOfDay(entry.endDate.toDate())
+                                                    : startDate;
+                                            const isMultiDay = !isSameDay(startDate, endDate);
+                                            const isStartDay = isSameDay(day, startDate);
+                                            const isEndDay = isSameDay(day, endDate);
+
+                                            const startTimeStr = format(entry.date.toDate(), "H:mm");
+
                                             return (
                                                 <button
-                                                    key={entry.id}
+                                                    key={`${entry.id}-${dateKey}`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setSelectedEntry(entry);
@@ -270,24 +382,36 @@ export function CalendarView() {
                                                         setSelectedDate(day);
                                                     }}
                                                     className={cn(
-                                                        "w-full text-left px-1.5 py-0.5 rounded text-[10px] font-medium truncate transition-all hover:scale-[1.02]",
+                                                        "w-full text-left px-1.5 h-[22px] flex items-center text-[10px] font-medium truncate transition-all hover:brightness-95 relative z-10",
                                                         isCompleted
                                                             ? "bg-muted text-muted-foreground line-through opacity-70"
                                                             : isSchedule
-                                                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200/50"
-                                                                : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border border-orange-200/50",
+                                                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
+                                                                : "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-200",
+                                                        isMultiDay && !isStartDay && "rounded-l-none border-l-0 ml-[-1px]",
+                                                        isMultiDay && !isEndDay && "rounded-r-none border-r-0 mr-[-1px]",
+                                                        (!isMultiDay || (isStartDay && isEndDay)) && "rounded-md",
+                                                        isMultiDay && isStartDay && !isEndDay && "rounded-l-md rounded-r-none",
+                                                        isMultiDay && !isStartDay && isEndDay && "rounded-r-md rounded-l-none",
                                                     )}
                                                 >
-                                                    <span className="mr-1 inline-block">
+                                                    {(isStartDay || !isMultiDay) && (
+                                                        <span className="font-mono font-bold mr-1 opacity-80 text-[9px] leading-none">
+                                                            {startTimeStr}
+                                                        </span>
+                                                    )}
+                                                    <span className="mr-1 inline-block leading-none">
                                                         {tagInfo?.emoji}
                                                     </span>
-                                                    {entry.title || entry.tags[0]}
+                                                    <span className="font-bold truncate leading-none">
+                                                        {entry.title || entry.tags[0]}
+                                                    </span>
                                                 </button>
                                             );
                                         })}
-                                        {dayEntries.length > 4 && (
-                                            <span className="text-[9px] text-center text-muted-foreground font-medium hover:text-primary cursor-pointer">
-                                                他 {dayEntries.length - 4} 件
+                                        {hiddenCount > 0 && (
+                                            <span className="text-[9px] text-center text-muted-foreground font-medium hover:text-primary cursor-pointer mt-0.5 h-[14px]">
+                                                他 {hiddenCount} 件
                                             </span>
                                         )}
                                     </div>
@@ -295,7 +419,8 @@ export function CalendarView() {
                             );
                         }
 
-                        // Fallback for other views (week/day - keep simple for now or update later)
+                        // Fallback (simple dot view)
+                        const dayEntries = getDayEntries(day); // Re-fetch for simple view
                         return (
                             <button
                                 key={dateKey}
@@ -321,7 +446,6 @@ export function CalendarView() {
                                     {format(day, "d")}
                                 </span>
 
-                                {/* Simple Indicators for non-month views */}
                                 {dayEntries.length > 0 && (
                                     <div className="mt-1.5 flex flex-wrap justify-center gap-0.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
