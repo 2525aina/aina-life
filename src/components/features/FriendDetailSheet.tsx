@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { calculateAge } from "@/lib/utils/date-utils";
+import { calculateAge, ensureDate } from "@/lib/utils/date-utils";
 import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 import {
   Trash2,
@@ -35,7 +35,6 @@ import {
   Home,
   X,
 } from "lucide-react";
-import { Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { Friend } from "@/lib/types";
 import Image from "next/image";
@@ -61,7 +60,8 @@ export function FriendDetailSheet({
 
   if (!friend) return null;
 
-  const age = friend.birthday ? calculateAge(friend.birthday.toDate()) : null;
+  const birthdayDate = ensureDate(friend.birthday);
+  const age = birthdayDate ? calculateAge(birthdayDate) : null;
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -228,15 +228,11 @@ export function FriendDetailSheet({
                   出会った日
                 </p>
                 <p className="font-bold">
-                  {format(
-                    friend.metAt instanceof Timestamp
-                      ? friend.metAt.toDate()
-                      : new Date(friend.metAt),
-                    "yyyy年M月d日 (E)",
-                    {
+                  {ensureDate(friend.metAt)
+                    ? format(ensureDate(friend.metAt)!, "yyyy年M月d日 (E)", {
                       locale: ja,
-                    },
-                  )}
+                    })
+                    : "不明"}
                 </p>
               </div>
             </div>
@@ -261,50 +257,50 @@ export function FriendDetailSheet({
             friend.ownerDetails ||
             friend.contact ||
             friend.address) && (
-            <div className="space-y-3">
-              <h3 className="font-bold text-sm text-muted-foreground flex items-center gap-2 px-2 uppercase tracking-widest">
-                <User className="w-4 h-4" /> 飼い主情報
-              </h3>
-              <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] space-y-3 shadow-lg">
-                {friend.ownerName && (
-                  <div className="flex items-start gap-3">
-                    <span className="font-bold min-w-[4rem] text-muted-foreground">
-                      お名前
-                    </span>
-                    <span className="font-medium text-foreground">
-                      {friend.ownerName}
-                    </span>
-                  </div>
-                )}
-                {friend.ownerDetails && (
-                  <div className="flex items-start gap-3">
-                    <span className="font-bold min-w-[4rem] text-muted-foreground">
-                      特徴
-                    </span>
-                    <span className="font-medium text-foreground">
-                      {friend.ownerDetails}
-                    </span>
-                  </div>
-                )}
-                {friend.contact && (
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium text-foreground">
-                      {friend.contact}
-                    </span>
-                  </div>
-                )}
-                {friend.address && (
-                  <div className="flex items-start gap-3">
-                    <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium text-foreground">
-                      {friend.address}
-                    </span>
-                  </div>
-                )}
+              <div className="space-y-3">
+                <h3 className="font-bold text-sm text-muted-foreground flex items-center gap-2 px-2 uppercase tracking-widest">
+                  <User className="w-4 h-4" /> 飼い主情報
+                </h3>
+                <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] space-y-3 shadow-lg">
+                  {friend.ownerName && (
+                    <div className="flex items-start gap-3">
+                      <span className="font-bold min-w-[4rem] text-muted-foreground">
+                        お名前
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {friend.ownerName}
+                      </span>
+                    </div>
+                  )}
+                  {friend.ownerDetails && (
+                    <div className="flex items-start gap-3">
+                      <span className="font-bold min-w-[4rem] text-muted-foreground">
+                        特徴
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {friend.ownerDetails}
+                      </span>
+                    </div>
+                  )}
+                  {friend.contact && (
+                    <div className="flex items-start gap-3">
+                      <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                      <span className="font-medium text-foreground">
+                        {friend.contact}
+                      </span>
+                    </div>
+                  )}
+                  {friend.address && (
+                    <div className="flex items-start gap-3">
+                      <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                      <span className="font-medium text-foreground">
+                        {friend.address}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Features/Memo */}
           {friend.features && (
