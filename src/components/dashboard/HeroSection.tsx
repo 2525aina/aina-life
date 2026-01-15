@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePetContext } from "@/contexts/PetContext";
 import { getPetDetailUrl } from "@/lib/utils/pet-urls";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 export function HeroSection() {
   const { selectedPet } = usePetContext();
@@ -80,7 +81,7 @@ export function HeroSection() {
             />
             <AvatarFallback className="bg-white/20 flex items-center justify-center overflow-hidden relative">
               <Image
-                src="/ogp.webp"
+                src={DEFAULT_FALLBACK_IMAGE}
                 alt="Pet"
                 fill
                 className="object-cover opacity-50 grayscale"

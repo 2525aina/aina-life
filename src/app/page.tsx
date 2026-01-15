@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 export default function Home() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -31,7 +32,7 @@ export default function Home() {
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
           <Image
-            src="/ogp.webp"
+            src={DEFAULT_FALLBACK_IMAGE}
             alt="Loading"
             width={120}
             height={63}
@@ -60,7 +61,7 @@ export default function Home() {
             >
               <div className="w-32 h-32 rounded-full overflow-hidden shadow-lg ring-4 ring-primary/20">
                 <Image
-                  src="/ogp.webp"
+                  src={DEFAULT_FALLBACK_IMAGE}
                   alt="aina-life"
                   width={128}
                   height={128}

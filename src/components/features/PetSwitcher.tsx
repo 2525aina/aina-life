@@ -18,6 +18,7 @@ import { PetNewSheet } from "@/components/features/PetNewSheet";
 import { useState, useEffect } from "react";
 
 import { getPetDetailUrl } from "@/lib/utils/pet-urls";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 export function PetSwitcher() {
   const { pets, loading } = usePets();
@@ -84,7 +85,7 @@ export function PetSwitcher() {
               <AvatarImage src={selectedPet?.avatarUrl} alt={selectedPet?.name} />
               <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden relative">
                 <Image
-                  src="/ogp.webp"
+                  src={DEFAULT_FALLBACK_IMAGE}
                   alt="Pet"
                   fill
                   className="object-cover opacity-50 grayscale"
@@ -108,7 +109,7 @@ export function PetSwitcher() {
                 <AvatarImage src={pet.avatarUrl} alt={pet.name} />
                 <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden relative">
                   <Image
-                    src="/ogp.webp"
+                    src={DEFAULT_FALLBACK_IMAGE}
                     alt="Pet"
                     fill
                     className="object-cover opacity-50 grayscale"

@@ -33,6 +33,7 @@ import {
 import { db } from "@/lib/firebase";
 import { EntryDetailSheet } from "@/components/features/EntryDetailSheet";
 import { EntryEditSheet } from "@/components/features/EntryEditSheet";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 // Section Header Component
 function SectionHeader({
@@ -280,7 +281,7 @@ function EntryCard({
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center relative">
                         <Image
-                          src="/ogp.webp"
+                          src={DEFAULT_FALLBACK_IMAGE}
                           alt="No image"
                           fill
                           className="object-cover opacity-50 grayscale"

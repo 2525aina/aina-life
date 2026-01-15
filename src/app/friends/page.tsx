@@ -15,6 +15,7 @@ import { FriendDetailSheet } from "@/components/features/FriendDetailSheet";
 import { FriendFormSheet } from "@/components/features/FriendFormSheet";
 import { toast } from "sonner";
 import { Friend } from "@/lib/types";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 // キャッシュから復元されたTimestampを安全にDateに変換
 function toDate(
@@ -158,7 +159,7 @@ export default function FriendsPage() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-primary/5">
                           <Image
-                            src="/ogp.webp"
+                            src={DEFAULT_FALLBACK_IMAGE}
                             alt="No image"
                             width={64}
                             height={64}

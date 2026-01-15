@@ -15,6 +15,7 @@ import {
 import { Settings, LogOut, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 export function Header() {
   const { userProfile, signOut } = useAuth();
@@ -53,7 +54,7 @@ export function Header() {
                   />
                   <AvatarFallback className="bg-primary/10 flex items-center justify-center overflow-hidden">
                     <Image
-                      src="/ogp.webp"
+                      src={DEFAULT_FALLBACK_IMAGE}
                       alt="User"
                       width={32}
                       height={32}

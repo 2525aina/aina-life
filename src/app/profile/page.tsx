@@ -50,7 +50,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePets } from "@/hooks/usePets";
 import { StyledInput, GenderSelect } from "@/components/ui/styled-form-fields";
-import { format, parse, differenceInYears } from "date-fns";
+import { format, parse } from "date-fns";
+import { calculateAge } from "@/lib/utils/date-utils";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 import { cn } from "@/lib/utils";
 import { getPetDetailUrl } from "@/lib/utils/pet-urls";
@@ -338,10 +340,7 @@ function ProfileContent() {
                         <div className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 bg-orange-500/10 text-orange-600 border border-orange-500/20 shadow-sm backdrop-blur-sm">
                           <Cake className="w-3.5 h-3.5" />
                           <span>
-                            {differenceInYears(
-                              new Date(),
-                              new Date(userProfile.birthday),
-                            )}
+                            {calculateAge(userProfile.birthday)}
                             歳
                           </span>
                         </div>
@@ -489,7 +488,7 @@ function ProfileContent() {
                       />
                       <AvatarFallback className="bg-orange-100 flex items-center justify-center overflow-hidden">
                         <Image
-                          src="/ogp.webp"
+                          src={DEFAULT_FALLBACK_IMAGE}
                           alt="Pet"
                           width={56}
                           height={56}

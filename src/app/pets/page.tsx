@@ -13,7 +13,8 @@ import { PetNewSheet } from "@/components/features/PetNewSheet";
 import { PetDetailSheet } from "@/components/features/PetDetailSheet";
 import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { Pet } from "@/lib/types";
-import { differenceInYears, differenceInMonths } from "date-fns";
+import { getAgeString } from "@/lib/utils/date-utils";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 function PetsPageContent() {
   const { pets, loading } = usePets();
@@ -42,17 +43,6 @@ function PetsPageContent() {
       }
     }
   }, [searchParams, pets, loading, handledPetId]);
-
-  // Helper to calculate age string
-  const getAgeString = (birthday?: string) => {
-    if (!birthday) return "";
-    const birthDate = new Date(birthday);
-    const now = new Date();
-    const years = differenceInYears(now, birthDate);
-    if (years > 0) return `${years}歳`;
-    const months = differenceInMonths(now, birthDate);
-    return `${months}ヶ月`;
-  };
 
   const handlePetClick = (pet: Pet) => {
     setSelectedPet(pet);
@@ -123,7 +113,7 @@ function PetsPageContent() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-primary/10">
                           <Image
-                            src="/ogp.webp"
+                            src={DEFAULT_FALLBACK_IMAGE}
                             alt="No Image"
                             width={40}
                             height={40}

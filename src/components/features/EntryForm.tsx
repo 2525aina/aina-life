@@ -25,6 +25,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { handleError } from "@/lib/errorHandler";
 import { ImageCropper } from "@/components/ui/image-cropper";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 interface EntryFormProps {
   initialData?: Entry;
@@ -376,7 +377,7 @@ export function EntryForm({
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <Image
-                              src="/ogp.webp"
+                              src={DEFAULT_FALLBACK_IMAGE}
                               alt="No image"
                               width={56}
                               height={56}

@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { useTimeFormat } from "@/hooks/useTimeFormat";
 import { Friend, CustomTask } from "@/lib/types";
 import Image from "next/image";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 interface EntryDetailSheetProps {
   entry: Entry | null;
@@ -203,7 +204,7 @@ export function EntryDetailSheet({
                           ) : (
                             <div className="w-full h-full bg-muted flex items-center justify-center">
                               <Image
-                                src="/ogp.webp"
+                                src={DEFAULT_FALLBACK_IMAGE}
                                 alt="No image"
                                 width={28}
                                 height={28}

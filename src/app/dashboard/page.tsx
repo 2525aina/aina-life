@@ -20,6 +20,7 @@ import { EntryFormData } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { User as UserIcon, X } from "lucide-react";
 import { getPetDetailUrl } from "@/lib/utils/pet-urls";
+import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 
 export default function DashboardPage() {
   const { selectedPet } = usePetContext();
@@ -96,7 +97,7 @@ export default function DashboardPage() {
           >
             <div className="w-28 h-28 mx-auto rounded-full overflow-hidden mb-6 ring-4 ring-primary/20 shadow-lg">
               <Image
-                src="/ogp.webp"
+                src={DEFAULT_FALLBACK_IMAGE}
                 alt="Welcome"
                 width={112}
                 height={112}
