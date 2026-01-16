@@ -35,6 +35,7 @@ import { PetDetailSheet } from "@/components/features/PetDetailSheet";
 import { PetEditSheet } from "@/components/features/PetEditSheet";
 import { Pet, Entry } from "@/lib/types";
 import { getAgeString } from "@/lib/utils/date-utils";
+import { getSpeciesLabel } from "@/lib/utils/pet-utils";
 import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
@@ -133,14 +134,6 @@ function PetCard({
   const [isBreedOpen, setIsBreedOpen] = useState(false);
   const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [isWeightOpen, setIsWeightOpen] = useState(false);
-
-  const getSpeciesLabel = (species: string | undefined) => {
-    if (!species) return "未設定";
-    if (species === "Canis lupus familiaris") return "犬";
-    if (species === "Felis catus") return "猫";
-    if (species === "other") return "その他";
-    return species;
-  };
 
   return (
     <div onClick={() => onClick(pet)} className="cursor-pointer">
