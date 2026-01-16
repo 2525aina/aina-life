@@ -21,6 +21,9 @@ import {
   Shield,
   ListTodo,
   BookOpen,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -70,6 +73,7 @@ function PetCard({
     completed: 0,
     total: 0,
     journals: 0,
+    overdue: 0,
   });
   const [isActivityOpen, setIsActivityOpen] = useState(false);
 
@@ -79,20 +83,34 @@ function PetCard({
 
     const q = query(
       collection(db, "pets", pet.id, "entries"),
-      where("date", ">=", Timestamp.fromDate(todayBegin)),
       where("date", "<=", Timestamp.fromDate(todayEnd)),
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const entries = snapshot.docs.map((doc) => doc.data() as Entry);
-      const schedules = entries.filter((e) => e.type === "schedule");
-      const diaries = entries.filter((e) => e.type === "diary");
+
+      const todaySchedules = entries.filter(
+        (e) => e.type === "schedule" && isSameDay(e.date.toDate(), todayBegin),
+      );
+      const todayDiaries = entries.filter(
+        (e) => e.type === "diary" && isSameDay(e.date.toDate(), todayBegin),
+      );
+
+      const overdueSchedules = entries.filter(
+        (e) =>
+          e.type === "schedule" &&
+          !e.isCompleted &&
+          e.date.toDate() < todayBegin,
+      );
 
       setTodaySummary({
-        remaining: schedules.filter((s) => !s.isCompleted).length,
-        completed: schedules.filter((s) => s.isCompleted).length,
-        total: schedules.length,
-        journals: diaries.length,
+        remaining:
+          todaySchedules.filter((s) => !s.isCompleted).length +
+          overdueSchedules.length,
+        completed: todaySchedules.filter((s) => s.isCompleted).length,
+        total: todaySchedules.length,
+        journals: todayDiaries.length,
+        overdue: overdueSchedules.length,
       });
     });
 
@@ -110,6 +128,7 @@ function PetCard({
   const [isMedicalOpen, setIsMedicalOpen] = useState(false);
   const [isBreedOpen, setIsBreedOpen] = useState(false);
   const [isMembersOpen, setIsMembersOpen] = useState(false);
+  const [isWeightOpen, setIsWeightOpen] = useState(false);
 
   return (
     <div onClick={() => onClick(pet)} className="cursor-pointer">
@@ -211,15 +230,104 @@ function PetCard({
             )}
           </div>
 
-          <div className="flex flex-col items-end gap-2 pointer-events-none">
+          <div className="flex flex-col items-end gap-2 pointer-events-auto">
             {latestWeight && (
-              <div className="bg-black/40 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-black border border-white/20 flex items-center gap-1.5 shadow-lg">
-                <Scale className="w-3.5 h-3.5 text-orange-300" />
-                {latestWeight.value}
-                <span className="text-[8px] opacity-70">
-                  {latestWeight.unit}
-                </span>
-              </div>
+              <Popover open={isWeightOpen} onOpenChange={setIsWeightOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    onMouseEnter={() => setIsWeightOpen(true)}
+                    onMouseLeave={() => setIsWeightOpen(false)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsWeightOpen(!isWeightOpen);
+                    }}
+                    className="bg-black/40 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-black border border-white/20 flex items-center gap-1.5 shadow-lg transition-all hover:bg-black/60 active:scale-95 group/weight"
+                  >
+                    <Scale className="w-3.5 h-3.5 text-orange-300 group-hover/weight:rotate-12 transition-transform" />
+                    {latestWeight.value}
+                    <span className="text-[8px] opacity-70">
+                      {latestWeight.unit}
+                    </span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  onMouseEnter={() => setIsWeightOpen(true)}
+                  onMouseLeave={() => setIsWeightOpen(false)}
+                  className="glass border-[var(--glass-border)] rounded-2xl p-4 w-52 space-y-3 z-[100] pointer-events-auto shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between text-yellow-500 font-bold text-xs uppercase tracking-wider mb-1">
+                    <div className="flex items-center gap-2">
+                      <Scale className="w-3.5 h-3.5" />
+                      最新の体重
+                    </div>
+                    {weights.length > 1 && (
+                      <div
+                        className={cn(
+                          "flex items-center text-[10px] font-black px-1.5 py-0.5 rounded-md",
+                          latestWeight.value > weights[1].value
+                            ? "bg-red-500/10 text-red-500"
+                            : latestWeight.value < weights[1].value
+                              ? "bg-blue-500/10 text-blue-500"
+                              : "bg-gray-500/10 text-gray-500",
+                        )}
+                      >
+                        {latestWeight.value > weights[1].value ? (
+                          <ArrowUpRight className="w-2.5 h-2.5 mr-0.5" />
+                        ) : latestWeight.value < weights[1].value ? (
+                          <ArrowDownRight className="w-2.5 h-2.5 mr-0.5" />
+                        ) : (
+                          <Minus className="w-2.5 h-2.5 mr-0.5" />
+                        )}
+                        {Math.abs(
+                          latestWeight.value - weights[1].value,
+                        ).toFixed(2)}
+                        <span className="text-[8px] ml-0.5">
+                          {latestWeight.unit}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-white/5 rounded-xl px-3 py-2 border border-white/5">
+                    <p className="text-xl font-black tabular-nums">
+                      {latestWeight.value}
+                      <span className="text-xs font-bold opacity-40 ml-1">
+                        {latestWeight.unit}
+                      </span>
+                    </p>
+                    <p className="text-[9px] text-muted-foreground mt-0.5">
+                      測定日: {format(latestWeight.date.toDate(), "yyyy/MM/dd")}
+                    </p>
+                  </div>
+
+                  {weights.length > 1 && (
+                    <div className="space-y-1.5">
+                      <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest pl-1">
+                        記録履歴
+                      </p>
+                      <div className="space-y-1">
+                        {weights.slice(1, 4).map((w, i) => (
+                          <div
+                            key={i}
+                            className="flex justify-between items-center text-[10px] px-2 py-1 rounded-lg bg-white/5 border border-white/5"
+                          >
+                            <span className="text-muted-foreground tabular-nums">
+                              {format(w.date.toDate(), "MM/dd")}
+                            </span>
+                            <span className="font-bold tabular-nums">
+                              {w.value}
+                              <span className="text-[8px] font-normal opacity-40 ml-0.5">
+                                {w.unit}
+                              </span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
             )}
 
             {(todaySummary.total > 0 || todaySummary.journals > 0) && (
@@ -234,12 +342,19 @@ function PetCard({
                     }}
                     className={cn(
                       "backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-black border border-white/20 flex items-center gap-1.5 shadow-lg shadow-black/20 transition-all active:scale-95 group/activity",
-                      todaySummary.remaining > 0
-                        ? "bg-primary/80 animate-pulse hover:bg-primary"
-                        : "bg-emerald-500/80 hover:bg-emerald-600",
+                      todaySummary.overdue > 0
+                        ? "bg-red-500/80 animate-pulse hover:bg-red-600"
+                        : todaySummary.remaining > 0
+                          ? "bg-primary/80 animate-pulse hover:bg-primary"
+                          : "bg-emerald-500/80 hover:bg-emerald-600",
                     )}
                   >
-                    {todaySummary.remaining > 0 ? (
+                    {todaySummary.overdue > 0 ? (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 text-white/90 group-hover/activity:rotate-12 transition-transform" />
+                        期限切れ {todaySummary.overdue}
+                      </>
+                    ) : todaySummary.remaining > 0 ? (
                       <>
                         <Clock className="w-3.5 h-3.5 text-white/90 group-hover/activity:rotate-12 transition-transform" />
                         残 {todaySummary.remaining}
@@ -264,10 +379,24 @@ function PetCard({
                   </div>
 
                   <div className="space-y-2.5">
+                    {todaySummary.overdue > 0 && (
+                      <div className="flex items-center justify-between bg-red-500/10 p-2 rounded-xl border border-red-500/20">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                          <span className="text-xs font-bold text-red-600">
+                            期限切れ
+                          </span>
+                        </div>
+                        <span className="text-xs font-black text-red-600">
+                          {todaySummary.overdue}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
                       <div className="flex items-center gap-2">
                         <ListTodo className="w-3.5 h-3.5 text-primary" />
-                        <span className="text-xs font-bold">予定・タスク</span>
+                        <span className="text-xs font-bold">今日の予定</span>
                       </div>
                       <span className="text-xs font-black">
                         {todaySummary.completed}
