@@ -145,6 +145,12 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
         avatarUrl = deleteField();
       } else if (pendingAvatarFile) {
         avatarUrl = await uploadPetAvatar(pendingAvatarFile, pet.id);
+      } else if (
+        avatarPreview &&
+        (avatarPreview.startsWith("http") || avatarPreview.startsWith("/"))
+      ) {
+        // サンプル画像が新しく選択された場合
+        avatarUrl = avatarPreview;
       }
 
       await updatePet(pet.id, {
@@ -170,14 +176,7 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
       setRemoveAvatar(false);
 
       toast.success("更新しました");
-      // Don't close immediately to allow further edits? Or close? Use close for standard save.
-      // But maybe they want to edit multiple tabs.
-      // Let's create a "Save" button for the General tab specifically?
-      // Or a global save?
-      // The page had a "Save" button at the bottom of General tab.
-      // The custom tasks save individually.
-      // Members save individually.
-      // So this save is mainly for General + Details.
+      onClose();
     } catch (error) {
       handleError(error, {
         context: "PetEdit.update",

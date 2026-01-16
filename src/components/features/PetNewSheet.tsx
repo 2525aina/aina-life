@@ -69,7 +69,17 @@ export function PetNewSheet({ open, onClose }: PetNewSheetProps) {
     }
     setIsSubmitting(true);
     try {
-      // 1. まずペットを作成（画像なしで）
+      // 1. まずペットを作成（画像なし、またはサンプル画像ありで）
+      let initialAvatarUrl: string | undefined = undefined;
+      // サンプル画像が選択されている場合（avatarFileがなく、avatarPreviewがある）
+      if (
+        !avatarFile &&
+        avatarPreview &&
+        (avatarPreview.startsWith("http") || avatarPreview.startsWith("/"))
+      ) {
+        initialAvatarUrl = avatarPreview;
+      }
+
       const petData = {
         name: formData.name.trim(),
         species: formData.species || undefined,
@@ -83,13 +93,13 @@ export function PetNewSheet({ open, onClose }: PetNewSheetProps) {
           ? format(formData.adoptionDate, "yyyy-MM-dd")
           : undefined,
         microchipId: formData.microchipId.trim() || undefined,
-        avatarUrl: undefined as string | undefined, // まずはundefined
+        avatarUrl: initialAvatarUrl,
       };
 
       const petId = await addPet(petData);
-      let finalAvatarUrl: string | undefined = undefined;
+      let finalAvatarUrl: string | undefined = initialAvatarUrl;
 
-      // 2. 画像があればアップロードして更新
+      // 2. アップロード用画像があればアップロードして更新
       if (avatarFile) {
         try {
           finalAvatarUrl = await uploadPetAvatar(avatarFile, petId);
