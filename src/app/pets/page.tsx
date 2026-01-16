@@ -130,6 +130,14 @@ function PetCard({
   const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [isWeightOpen, setIsWeightOpen] = useState(false);
 
+  const getSpeciesLabel = (species: string | undefined) => {
+    if (!species) return "未設定";
+    if (species === "Canis lupus familiaris") return "犬";
+    if (species === "Felis catus") return "猫";
+    if (species === "other") return "その他";
+    return species;
+  };
+
   return (
     <div onClick={() => onClick(pet)} className="cursor-pointer">
       <motion.div
@@ -456,13 +464,7 @@ function PetCard({
                   }}
                   className="px-2 py-0.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/10 text-[9px] font-bold uppercase tracking-wider text-white/90 hover:bg-white/20 transition-all active:scale-95"
                 >
-                  {pet.breed ||
-                    (pet.species === "Canis lupus familiaris"
-                      ? "犬"
-                      : pet.species === "Felis catus"
-                        ? "猫"
-                        : pet.species) ||
-                    "未設定"}
+                  {pet.breed || getSpeciesLabel(pet.species)}
                 </button>
               </PopoverTrigger>
               <PopoverContent
@@ -478,7 +480,9 @@ function PetCard({
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between border-b border-white/5 pb-1">
                     <span className="text-muted-foreground">種類</span>
-                    <span className="font-bold">{pet.species || "未設定"}</span>
+                    <span className="font-bold">
+                      {getSpeciesLabel(pet.species)}
+                    </span>
                   </div>
                   <div className="flex justify-between pt-1">
                     <span className="text-muted-foreground">品種</span>
