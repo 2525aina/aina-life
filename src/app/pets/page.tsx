@@ -61,11 +61,15 @@ function PetCard({
   pet,
   index,
   onClick,
+  columns,
 }: {
   pet: Pet;
   index: number;
   onClick: (pet: Pet) => void;
+  columns: number;
 }) {
+  const isCompact = columns >= 3;
+  const isSuperCompact = columns >= 5;
   const { weights } = useWeights(pet.id);
   const { members } = useMembers(pet.id);
   const [todaySummary, setTodaySummary] = useState({
@@ -169,7 +173,12 @@ function PetCard({
         </div>
 
         {/* Status Badges (Top) */}
-        <div className="absolute top-4 inset-x-4 flex justify-between items-start z-10">
+        <div
+          className={cn(
+            "absolute inset-x-4 flex justify-between items-start z-10",
+            isCompact ? "top-3" : "top-4",
+          )}
+        >
           <div className="flex flex-col gap-2 pointer-events-auto">
             {hasMedicalInfo && (
               <Popover open={isMedicalOpen} onOpenChange={setIsMedicalOpen}>
@@ -181,9 +190,14 @@ function PetCard({
                       e.stopPropagation();
                       setIsMedicalOpen(!isMedicalOpen);
                     }}
-                    className="bg-red-500/80 backdrop-blur-md text-white p-2 rounded-full shadow-lg scale-90 hover:scale-110 transition-all border border-white/20 active:scale-95"
+                    className={cn(
+                      "bg-red-500/80 backdrop-blur-md text-white rounded-full shadow-lg border border-white/20 active:scale-95 transition-all hover:scale-110",
+                      isCompact ? "p-1.5" : "p-2",
+                    )}
                   >
-                    <AlertCircle className="w-4 h-4" />
+                    <AlertCircle
+                      className={cn(isCompact ? "w-3 h-3" : "w-4 h-4")}
+                    />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -238,7 +252,7 @@ function PetCard({
             )}
           </div>
 
-          <div className="flex flex-col items-end gap-2 pointer-events-auto">
+          <div className="flex flex-col items-end gap-1.5 pointer-events-auto">
             {latestWeight && (
               <Popover open={isWeightOpen} onOpenChange={setIsWeightOpen}>
                 <PopoverTrigger asChild>
@@ -249,13 +263,25 @@ function PetCard({
                       e.stopPropagation();
                       setIsWeightOpen(!isWeightOpen);
                     }}
-                    className="bg-black/40 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-black border border-white/20 flex items-center gap-1.5 shadow-lg transition-all hover:bg-black/60 active:scale-95 group/weight"
+                    className={cn(
+                      "bg-black/40 backdrop-blur-md text-white rounded-full font-black border border-white/20 flex items-center gap-1 shadow-lg transition-all hover:bg-black/60 active:scale-95 group/weight",
+                      isCompact
+                        ? "px-2 py-1 text-[9px]"
+                        : "px-3 py-1.5 text-[10px]",
+                    )}
                   >
-                    <Scale className="w-3.5 h-3.5 text-orange-300 group-hover/weight:rotate-12 transition-transform" />
+                    <Scale
+                      className={cn(
+                        "text-orange-300 group-hover/weight:rotate-12 transition-transform",
+                        isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                      )}
+                    />
                     {latestWeight.value}
-                    <span className="text-[8px] opacity-70">
-                      {latestWeight.unit}
-                    </span>
+                    {!isSuperCompact && (
+                      <span className="text-[8px] opacity-70">
+                        {latestWeight.unit}
+                      </span>
+                    )}
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -349,7 +375,10 @@ function PetCard({
                       setIsActivityOpen(!isActivityOpen);
                     }}
                     className={cn(
-                      "backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-black border border-white/20 flex items-center gap-1.5 shadow-lg shadow-black/20 transition-all active:scale-95 group/activity",
+                      "backdrop-blur-md text-white rounded-full font-black border border-white/20 flex items-center gap-1 shadow-lg shadow-black/20 transition-all active:scale-95 group/activity",
+                      isCompact
+                        ? "px-2 py-1 text-[9px]"
+                        : "px-3 py-1.5 text-[10px]",
                       todaySummary.overdue > 0
                         ? "bg-red-500/80 animate-pulse hover:bg-red-600"
                         : todaySummary.remaining > 0
@@ -359,18 +388,33 @@ function PetCard({
                   >
                     {todaySummary.overdue > 0 ? (
                       <>
-                        <AlertCircle className="w-3.5 h-3.5 text-white/90 group-hover/activity:rotate-12 transition-transform" />
-                        期限切れ {todaySummary.overdue}
+                        <AlertCircle
+                          className={cn(
+                            "text-white/90 group-hover/activity:rotate-12 transition-transform",
+                            isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                          )}
+                        />
+                        {!isSuperCompact && "期限切れ"} {todaySummary.overdue}
                       </>
                     ) : todaySummary.remaining > 0 ? (
                       <>
-                        <Clock className="w-3.5 h-3.5 text-white/90 group-hover/activity:rotate-12 transition-transform" />
-                        残 {todaySummary.remaining}
+                        <Clock
+                          className={cn(
+                            "text-white/90 group-hover/activity:rotate-12 transition-transform",
+                            isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                          )}
+                        />
+                        {!isSuperCompact && "残"} {todaySummary.remaining}
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-white/90 group-hover/activity:scale-110 transition-transform" />
-                        完了
+                        <CheckCircle2
+                          className={cn(
+                            "text-white/90 group-hover/activity:scale-110 transition-transform",
+                            isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                          )}
+                        />
+                        {!isSuperCompact && "完了"}
                       </>
                     )}
                   </button>
@@ -451,8 +495,18 @@ function PetCard({
         <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
 
         {/* Content */}
-        <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-          <div className="flex items-center gap-2 mb-2 relative z-30 pointer-events-auto">
+        <div
+          className={cn(
+            "absolute inset-x-0 bottom-0 text-white transition-all duration-300",
+            isCompact ? "p-3 pb-4" : "p-5",
+          )}
+        >
+          <div
+            className={cn(
+              "flex items-center gap-2 relative z-30 pointer-events-auto",
+              isCompact ? "mb-1" : "mb-2",
+            )}
+          >
             <Popover open={isBreedOpen} onOpenChange={setIsBreedOpen}>
               <PopoverTrigger asChild>
                 <button
@@ -462,7 +516,12 @@ function PetCard({
                     e.stopPropagation();
                     setIsBreedOpen(!isBreedOpen);
                   }}
-                  className="px-2 py-0.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/10 text-[9px] font-bold uppercase tracking-wider text-white/90 hover:bg-white/20 transition-all active:scale-95"
+                  className={cn(
+                    "rounded-lg bg-white/10 backdrop-blur-md border border-white/10 font-bold uppercase tracking-wider text-white/90 hover:bg-white/20 transition-all active:scale-95 truncate",
+                    isCompact
+                      ? "px-1.5 py-0.5 text-[8px] max-w-[80px]"
+                      : "px-2 py-0.5 text-[9px]",
+                  )}
                 >
                   {pet.breed || getSpeciesLabel(pet.species)}
                 </button>
@@ -495,7 +554,8 @@ function PetCard({
             {pet.gender && (
               <span
                 className={cn(
-                  "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border border-white/20",
+                  "rounded-full flex items-center justify-center font-black border border-white/20",
+                  isCompact ? "w-4 h-4 text-[8px]" : "w-5 h-5 text-[10px]",
                   pet.gender === "male"
                     ? "bg-blue-500/80 text-white"
                     : "bg-pink-500/80 text-white",
@@ -506,11 +566,25 @@ function PetCard({
             )}
           </div>
 
-          <h3 className="font-black text-2xl leading-tight mb-2 truncate group-hover:translate-x-1 transition-transform duration-300">
+          <h3
+            className={cn(
+              "font-black leading-tight truncate group-hover:translate-x-1 transition-transform duration-300",
+              isSuperCompact
+                ? "text-base mb-1"
+                : isCompact
+                  ? "text-lg mb-1"
+                  : "text-2xl mb-2",
+            )}
+          >
             {pet.name}
           </h3>
 
-          <div className="flex items-center gap-3 text-[10px] font-bold text-white/70 relative z-30 pointer-events-auto">
+          <div
+            className={cn(
+              "flex items-center text-white/70 relative z-30 pointer-events-auto",
+              isCompact ? "gap-2 text-[9px]" : "gap-3 text-[10px] font-bold",
+            )}
+          >
             <button
               type="button"
               onClick={(e) => {
@@ -518,18 +592,34 @@ function PetCard({
                 e.stopPropagation();
                 if (pet.birthday) setShowBirthday(!showBirthday);
               }}
-              className="group/age flex items-center gap-1.5 bg-white/5 py-1 px-2.5 rounded-full backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/30 active:scale-95 transition-all cursor-pointer"
+              className={cn(
+                "group/age flex items-center gap-1.5 bg-white/5 rounded-full backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/30 active:scale-95 transition-all cursor-pointer",
+                isCompact ? "py-0.5 px-2" : "py-1 px-2.5",
+              )}
             >
               {showBirthday ? (
                 <>
-                  <Cake className="w-3.5 h-3.5 text-pink-400 group-hover/age:scale-110 transition-transform" />
+                  <Cake
+                    className={cn(
+                      "text-pink-400 group-hover/age:scale-110 transition-transform",
+                      isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                    )}
+                  />
                   <span className="text-white drop-shadow-sm">
-                    {format(new Date(pet.birthday!), "yyyy/MM/dd")}
+                    {format(
+                      new Date(pet.birthday!),
+                      isSuperCompact ? "MM/dd" : "yyyy/MM/dd",
+                    )}
                   </span>
                 </>
               ) : (
                 <>
-                  <Heart className="w-3.5 h-3.5 text-pink-400 group-hover/age:scale-110 transition-transform" />
+                  <Heart
+                    className={cn(
+                      "text-pink-400 group-hover/age:scale-110 transition-transform",
+                      isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                    )}
+                  />
                   <span className="text-white/90">
                     {pet.birthday ? getAgeString(pet.birthday) : "年齢不明"}
                   </span>
@@ -546,9 +636,17 @@ function PetCard({
                       e.stopPropagation();
                       setIsMembersOpen(!isMembersOpen);
                     }}
-                    className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full backdrop-blur-sm border border-white/10 hover:bg-white/10 active:scale-95 transition-all text-white/70"
+                    className={cn(
+                      "flex items-center gap-1.5 bg-white/5 rounded-full backdrop-blur-sm border border-white/10 hover:bg-white/10 active:scale-95 transition-all text-white/70",
+                      isCompact ? "px-2 py-0.5" : "px-2.5 py-1",
+                    )}
                   >
-                    <Users className="w-3.5 h-3.5 text-blue-300" />
+                    <Users
+                      className={cn(
+                        "text-blue-300",
+                        isCompact ? "w-3 h-3" : "w-3.5 h-3.5",
+                      )}
+                    />
                     {activeMembersCount}
                   </button>
                 </PopoverTrigger>
@@ -786,6 +884,7 @@ function PetsPageContent() {
                   pet={pet}
                   index={index}
                   onClick={handlePetClick}
+                  columns={displayCols}
                 />
               ))}
             </div>
