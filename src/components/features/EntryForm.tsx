@@ -310,7 +310,7 @@ export function EntryForm({
           {/* Tags */}
           <div className="glass rounded-[2rem] p-6 shadow-sm">
             <div className="flex items-center gap-2 text-muted-foreground mb-4">
-              <span className="text-xs font-bold tracking-wider">CATEGORY</span>
+              <span className="text-xs font-bold tracking-wider">カテゴリ</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {uniqueTags.map((tag) => {
@@ -340,7 +340,7 @@ export function EntryForm({
             <div className="glass rounded-[2rem] p-6 shadow-sm">
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
                 <span className="text-xs font-bold tracking-wider">
-                  WALKING FRIENDS
+                  お散歩友達
                 </span>
               </div>
               <div className="flex overflow-x-auto pb-2 gap-3 no-scrollbar">
@@ -423,7 +423,7 @@ export function EntryForm({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-muted-foreground tracking-wider">
-                  PHOTOS
+                  写真
                 </span>
                 <span className="text-[10px] text-muted-foreground/50">
                   {imageUrls.length}/5
