@@ -18,7 +18,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateAge } from "@/lib/utils/date-utils";
@@ -446,14 +452,14 @@ export function PetDetailSheet({
                     </div>
                   </div>
                   <div className="pt-12 pb-6 px-6 text-center space-y-4">
-                    <div>
-                      <h3 className="font-exbold text-xl">
+                    <DialogHeader className="space-y-1">
+                      <DialogTitle className="font-exbold text-xl">
                         {selectedMember?.userProfile?.nickname || "ユーザー"}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
+                      </DialogTitle>
+                      <DialogDescription className="text-sm text-muted-foreground">
                         {selectedMember?.inviteEmail}
-                      </p>
-                    </div>
+                      </DialogDescription>
+                    </DialogHeader>
 
                     <div className="bg-[var(--glass-bg)] p-4 rounded-2xl border border-[var(--glass-border)] text-left space-y-3">
                       <div className="flex items-center justify-between">

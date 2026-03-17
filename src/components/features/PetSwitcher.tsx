@@ -15,7 +15,7 @@ import { ChevronDown, Plus, Settings } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PetNewSheet } from "@/components/features/PetNewSheet";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { getPetDetailUrl } from "@/lib/utils/pet-urls";
 import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
@@ -25,33 +25,8 @@ export function PetSwitcher() {
   const { selectedPet, setSelectedPet } = usePetContext();
   const [isNewPetSheetOpen, setIsNewPetSheetOpen] = useState(false);
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (pets.length > 0) {
-      if (selectedPet) {
-        // 選択中のペットが最新のリストに存在するか確認し、データが更新されていればStateも更新
-        const updatedPet = pets.find((p) => p.id === selectedPet.id);
-        if (updatedPet) {
-          // JSON.stringifyで比較して変更があれば更新 (レンダリングループ防止)
-          if (JSON.stringify(updatedPet) !== JSON.stringify(selectedPet)) {
-            setSelectedPet(updatedPet);
-          }
-        } else {
-          // 選択中のペットが削除された場合は最初のペットを選択
-          setSelectedPet(pets[0]);
-        }
-      } else {
-        // 未選択の場合は最初のペットを選択
-        setSelectedPet(pets[0]);
-      }
-    } else {
-      // ペットが1匹もいない場合は選択解除
-      if (selectedPet) {
-        setSelectedPet(null);
-      }
-    }
-  }, [pets, loading, selectedPet, setSelectedPet]);
+  // We no longer manage selectedPet logic here. It's handled by PetContext.
+  // This avoids double-triggers and resets during navigation.
 
   if (loading)
     return <div className="h-10 w-32 bg-muted animate-pulse rounded-lg" />;

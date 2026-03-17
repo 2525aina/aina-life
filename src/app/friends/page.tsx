@@ -10,17 +10,9 @@ import {
   Search,
   Heart,
   Scale,
-  PawPrint,
-  Users,
   LayoutGrid,
-  ChevronRight,
-  Clock,
-  Cake,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";

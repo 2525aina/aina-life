@@ -29,10 +29,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserPlus, Trash2, X, Mail } from "lucide-react";
+import { UserPlus, Trash2, X, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { MEMBER_ROLES, MemberRole, Member, Pet } from "@/lib/types";
 import { getRoleLabel, getRoleIcon } from "@/lib/memberUtils";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PetMembersTabProps {
   pet: Pet;
@@ -55,9 +56,11 @@ export function PetMembersTab({
   updateMemberRole,
   removeMember,
 }: PetMembersTabProps) {
+  const { user } = useAuth();
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<MemberRole>("editor");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const sortedMembers = [...members].sort((a, b) => {
     if (a.status === "active" && b.status !== "active") return -1;
@@ -70,6 +73,20 @@ export function PetMembersTab({
   const activeOwnersCount = members.filter(
     (m) => m.role === "owner" && m.status === "active",
   ).length;
+
+  const handleRemoveMember = async (memberId: string) => {
+    setIsDeleting(memberId);
+    try {
+      await removeMember(memberId);
+      toast.success("メンバーを削除しました");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "削除に失敗しました",
+      );
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,37 +212,44 @@ export function PetMembersTab({
                   </SelectContent>
                 </Select>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>メンバー削除</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {member.userProfile?.nickname || "このメンバー"}
-                        を削除しますか？
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="rounded-full">
-                        キャンセル
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => removeMember(member.id)}
-                        className="bg-destructive rounded-full"
+                {member.userId !== user?.uid && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={member.role === "owner" || !!isDeleting}
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
                       >
-                        削除
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        {isDeleting === member.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>メンバー削除</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {member.userProfile?.nickname || "このメンバー"}
+                          を削除しますか？
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-full">
+                          キャンセル
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleRemoveMember(member.id)}
+                          className="bg-destructive rounded-full"
+                        >
+                          削除
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             )}
 
@@ -253,7 +277,7 @@ export function PetMembersTab({
                       キャンセル
                     </AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => removeMember(member.id)}
+                      onClick={() => handleRemoveMember(member.id)}
                       className="bg-destructive rounded-full"
                     >
                       取り消し

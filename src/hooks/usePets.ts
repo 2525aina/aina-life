@@ -23,12 +23,16 @@ export function usePets() {
   const { user } = useAuth();
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasFetchedIds, setHasFetchedIds] = useState(false);
+  const [allPetIds, setAllPetIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) {
       const timer = setTimeout(() => {
         setPets([]);
         setLoading(false);
+        setHasFetchedIds(true);
+        setAllPetIds([]);
       }, 0);
       return () => clearTimeout(timer);
     }
@@ -50,6 +54,8 @@ export function usePets() {
         .map((doc) => doc.ref.parent.parent?.id)
         .filter(Boolean) as string[];
       const uniquePetIds = Array.from(new Set(petIds));
+      setAllPetIds(uniquePetIds);
+      setHasFetchedIds(true);
 
       if (uniquePetIds.length === 0) {
         setPets([]);
@@ -183,5 +189,13 @@ export function usePets() {
     await deleteDoc(petRef);
   }, []);
 
-  return { pets, loading, addPet, updatePet, deletePet };
+  return {
+    pets,
+    loading,
+    hasFetchedIds,
+    allPetIds,
+    addPet,
+    updatePet,
+    deletePet,
+  };
 }

@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -44,6 +43,7 @@ import {
   Sparkles,
   Cake,
   Loader2,
+  Monitor,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -527,14 +527,22 @@ function ProfileContent() {
               </h2>
               <div className="space-y-3">
                 <ListItem
-                  icon={theme === "dark" ? Moon : Sun}
-                  label="ダークモード"
-                  subLabel="画面の明度を調整します"
+                  icon={
+                    theme === "dark" ? Moon : theme === "light" ? Sun : Monitor
+                  }
+                  label="テーマ設定"
+                  subLabel="アプリの表示モードを選択します"
                   action={
-                    <Switch
-                      checked={theme === "dark"}
-                      onCheckedChange={(c) => setTheme(c ? "dark" : "light")}
-                    />
+                    <Select value={theme} onValueChange={(v) => setTheme(v)}>
+                      <SelectTrigger className="w-[100px] h-9 text-xs bg-transparent border-[var(--glass-border)] rounded-lg">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">ライト</SelectItem>
+                        <SelectItem value="dark">ダーク</SelectItem>
+                        <SelectItem value="system">システム</SelectItem>
+                      </SelectContent>
+                    </Select>
                   }
                 />
                 <ListItem

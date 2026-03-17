@@ -387,38 +387,42 @@ export function PetEditSheet({ pet, open, onClose }: PetEditSheetProps) {
                       </AlertDialogContent>
                     </AlertDialog>
 
-                    {canOwnerLeave && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full rounded-full font-bold gap-2 text-destructive border-destructive/50 hover:bg-destructive/10"
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          disabled={!canOwnerLeave}
+                          className="w-full rounded-full font-bold gap-2 text-destructive border-destructive/50 hover:bg-destructive/10"
+                        >
+                          <LogOut className="w-4 h-4" /> 脱退する
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            本当にこのペットのチームから脱退しますか？
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            このペットの共有メンバーから抜けます。
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="rounded-full">
+                            キャンセル
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => leaveTeam().then(onClose)}
+                            className="bg-destructive rounded-full"
                           >
-                            <LogOut className="w-4 h-4" /> 脱退する
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="glass border-[var(--glass-border)] rounded-[2rem]">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              本当にこのペットのチームから脱退しますか？
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              このペットの共有メンバーから抜けます。
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="rounded-full">
-                              キャンセル
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => leaveTeam().then(onClose)}
-                              className="bg-destructive rounded-full"
-                            >
-                              脱退実行
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                            脱退実行
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                    {!canOwnerLeave && (
+                      <p className="text-[10px] text-muted-foreground text-center px-4">
+                        唯一のオーナーであるため脱退できません。先に他のメンバーをオーナーに設定してください。
+                      </p>
                     )}
                   </div>
                 ) : (

@@ -4,8 +4,6 @@ import { AppLayout } from "@/components/features/AppLayout";
 import { usePets } from "@/hooks/usePets";
 import { Button } from "@/components/ui/button";
 import {
-  Plus,
-  ChevronRight,
   PawPrint,
   Users,
   Scale,
@@ -13,12 +11,10 @@ import {
   CheckCircle2,
   Heart,
   LayoutGrid,
-  LayoutList,
   Calendar,
   MapPin,
   Clock,
   Cake,
-  Shield,
   ListTodo,
   BookOpen,
   ArrowUpRight,
@@ -41,8 +37,6 @@ import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
 import { useWeights } from "@/hooks/useWeights";
 import { useMembers } from "@/hooks/useMembers";
-import { useEntries } from "@/hooks/useEntries";
-import { useCustomTasks } from "@/hooks/useCustomTasks";
 import { isSameDay, startOfDay, endOfDay, format } from "date-fns";
 import {
   collection,
@@ -715,7 +709,9 @@ function PetsPageContent() {
   // Load view mode from local storage
   useEffect(() => {
     const saved = localStorage.getItem("pets_grid_cols");
-    if (saved) setGridCols(parseInt(saved, 10));
+    if (saved) {
+      setTimeout(() => setGridCols(parseInt(saved, 10)), 0);
+    }
   }, []);
 
   const updateCols = (cols: number) => {
@@ -752,11 +748,13 @@ function PetsPageContent() {
     if (petId && pets.length > 0 && petId !== handledPetId) {
       const pet = pets.find((p) => p.id === petId);
       if (pet) {
-        setHandledPetId(petId);
-        requestAnimationFrame(() => {
-          setSelectedPet(pet);
-          setIsDetailOpen(true);
-        });
+        setTimeout(() => {
+          setHandledPetId(petId);
+          requestAnimationFrame(() => {
+            setSelectedPet(pet);
+            setIsDetailOpen(true);
+          });
+        }, 0);
       }
     }
   }, [searchParams, pets, loading, handledPetId]);

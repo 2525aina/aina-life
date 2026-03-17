@@ -41,8 +41,10 @@ export function useFriends(petId: string | null) {
     const cacheKey = cacheKeys.friends(petId);
     const cached = getCache<Friend[]>(cacheKey);
     if (cached) {
-      setFriends(cached);
-      setLoading(false);
+      setTimeout(() => {
+        setFriends(cached);
+        setLoading(false);
+      }, 0);
     }
 
     const friendsQuery = query(collection(db, "pets", petId, "friends"));

@@ -21,10 +21,9 @@ const PetContext = createContext<PetContextType | undefined>(undefined);
 
 export function PetProvider({ children }: { children: ReactNode }) {
   const [selectedPet, setSelectedPetState] = useState<Pet | null>(null);
-  const { pets, loading: petsLoading } = usePets();
+  const { pets, loading: petsLoading, hasFetchedIds, allPetIds } = usePets();
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Wrapper for setSelectedPet to handle persistence
   const setSelectedPet = useCallback((pet: Pet | null) => {
     setSelectedPetState(pet);
     if (pet) {
@@ -35,50 +34,76 @@ export function PetProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (petsLoading) return;
+    // 1. まずメンバー情報（IDのリスト）が引けるまで待つ
+    if (!hasFetchedIds) return;
 
-    const timer = setTimeout(() => {
-      const storedPetId = localStorage.getItem("selectedPetId");
+    const storedPetId = localStorage.getItem("selectedPetId");
 
-      if (selectedPet) {
-        // Check if selected pet still exists
-        const stillExists = pets.find((p) => p.id === selectedPet.id);
-        if (!stillExists) {
-          // If current pet was deleted (or permission lost), fallback
-          const fallback = pets.length > 0 ? pets[0] : null;
-          setSelectedPet(fallback);
+    // 2. まだ何も選択されていない初期状態の場合
+    if (!isInitialized && !selectedPet) {
+      if (storedPetId) {
+        // LocalStorageに保存されているIDがある場合、それが pets リストに現れるのを待つ
+        const found = pets.find((p) => p.id === storedPetId);
+        if (found) {
+          setTimeout(() => {
+            setSelectedPet(found);
+            setIsInitialized(true);
+          }, 0);
         } else {
-          // Update pet data in case name/avatar changed
-          if (JSON.stringify(stillExists) !== JSON.stringify(selectedPet)) {
-            setSelectedPetState(stillExists); // Don't trigger persistence write unnecessarily loop, but here it's fine
+          // もし ID リスト(allPetIds)の中に保存されたIDがもう存在しない場合は、Fallbackする
+          if (allPetIds.length > 0 && !allPetIds.includes(storedPetId)) {
+            setTimeout(() => {
+              setSelectedPet(pets[0] || null);
+              if (pets.length > 0) setIsInitialized(true);
+            }, 0);
           }
         }
       } else {
-        // No pet selected currently
-        if (storedPetId) {
-          const storedPet = pets.find((p) => p.id === storedPetId);
-          if (storedPet) {
-            setSelectedPet(storedPet);
-          } else if (pets.length > 0) {
-            // Stored ID not found, default to first
-            setSelectedPet(pets[0]);
+        // 保存されたIDがない場合は初回のペットを選択
+        if (allPetIds.length > 0) {
+          if (pets.length > 0) {
+            setTimeout(() => {
+              setSelectedPet(pets[0]);
+              setIsInitialized(true);
+            }, 0);
           }
-        } else if (pets.length > 0) {
-          // No stored ID, default to first
-          setSelectedPet(pets[0]);
+        } else {
+          // ペットが一人もいない場合
+          setTimeout(() => setIsInitialized(true), 0);
         }
       }
-      setIsInitialized(true);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [pets, petsLoading, selectedPet, setSelectedPet]);
+      return;
+    }
+
+    // 3. すでに初期化済みの場合は、データの同期のみ行う
+    if (isInitialized && selectedPet) {
+      const updated = pets.find((p) => p.id === selectedPet.id);
+      if (updated && JSON.stringify(updated) !== JSON.stringify(selectedPet)) {
+        setTimeout(() => setSelectedPetState(updated), 0);
+      } else if (!updated && allPetIds.length > 0) {
+        // 万が一選択中のペットがリストから消えた場合（削除など）
+        const fallback = pets.find((p) => allPetIds.includes(p.id)) || pets[0];
+        if (fallback) {
+          setTimeout(() => setSelectedPet(fallback), 0);
+        }
+      }
+    }
+  }, [
+    pets,
+    petsLoading,
+    hasFetchedIds,
+    allPetIds,
+    selectedPet,
+    setSelectedPet,
+    isInitialized,
+  ]);
 
   return (
     <PetContext.Provider
       value={{
         selectedPet,
         setSelectedPet,
-        isPetLoading: petsLoading || !isInitialized,
+        isPetLoading: !isInitialized,
       }}
     >
       {children}
