@@ -227,32 +227,31 @@ export function useEntries(petId: string | null) {
   const updateFriendStats = useCallback(
     async (friendIds: string[], date: Timestamp, delta: number) => {
       if (!petId || friendIds.length === 0) return;
-      
+
       const updatePromises = friendIds.map(async (friendId) => {
         const friendRef = doc(db, "pets", petId, "friends", friendId);
         const updateData: Record<string, unknown> = {
           encounterCount: increment(delta),
           updatedAt: serverTimestamp(),
         };
-        
+
         // Only update lastMetAt if adding an encounter
         if (delta > 0) {
           // Check if this is truly the latest encounter (simplified: assume the one being added is recent)
           updateData.lastMetAt = date;
         }
-        
+
         try {
           await updateDoc(friendRef, updateData);
         } catch (e) {
           console.error("Failed to update friend stats:", e);
         }
       });
-      
+
       await Promise.all(updatePromises);
     },
-    [petId]
+    [petId],
   );
-
 
   const addEntry = useCallback(
     async (entryData: {
@@ -305,8 +304,16 @@ export function useEntries(petId: string | null) {
 
       // Update Friends' Stats
       const isEncounter = entryData.type === "diary" || entryData.isCompleted;
-      if (isEncounter && entryData.friendIds && entryData.friendIds.length > 0) {
-        await updateFriendStats(entryData.friendIds, Timestamp.fromDate(entryData.date), 1);
+      if (
+        isEncounter &&
+        entryData.friendIds &&
+        entryData.friendIds.length > 0
+      ) {
+        await updateFriendStats(
+          entryData.friendIds,
+          Timestamp.fromDate(entryData.date),
+          1,
+        );
       }
     },
     [petId, user, updateMonthlySummary, updateFriendStats],
@@ -380,23 +387,28 @@ export function useEntries(petId: string | null) {
       // Update Friends' Stats
       const wasEncounter = oldData.type === "diary" || oldData.isCompleted;
       const isEncounter = mergedData.type === "diary" || mergedData.isCompleted;
-      
+
       const oldFriends = oldData.friendIds || [];
       const newFriends = mergedData.friendIds || [];
-      
+
       if (!wasEncounter && isEncounter) {
         await updateFriendStats(newFriends, mergedData.date, 1);
       } else if (wasEncounter && !isEncounter) {
         await updateFriendStats(oldFriends, oldData.date, -1);
       } else if (wasEncounter && isEncounter) {
-        const removed = oldFriends.filter(f => !newFriends.includes(f));
-        const added = newFriends.filter(f => !oldFriends.includes(f));
-        if (removed.length > 0) await updateFriendStats(removed, oldData.date, -1);
-        if (added.length > 0) await updateFriendStats(added, mergedData.date, 1);
-        
-        const common = newFriends.filter(f => oldFriends.includes(f));
-        if (common.length > 0 && oldData.date.toMillis() !== mergedData.date.toMillis()) {
-          await updateFriendStats(common, mergedData.date, 0); 
+        const removed = oldFriends.filter((f) => !newFriends.includes(f));
+        const added = newFriends.filter((f) => !oldFriends.includes(f));
+        if (removed.length > 0)
+          await updateFriendStats(removed, oldData.date, -1);
+        if (added.length > 0)
+          await updateFriendStats(added, mergedData.date, 1);
+
+        const common = newFriends.filter((f) => oldFriends.includes(f));
+        if (
+          common.length > 0 &&
+          oldData.date.toMillis() !== mergedData.date.toMillis()
+        ) {
+          await updateFriendStats(common, mergedData.date, 0);
         }
       }
     },

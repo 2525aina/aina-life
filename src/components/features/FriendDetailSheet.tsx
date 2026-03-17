@@ -93,7 +93,7 @@ export function FriendDetailSheet({
             >
               <X className="w-5 h-5" />
             </Button>
-            <SheetTitle className="text-sm font-bold">お友達の詳細</SheetTitle>
+            <SheetTitle className="text-sm font-bold">友達の詳細</SheetTitle>
             <div className="flex gap-1">
               {canEdit && (
                 <>
@@ -117,9 +117,9 @@ export function FriendDetailSheet({
                     </AlertDialogTrigger>
                     <AlertDialogContent className="glass border-[var(--glass-border)]">
                       <AlertDialogHeader>
-                        <AlertDialogTitle>お友達を削除</AlertDialogTitle>
+                        <AlertDialogTitle>友達を削除</AlertDialogTitle>
                         <AlertDialogDescription>
-                          本当にこのお友達を削除しますか？この操作は取り消せません。
+                          本当にこの友達を削除しますか？この操作は取り消せません。
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -176,7 +176,7 @@ export function FriendDetailSheet({
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl font-black tracking-tight">
+              <h1 className="text-3xl font-black tracking-tight break-all">
                 {friend.name}
               </h1>
             </div>
@@ -246,7 +246,7 @@ export function FriendDetailSheet({
                   <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
                     出会った場所
                   </p>
-                  <p className="font-bold">{friend.location}</p>
+                  <p className="font-bold break-all">{friend.location}</p>
                 </div>
               </div>
             )}
@@ -265,9 +265,9 @@ export function FriendDetailSheet({
                 {friend.ownerName && (
                   <div className="flex items-start gap-3">
                     <span className="font-bold min-w-[4rem] text-muted-foreground">
-                      お名前
+                      飼い主名
                     </span>
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground break-all">
                       {friend.ownerName}
                     </span>
                   </div>
@@ -275,9 +275,9 @@ export function FriendDetailSheet({
                 {friend.ownerDetails && (
                   <div className="flex items-start gap-3">
                     <span className="font-bold min-w-[4rem] text-muted-foreground">
-                      特徴
+                      飼い主特徴
                     </span>
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground leading-[1.4] break-all">
                       {friend.ownerDetails}
                     </span>
                   </div>
@@ -285,7 +285,7 @@ export function FriendDetailSheet({
                 {friend.contact && (
                   <div className="flex items-start gap-3">
                     <Phone className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground break-all">
                       {friend.contact}
                     </span>
                   </div>
@@ -293,7 +293,7 @@ export function FriendDetailSheet({
                 {friend.address && (
                   <div className="flex items-start gap-3">
                     <Home className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground leading-[1.4] break-all">
                       {friend.address}
                     </span>
                   </div>
@@ -306,9 +306,9 @@ export function FriendDetailSheet({
           {friend.features && (
             <div className="space-y-3">
               <h3 className="font-bold text-sm text-muted-foreground px-2 uppercase tracking-widest">
-                メモ・特徴
+                特徴/メモ
               </h3>
-              <div className="glass rounded-2xl p-5 text-sm leading-relaxed border-[var(--glass-border)] shadow-lg whitespace-pre-wrap font-medium">
+              <div className="glass rounded-2xl p-5 text-sm border-[var(--glass-border)] shadow-lg whitespace-pre-wrap font-medium leading-[1.4] break-all">
                 {friend.features}
               </div>
             </div>

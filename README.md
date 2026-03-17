@@ -156,7 +156,7 @@ aina-life/
 ### コードの品質確認
 
 変更を加えた後は、以下のコマンドを順に実行してください：
-
+※ warningやerrorは修正必須
 ```bash
 # フォーマット
 npx prettier --write "src/**/*.{ts,tsx,css}"

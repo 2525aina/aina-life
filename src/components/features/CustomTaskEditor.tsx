@@ -308,6 +308,7 @@ export function CustomTaskEditor({ petId, canEdit }: CustomTaskEditorProps) {
                       onChange={(e) => setTaskName(e.target.value)}
                       placeholder="例：おやつ"
                       className="mt-1"
+                      maxLength={10}
                     />
                   </div>
                   <div>
@@ -384,6 +385,7 @@ export function CustomTaskEditor({ petId, canEdit }: CustomTaskEditorProps) {
                               value={taskName}
                               onChange={(e) => setTaskName(e.target.value)}
                               className="mt-1"
+                              maxLength={10}
                             />
                           </div>
                           <div>

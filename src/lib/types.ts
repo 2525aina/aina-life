@@ -233,7 +233,6 @@ export interface CustomTask extends AuditDocument {
 export interface Friend extends AuditDocument {
   id: string;
   name: string;
-  nickname?: string;
   species: string; // e.g. "Canis lupus familiaris"
   breed?: string; // e.g. "柴犬"
   gender?: "male" | "female" | "unknown";
@@ -254,7 +253,11 @@ export interface Friend extends AuditDocument {
   encounterCount?: number;
 }
 
-export type FriendSortOption = "metAt_desc" | "metAt_asc" | "name_asc" | "lastMetAt_desc";
+export type FriendSortOption =
+  | "metAt_desc"
+  | "metAt_asc"
+  | "name_asc"
+  | "lastMetAt_desc";
 
 // ============================================
 // 遭遇記録 (deprecated in favor of Friends metAt or separate Encounter logs if needed)

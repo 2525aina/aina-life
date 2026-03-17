@@ -69,6 +69,7 @@ export function PetBasicInfoForm({
             onChange={(e) => handleChange("name", e.target.value)}
             placeholder="ペットの名前"
             disabled={disabled}
+            maxLength={20}
           />
         </div>
 
@@ -96,7 +97,7 @@ export function PetBasicInfoForm({
           </div>
           <div className="space-y-2">
             <Label className="text-xs font-bold text-muted-foreground ml-1">
-              毛色
+              毛色/カラー
             </Label>
             <ColorSelect
               value={data.color}
@@ -114,7 +115,7 @@ export function PetBasicInfoForm({
             disabled={disabled}
           />
           <DatePickerDropdown
-            label="うちの子記念日"
+            label="迎えた日"
             date={data.adoptionDate}
             setDate={(d) => handleChange("adoptionDate", d)}
             disabled={disabled}
@@ -134,6 +135,7 @@ export function PetBasicInfoForm({
             onChange={(e) => handleChange("microchipId", e.target.value)}
             placeholder="マイクロチップID（任意）"
             disabled={disabled}
+            maxLength={20}
           />
         </div>
       </div>

@@ -339,9 +339,7 @@ export function EntryForm({
           {friends.length > 0 && (
             <div className="glass rounded-[2rem] p-6 shadow-sm">
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
-                <span className="text-xs font-bold tracking-wider">
-                  お散歩友達
-                </span>
+                <span className="text-xs font-bold tracking-wider">友達</span>
               </div>
               <div className="flex overflow-x-auto pb-2 gap-3 no-scrollbar">
                 {friends.map((friend) => {
@@ -409,6 +407,7 @@ export function EntryForm({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full bg-transparent border-0 border-b border-[var(--glass-border)] rounded-none text-xl font-bold px-0 focus:ring-0 focus:border-primary placeholder:text-muted-foreground/30 py-2 transition-colors"
+                maxLength={50}
               />
               <textarea
                 placeholder="詳細を入力..."
@@ -416,6 +415,7 @@ export function EntryForm({
                 onChange={(e) => setBody(e.target.value)}
                 rows={5}
                 className="w-full bg-transparent border-none text-base resize-none outline-none placeholder:text-muted-foreground/30 leading-relaxed"
+                maxLength={2000}
               />
             </div>
 

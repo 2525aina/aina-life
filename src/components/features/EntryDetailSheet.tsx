@@ -181,7 +181,7 @@ export function EntryDetailSheet({
               <div className="flex justify-center mb-4">
                 <div className="glass-capsule px-3 py-1.5 flex items-center gap-3 bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  一緒
+                    一緒
                   </span>
                   <div className="flex items-center -space-x-2">
                     {entry.friendIds.map((fid) => {

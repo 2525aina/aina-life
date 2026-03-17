@@ -136,6 +136,7 @@ export function PetMembersTab({
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="email@example.com"
                   type="email"
+                  maxLength={100}
                 />
                 <Button
                   type="submit"

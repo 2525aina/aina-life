@@ -64,37 +64,54 @@ export function ensureDate(date: unknown): Date | null {
 /**
  * Calculate days until the next birthday
  */
-export function getDaysUntilNextBirthday(birthday: string | Date | undefined): number {
+export function getDaysUntilNextBirthday(
+  birthday: string | Date | undefined,
+): number {
   if (!birthday) return Infinity;
-  const birthDate = typeof birthday === "string" ? new Date(birthday) : birthday;
+  const birthDate =
+    typeof birthday === "string" ? new Date(birthday) : birthday;
   const now = new Date();
-  
-  const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-  if (nextBirthday < now && 
-      !(nextBirthday.getMonth() === now.getMonth() && nextBirthday.getDate() === now.getDate())) {
+
+  const nextBirthday = new Date(
+    now.getFullYear(),
+    birthDate.getMonth(),
+    birthDate.getDate(),
+  );
+  if (
+    nextBirthday < now &&
+    !(
+      nextBirthday.getMonth() === now.getMonth() &&
+      nextBirthday.getDate() === now.getDate()
+    )
+  ) {
     nextBirthday.setFullYear(now.getFullYear() + 1);
   }
-  
+
   // Reset hours for accurate day difference
   nextBirthday.setHours(0, 0, 0, 0);
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
-  
-  return Math.ceil((nextBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+  return Math.ceil(
+    (nextBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
 }
 
 /**
  * Get detailed age string (Years and Months)
  */
-export function getAgeDetailString(birthday: string | Date | undefined): string {
+export function getAgeDetailString(
+  birthday: string | Date | undefined,
+): string {
   if (!birthday) return "";
-  const birthDate = typeof birthday === "string" ? new Date(birthday) : birthday;
+  const birthDate =
+    typeof birthday === "string" ? new Date(birthday) : birthday;
   const now = new Date();
-  
+
   const years = differenceInYears(now, birthDate);
   const totalMonths = differenceInMonths(now, birthDate);
   const months = totalMonths % 12;
-  
+
   if (years > 0) {
     return months > 0 ? `${years}歳${months}ヶ月` : `${years}歳`;
   }

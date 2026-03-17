@@ -53,12 +53,16 @@ import {
 } from "@/components/ui/popover";
 import { usePetContext } from "@/contexts/PetContext";
 import { useMemo } from "react";
-import { getDaysUntilNextBirthday, getAgeDetailString } from "@/lib/utils/date-utils";
-import { ListViewTable, ListViewRow, ListViewCell } from "@/components/ui/list-view-table";
-import { 
-  Columns,
-  List as ListIcon,
-} from "lucide-react";
+import {
+  getDaysUntilNextBirthday,
+  getAgeDetailString,
+} from "@/lib/utils/date-utils";
+import {
+  ListViewTable,
+  ListViewRow,
+  ListViewCell,
+} from "@/components/ui/list-view-table";
+import { Columns, List as ListIcon } from "lucide-react";
 
 function PetCard({
   pet,
@@ -563,13 +567,14 @@ function PetCard({
 
           <h3
             className={cn(
-              "font-black leading-tight truncate group-hover:translate-x-1 transition-transform duration-300",
+              "font-black leading-tight group-hover:translate-x-1 transition-transform duration-300",
               isSuperCompact
-                ? "text-base mb-1"
+                ? "text-base mb-1 line-clamp-1"
                 : isCompact
-                  ? "text-lg mb-1"
-                  : "text-2xl mb-2",
+                  ? "text-lg mb-1 line-clamp-1"
+                  : "text-2xl mb-2 line-clamp-2",
             )}
+            title={pet.name}
           >
             {pet.name}
           </h3>
@@ -712,7 +717,7 @@ function PetsPageContent() {
 
       const daysA = getDaysUntilNextBirthday(a.birthday);
       const daysB = getDaysUntilNextBirthday(b.birthday);
-      
+
       if (daysA !== daysB) return daysA - daysB;
       return a.name.localeCompare(b.name, "ja");
     });
@@ -826,9 +831,9 @@ function PetsPageContent() {
                 onClick={() => toggleViewMode()}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
-                  viewMode === "grid" 
-                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
-                    : "text-muted-foreground opacity-60"
+                  viewMode === "grid"
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40"
+                    : "text-muted-foreground opacity-60",
                 )}
               >
                 <Columns className="w-3.5 h-3.5" />
@@ -838,9 +843,9 @@ function PetsPageContent() {
                 onClick={() => toggleViewMode()}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
-                  viewMode === "list" 
-                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
-                    : "text-muted-foreground opacity-60"
+                  viewMode === "list"
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40"
+                    : "text-muted-foreground opacity-60",
                 )}
               >
                 <ListIcon className="w-3.5 h-3.5" />
@@ -948,71 +953,115 @@ function PetsPageContent() {
             <div className="px-1">
               <ListViewTable
                 headers={[
-                  { key: "name", label: "名前", width: "w-40" },
+                  { key: "avatar", label: "写真", width: "w-16", sticky: true },
+                  { key: "name", label: "名前", width: "w-32" },
                   { key: "species", label: "種類" },
-                  { key: "breed", label: "品種" },
+                  { key: "breed", label: "品種/犬種" },
                   { key: "gender", label: "性別" },
-                  { key: "color", label: "毛色" },
+                  { key: "color", label: "毛色/カラー" },
                   { key: "age", label: "年齢" },
                   { key: "birthday", label: "誕生日" },
-                  { key: "adoption", label: "記念日" },
+                  { key: "adoption", label: "迎えた日" },
                   { key: "chip", label: "チップID" },
-                  { key: "medical", label: "医療メモ" },
-                  { key: "vet", label: "かかりつけ医" }
+                  { key: "medical", label: "医療・健康" },
+                  { key: "vet", label: "かかりつけ" },
                 ]}
               >
                 {sortedPets.map((pet) => (
                   <ListViewRow key={pet.id} onClick={() => handlePetClick(pet)}>
-                    <ListViewCell isSticky className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--glass-border)] shrink-0">
+                    <ListViewCell isSticky className="w-16">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--glass-border)] shrink-0 mx-auto">
                         {pet.avatarUrl ? (
-                          <Image src={pet.avatarUrl} alt={pet.name} width={40} height={40} className="w-full h-full object-cover" />
+                          <Image
+                            src={pet.avatarUrl}
+                            alt={pet.name}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <PawPrint className="w-5 h-5 opacity-20" />
                           </div>
                         )}
                       </div>
-                      <span className="font-black text-sm">{pet.name}</span>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold text-muted-foreground">
+                    <ListViewCell className="max-w-[150px] whitespace-normal">
+                      <span
+                        className="font-black text-sm line-clamp-3 break-all block"
+                        title={pet.name}
+                      >
+                        {pet.name}
+                      </span>
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold text-muted-foreground whitespace-nowrap">
                       {getSpeciesLabel(pet.species)}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-black">
-                      {pet.breed || "---"}
+                    <ListViewCell className="text-xs font-black max-w-[120px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={pet.breed || ""}
+                      >
+                        {pet.breed || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell>
+                    <ListViewCell className="whitespace-nowrap">
                       {pet.gender ? (
-                        <span className={cn(
-                          "px-2.5 py-1 rounded-full text-[10px] font-black border border-white/10",
-                          pet.gender === "male" ? "bg-blue-500/10 text-blue-500" : "bg-pink-500/10 text-pink-500"
-                        )}>
+                        <span
+                          className={cn(
+                            "px-2.5 py-1 rounded-full text-[10px] font-black border border-white/10",
+                            pet.gender === "male"
+                              ? "bg-blue-500/10 text-blue-500"
+                              : "bg-pink-500/10 text-pink-500",
+                          )}
+                        >
                           {pet.gender === "male" ? "♂ オス" : "♀ メス"}
                         </span>
-                      ) : "---"}
+                      ) : (
+                        "---"
+                      )}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold">
-                      {pet.color || "---"}
+                    <ListViewCell className="text-xs font-bold max-w-[100px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={pet.color || ""}
+                      >
+                        {pet.color || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-black">
+                    <ListViewCell className="text-xs font-black whitespace-nowrap">
                       {getAgeDetailString(pet.birthday) || "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold font-mono">
+                    <ListViewCell className="text-xs font-bold font-mono whitespace-nowrap">
                       {pet.birthday || "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold font-mono text-emerald-600">
+                    <ListViewCell className="text-xs font-bold font-mono text-emerald-600 whitespace-nowrap">
                       {pet.adoptionDate || "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-mono font-medium text-muted-foreground">
-                      {pet.microchipId || "---"}
+                    <ListViewCell className="text-xs font-mono font-medium text-muted-foreground max-w-[110px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={pet.microchipId || ""}
+                      >
+                        {pet.microchipId || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-[10px] leading-tight text-red-500 max-w-[200px] whitespace-normal">
-                      {pet.medicalNotes || "---"}
+                    <ListViewCell className="text-[10px] leading-[1.4] text-red-500 max-w-[200px] whitespace-normal py-3 px-4">
+                      <div className="line-clamp-3 break-all">
+                        {pet.medicalNotes || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-[10px] leading-tight max-w-[200px] whitespace-normal">
-                      {pet.vetInfo && pet.vetInfo.length > 0 
-                        ? pet.vetInfo.map(v => `${v.name}${v.phone ? `(${v.phone})` : ""}`).join(", ") 
-                        : "---"}
+                    <ListViewCell className="text-[10px] leading-[1.4] max-w-[200px] whitespace-normal py-3 px-4">
+                      <div className="line-clamp-3 break-all">
+                        {pet.vetInfo && pet.vetInfo.length > 0
+                          ? pet.vetInfo
+                              .map(
+                                (v) =>
+                                  `${v.name}${v.phone ? `(${v.phone})` : ""}`,
+                              )
+                              .join(", ")
+                          : "---"}
+                      </div>
                     </ListViewCell>
                   </ListViewRow>
                 ))}

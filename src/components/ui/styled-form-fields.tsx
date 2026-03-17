@@ -256,7 +256,7 @@ export const SpeciesBreedSelector = ({
       </div>
       <div className="space-y-2">
         <Label className="text-xs font-bold text-muted-foreground ml-1">
-          品種
+          品種/犬種
         </Label>
         {!isOtherSpecies && breedOptions.length > 0 ? (
           <StyledSelect
@@ -276,6 +276,7 @@ export const SpeciesBreedSelector = ({
             onChange={(e) => onChangeBreed(e.target.value)}
             placeholder="品種を入力"
             disabled={disabled}
+            maxLength={30}
           />
         )}
       </div>

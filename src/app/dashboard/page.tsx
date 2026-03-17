@@ -113,7 +113,7 @@ export default function DashboardPage() {
                 {format(new Date(), "yyyy年M月d日 (E)", { locale: ja })}
               </p>
               <h1 className="text-3xl sm:text-4xl font-black tracking-tighter filter drop-shadow-sm">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80 line-clamp-1">
                   {selectedPet.name}
                 </span>
               </h1>

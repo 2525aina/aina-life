@@ -46,7 +46,7 @@ export function PetHealthForm({
 
       <div className="space-y-2">
         <Label className="text-xs font-bold text-muted-foreground ml-1">
-          医療メモ
+          医療・健康
         </Label>
         <textarea
           value={medicalNotes}
@@ -54,14 +54,15 @@ export function PetHealthForm({
           placeholder="アレルギー、持病など..."
           rows={3}
           disabled={disabled}
-          className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+          className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none leading-[1.4]"
+          maxLength={1000}
         />
       </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Label className="text-xs font-bold text-muted-foreground ml-1">
-            かかりつけ動物病院
+            かかりつけ
           </Label>
           {!disabled && (
             <Button
@@ -94,6 +95,7 @@ export function PetHealthForm({
                   placeholder="病院名"
                   className="h-8 text-xs bg-transparent"
                   disabled={disabled}
+                  maxLength={30}
                 />
                 <Input
                   value={vet.phone || ""}
@@ -101,6 +103,7 @@ export function PetHealthForm({
                   placeholder="電話番号"
                   className="h-8 text-xs bg-transparent"
                   disabled={disabled}
+                  maxLength={20}
                 />
               </div>
               {!disabled && (

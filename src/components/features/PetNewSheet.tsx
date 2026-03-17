@@ -162,7 +162,7 @@ export function PetNewSheet({ open, onClose }: PetNewSheetProps) {
             >
               <X className="w-5 h-5" />
             </Button>
-            <SheetTitle className="text-sm font-bold">ペットを登録</SheetTitle>
+            <SheetTitle className="text-sm font-bold">家族を登録</SheetTitle>
             <div className="w-9" />
           </div>
         </SheetHeader>

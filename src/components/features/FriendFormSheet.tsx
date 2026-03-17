@@ -258,7 +258,7 @@ export function FriendFormSheet({
               <X className="w-5 h-5" />
             </Button>
             <SheetTitle className="text-sm font-bold">
-              {friend ? "お友達を編集" : "お友達を登録"}
+              {friend ? "友達を編集" : "友達を登録"}
             </SheetTitle>
             <div className="w-9" />
           </div>
@@ -308,6 +308,7 @@ export function FriendFormSheet({
                     onChange={(e) => setName(e.target.value)}
                     placeholder="ポチ"
                     className="h-14 text-xl font-bold rounded-2xl"
+                    maxLength={20}
                   />
                 </div>
 
@@ -465,17 +466,19 @@ export function FriendFormSheet({
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="公園、ドッグランなど"
                       className="pl-11 h-12 rounded-xl"
+                      maxLength={50}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold ml-1">特徴・メモ</Label>
+                  <Label className="text-xs font-bold ml-1">特徴/メモ</Label>
                   <textarea
                     value={memo}
                     onChange={(e) => setMemo(e.target.value)}
                     placeholder="フレンドリー、おやつが好き、など"
                     className="w-full bg-[var(--glass-bg)] min-h-[120px] rounded-2xl border border-[var(--glass-border)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    maxLength={1000}
                   />
                 </div>
               </div>
@@ -494,15 +497,17 @@ export function FriendFormSheet({
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="○○さん"
                     className="h-12 rounded-xl"
+                    maxLength={20}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold ml-1">特徴</Label>
+                  <Label className="text-xs font-bold ml-1">飼い主特徴</Label>
                   <StyledInput
                     value={ownerDetails}
                     onChange={(e) => setOwnerDetails(e.target.value)}
                     placeholder="いつも帽子を被っている、など"
                     className="h-12 rounded-xl"
+                    maxLength={50}
                   />
                 </div>
                 <div className="space-y-2">
@@ -514,11 +519,12 @@ export function FriendFormSheet({
                       onChange={(e) => setContact(e.target.value)}
                       className="pl-11 h-12 rounded-xl"
                       placeholder="電話番号やLINEなど"
+                      maxLength={50}
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold ml-1">住所・地域</Label>
+                  <Label className="text-xs font-bold ml-1">地域/住所</Label>
                   <div className="relative">
                     <Home className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                     <StyledInput
@@ -526,6 +532,7 @@ export function FriendFormSheet({
                       onChange={(e) => setAddress(e.target.value)}
                       className="pl-11 h-12 rounded-xl"
                       placeholder="○○区○○町"
+                      maxLength={100}
                     />
                   </div>
                 </div>

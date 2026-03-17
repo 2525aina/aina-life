@@ -26,7 +26,8 @@ export function useFriends(petId: string | null) {
   const { user } = useAuth();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState<FriendSortOption>("lastMetAt_desc");
+  const [sortOption, setSortOption] =
+    useState<FriendSortOption>("lastMetAt_desc");
 
   useEffect(() => {
     if (!petId || !user) {

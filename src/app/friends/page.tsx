@@ -28,12 +28,12 @@ import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
 import { cn } from "@/lib/utils";
-import { ListViewTable, ListViewRow, ListViewCell } from "@/components/ui/list-view-table";
-import { 
-  Columns,
-  List as ListIcon,
-  PawPrint,
-} from "lucide-react";
+import {
+  ListViewTable,
+  ListViewRow,
+  ListViewCell,
+} from "@/components/ui/list-view-table";
+import { Columns, List as ListIcon, PawPrint } from "lucide-react";
 import { getAgeDetailString } from "@/lib/utils/date-utils";
 
 interface FriendFormData {
@@ -184,11 +184,12 @@ function FriendCard({
 
           <h3
             className={cn(
-              "font-black text-2xl leading-tight mb-2 truncate group-hover:translate-x-1 transition-transform duration-300",
+              "font-black text-2xl leading-tight mb-2 group-hover:translate-x-1 transition-transform duration-300",
               columns >= 2 && "text-xl",
-              isCompact && "text-lg",
-              isSuperCompact && "text-sm mb-1",
+              isCompact && "text-lg line-clamp-1",
+              isSuperCompact && "text-sm mb-1 line-clamp-1",
             )}
+            title={friend.name}
           >
             {friend.name}
           </h3>
@@ -352,7 +353,7 @@ export default function FriendsPage() {
             <div>
               <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
                 <span className="text-3xl">🤝</span>
-                お友達一覧
+                友達一覧
               </h1>
               <p className="text-sm text-muted-foreground mt-1 ml-1">
                 出会った仲間たちの記録
@@ -367,9 +368,9 @@ export default function FriendsPage() {
                 onClick={() => toggleViewMode()}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
-                  viewMode === "grid" 
-                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
-                    : "text-muted-foreground opacity-60"
+                  viewMode === "grid"
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40"
+                    : "text-muted-foreground opacity-60",
                 )}
               >
                 <Columns className="w-3.5 h-3.5" />
@@ -379,9 +380,9 @@ export default function FriendsPage() {
                 onClick={() => toggleViewMode()}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
-                  viewMode === "list" 
-                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
-                    : "text-muted-foreground opacity-60"
+                  viewMode === "list"
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40"
+                    : "text-muted-foreground opacity-60",
                 )}
               >
                 <ListIcon className="w-3.5 h-3.5" />
@@ -489,95 +490,150 @@ export default function FriendsPage() {
             <div className="px-1">
               <ListViewTable
                 headers={[
-                  { key: "name", label: "名前", width: "w-40" },
-                  { key: "nickname", label: "あだ名" },
+                  { key: "avatar", label: "写真", width: "w-16", sticky: true },
+                  { key: "name", label: "名前", width: "w-32" },
                   { key: "species", label: "種類" },
-                  { key: "breed", label: "品種" },
+                  { key: "breed", label: "品種/犬種" },
                   { key: "gender", label: "性別" },
                   { key: "color", label: "毛色" },
                   { key: "age", label: "年齢" },
                   { key: "weight", label: "体重" },
                   { key: "metAt", label: "出会った日" },
-                  { key: "lastMet", label: "最後に会った" },
+                  { key: "lastMet", label: "最近会った日" },
                   { key: "count", label: "遭遇数" },
-                  { key: "features", label: "特徴" },
-                  { key: "owner", label: "飼い主" },
-                  { key: "ownerDetails", label: "飼い主詳細" },
+                  { key: "features", label: "特徴/メモ" },
+                  { key: "owner", label: "飼い主名" },
+                  { key: "ownerDetails", label: "飼い主特徴" },
                   { key: "contact", label: "連絡先" },
-                  { key: "address", label: "住所" },
-                  { key: "location", label: "出会った場所" }
+                  { key: "address", label: "地域/住所" },
+                  { key: "location", label: "出会った場所" },
                 ]}
               >
                 {filteredFriends.map((friend) => (
-                  <ListViewRow key={friend.id} onClick={() => handleFriendClick(friend)}>
-                    <ListViewCell isSticky className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--glass-border)] shrink-0">
+                  <ListViewRow
+                    key={friend.id}
+                    onClick={() => handleFriendClick(friend)}
+                  >
+                    <ListViewCell isSticky className="w-16">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--glass-border)] shrink-0 mx-auto">
                         {friend.images?.[0] ? (
-                          <Image src={friend.images[0]} alt={friend.name} width={40} height={40} className="w-full h-full object-cover" />
+                          <Image
+                            src={friend.images[0]}
+                            alt={friend.name}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <PawPrint className="w-5 h-5 opacity-20" />
                           </div>
                         )}
                       </div>
-                      <span className="font-black text-sm">{friend.name}</span>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold text-muted-foreground">
-                      {friend.nickname || "---"}
+                    <ListViewCell className="max-w-[150px] whitespace-normal">
+                      <span
+                        className="font-black text-sm line-clamp-3 break-all block"
+                        title={friend.name}
+                      >
+                        {friend.name}
+                      </span>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold text-muted-foreground">
+                    <ListViewCell className="text-xs font-bold text-muted-foreground whitespace-nowrap">
                       {getSpeciesLabel(friend.species)}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-black">
-                      {friend.breed || "---"}
+                    <ListViewCell className="text-xs font-black max-w-[120px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={friend.breed || ""}
+                      >
+                        {friend.breed || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell>
+                    <ListViewCell className="whitespace-nowrap">
                       {friend.gender && friend.gender !== "unknown" ? (
-                        <span className={cn(
-                          "px-2.5 py-1 rounded-full text-[10px] font-black border border-white/10",
-                          friend.gender === "male" ? "bg-blue-500/10 text-blue-500" : "bg-pink-500/10 text-pink-500"
-                        )}>
+                        <span
+                          className={cn(
+                            "px-2.5 py-1 rounded-full text-[10px] font-black border border-white/10",
+                            friend.gender === "male"
+                              ? "bg-blue-500/10 text-blue-500"
+                              : "bg-pink-500/10 text-pink-500",
+                          )}
+                        >
                           {friend.gender === "male" ? "♂ オス" : "♀ メス"}
                         </span>
-                      ) : "---"}
+                      ) : (
+                        "---"
+                      )}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold">
-                      {friend.color || "---"}
+                    <ListViewCell className="text-xs font-bold max-w-[100px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={friend.color || ""}
+                      >
+                        {friend.color || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-black">
-                      {getAgeDetailString(ensureDate(friend.birthday) ?? undefined) || "---"}
+                    <ListViewCell className="text-xs font-black whitespace-nowrap">
+                      {getAgeDetailString(
+                        ensureDate(friend.birthday) ?? undefined,
+                      ) || "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-black">
-                      {friend.weight ? `${friend.weight}${friend.weightUnit || "kg"}` : "---"}
+                    <ListViewCell className="text-xs font-black whitespace-nowrap">
+                      {friend.weight
+                        ? `${friend.weight}${friend.weightUnit || "kg"}`
+                        : "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold font-mono">
-                      {friend.metAt ? format(ensureDate(friend.metAt)!, "yyyy/MM/dd") : "---"}
+                    <ListViewCell className="text-xs font-bold font-mono whitespace-nowrap">
+                      {friend.metAt
+                        ? format(ensureDate(friend.metAt)!, "yyyy/MM/dd")
+                        : "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-bold text-primary">
-                      {friend.lastMetAt ? format(ensureDate(friend.lastMetAt)!, "yyyy/MM/dd") : "---"}
+                    <ListViewCell className="text-xs font-bold text-primary whitespace-nowrap">
+                      {friend.lastMetAt
+                        ? format(ensureDate(friend.lastMetAt)!, "yyyy/MM/dd")
+                        : "---"}
                     </ListViewCell>
-                    <ListViewCell className="text-center">
+                    <ListViewCell className="text-center whitespace-nowrap">
                       <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-black">
                         {friend.encounterCount || 0}回
                       </span>
                     </ListViewCell>
-                    <ListViewCell className="text-xs leading-tight max-w-[150px] whitespace-normal">
-                      {friend.features || "---"}
+                    <ListViewCell className="text-xs leading-[1.4] max-w-[200px] whitespace-normal py-3 px-4">
+                      <div className="line-clamp-3 break-all">
+                        {friend.features || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-black">
-                      {friend.ownerName || "---"}
+                    <ListViewCell className="text-xs font-black max-w-[120px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={friend.ownerName || ""}
+                      >
+                        {friend.ownerName || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs leading-tight max-w-[150px] whitespace-normal">
-                      {friend.ownerDetails || "---"}
+                    <ListViewCell className="text-xs leading-[1.4] max-w-[200px] whitespace-normal py-3 px-4">
+                      <div className="line-clamp-3 break-all">
+                        {friend.ownerDetails || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs font-mono">
-                      {friend.contact || "---"}
+                    <ListViewCell className="text-xs font-mono max-w-[120px] whitespace-normal">
+                      <div
+                        className="line-clamp-3 break-all"
+                        title={friend.contact || ""}
+                      >
+                        {friend.contact || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs leading-tight max-w-[150px] whitespace-normal">
-                      {friend.address || "---"}
+                    <ListViewCell className="text-xs leading-[1.4] max-w-[200px] whitespace-normal py-3 px-4">
+                      <div className="line-clamp-3 break-all">
+                        {friend.address || "---"}
+                      </div>
                     </ListViewCell>
-                    <ListViewCell className="text-xs text-muted-foreground truncate max-w-[150px]">
-                      {friend.location || "---"}
+                    <ListViewCell className="text-xs text-muted-foreground max-w-[150px] leading-[1.4] whitespace-normal py-3 px-4">
+                      <div className="line-clamp-3 break-all">
+                        {friend.location || "---"}
+                      </div>
                     </ListViewCell>
                   </ListViewRow>
                 ))}

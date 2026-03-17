@@ -394,6 +394,7 @@ function ProfileContent() {
                             value={nickname}
                             onChange={(e) => setNickname(e.target.value)}
                             placeholder="ニックネーム"
+                            maxLength={20}
                           />
                         </div>
                       </div>
@@ -427,6 +428,7 @@ function ProfileContent() {
                           rows={2}
                           className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus:bg-background transition-colors resize-none"
                           placeholder="ひとこと..."
+                          maxLength={1000}
                         />
                       </div>
                     </div>

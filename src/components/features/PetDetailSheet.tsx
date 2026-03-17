@@ -242,7 +242,7 @@ export function PetDetailSheet({
                         </span>
                       )}
                     </div>
-                    <h1 className="text-4xl font-black tracking-tight">
+                    <h1 className="text-4xl font-black tracking-tight break-all">
                       {pet.name}
                     </h1>
                   </div>
@@ -258,7 +258,7 @@ export function PetDetailSheet({
                       <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
                         種類
                       </p>
-                      <p className="font-bold text-sm">
+                      <p className="font-bold text-sm break-all">
                         {pet.species || "未設定"}
                       </p>
                     </div>
@@ -298,18 +298,18 @@ export function PetDetailSheet({
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                            毛色
+                            毛色/カラー
                           </p>
-                          <p className="font-bold">{pet.color}</p>
+                          <p className="font-bold break-all">{pet.color}</p>
                         </div>
                       </div>
                     )}
                     {pet.medicalNotes && (
                       <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
                         <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
-                          メモ・医療情報
+                          医療・健康
                         </p>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm leading-[1.4] whitespace-pre-wrap break-all">
                           {pet.medicalNotes}
                         </p>
                       </div>
@@ -317,7 +317,7 @@ export function PetDetailSheet({
                     {pet.vetInfo && pet.vetInfo.length > 0 && (
                       <div className="pt-2 border-t border-dashed border-[var(--glass-border)]">
                         <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">
-                          かかりつけ医
+                          かかりつけ
                         </p>
                         <div className="space-y-2">
                           {pet.vetInfo.map((vet, idx) => (
@@ -325,8 +325,10 @@ export function PetDetailSheet({
                               key={idx}
                               className="flex justify-between items-center text-sm"
                             >
-                              <span className="font-bold">{vet.name}</span>
-                              <span className="text-muted-foreground">
+                              <span className="font-bold leading-[1.4] break-all">
+                                {vet.name}
+                              </span>
+                              <span className="text-muted-foreground font-mono shrink-0 ml-2">
                                 {vet.phone}
                               </span>
                             </div>
