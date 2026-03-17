@@ -271,6 +271,19 @@ export function useEntries(petId: string | null) {
           ? Timestamp.fromDate(entryData.endDate)
           : undefined,
       } as Partial<Entry> & { id: string; date: Timestamp });
+
+      // Update Friends' lastMetAt
+      if (entryData.friendIds && entryData.friendIds.length > 0) {
+        const lastMetAt = Timestamp.fromDate(entryData.date);
+        await Promise.all(
+          entryData.friendIds.map((friendId) =>
+            updateDoc(doc(db, "pets", petId, "friends", friendId), {
+              lastMetAt,
+              updatedAt: serverTimestamp(),
+            }),
+          ),
+        );
+      }
     },
     [petId, user, updateMonthlySummary],
   );
@@ -339,6 +352,19 @@ export function useEntries(petId: string | null) {
       };
 
       await updateMonthlySummary("update", mergedData, oldData.date);
+
+      // Update Friends' lastMetAt if needed
+      if (mergedData.friendIds && mergedData.friendIds.length > 0) {
+        const lastMetAt = mergedData.date;
+        await Promise.all(
+          mergedData.friendIds.map((friendId) =>
+            updateDoc(doc(db, "pets", petId, "friends", friendId), {
+              lastMetAt,
+              updatedAt: serverTimestamp(),
+            }),
+          ),
+        );
+      }
     },
     [petId, user, updateMonthlySummary],
   );

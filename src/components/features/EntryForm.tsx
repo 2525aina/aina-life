@@ -335,8 +335,8 @@ export function EntryForm({
             </div>
           </div>
 
-          {/* Friends (Only for Diary) */}
-          {type === "diary" && friends.length > 0 && (
+          {/* Friends */}
+          {friends.length > 0 && (
             <div className="glass rounded-[2rem] p-6 shadow-sm">
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
                 <span className="text-xs font-bold tracking-wider">

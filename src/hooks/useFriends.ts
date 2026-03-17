@@ -26,7 +26,7 @@ export function useFriends(petId: string | null) {
   const { user } = useAuth();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState<FriendSortOption>("metAt_desc");
+  const [sortOption, setSortOption] = useState<FriendSortOption>("lastMetAt_desc");
 
   useEffect(() => {
     if (!petId || !user) {
@@ -79,6 +79,10 @@ export function useFriends(petId: string | null) {
       return getMillis(a.metAt) - getMillis(b.metAt);
     } else if (sortOption === "name_asc") {
       return a.name.localeCompare(b.name, "ja");
+    } else if (sortOption === "lastMetAt_desc") {
+      const timeA = a.lastMetAt ? getMillis(a.lastMetAt) : getMillis(a.metAt);
+      const timeB = b.lastMetAt ? getMillis(b.lastMetAt) : getMillis(b.metAt);
+      return timeB - timeA;
     }
     return 0;
   });

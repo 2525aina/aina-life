@@ -37,7 +37,7 @@ import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
 import { useWeights } from "@/hooks/useWeights";
 import { useMembers } from "@/hooks/useMembers";
-import { isSameDay, startOfDay, endOfDay, format } from "date-fns";
+import { isSameDay, startOfDay, endOfDay, format, parseISO } from "date-fns";
 import {
   collection,
   query,
@@ -51,6 +51,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { usePetContext } from "@/contexts/PetContext";
+import { useMemo } from "react";
+import { getDaysUntilNextBirthday, getAgeDetailString } from "@/lib/utils/date-utils";
+import { ListViewTable, ListViewRow, ListViewCell } from "@/components/ui/list-view-table";
+import { 
+  Columns,
+  List as ListIcon,
+} from "lucide-react";
 
 function PetCard({
   pet,
@@ -686,6 +694,7 @@ function PetCard({
 
 function PetsPageContent() {
   const { pets, loading } = usePets();
+  const { selectedPet: currentSelectedPet } = usePetContext();
   const searchParams = useSearchParams();
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -694,6 +703,32 @@ function PetsPageContent() {
   const [handledPetId, setHandledPetId] = useState<string | null>(null);
   const [gridCols, setGridCols] = useState(3);
   const [maxCols, setMaxCols] = useState(6);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const sortedPets = useMemo(() => {
+    return [...pets].sort((a, b) => {
+      if (a.id === currentSelectedPet?.id) return -1;
+      if (b.id === currentSelectedPet?.id) return 1;
+
+      const daysA = getDaysUntilNextBirthday(a.birthday);
+      const daysB = getDaysUntilNextBirthday(b.birthday);
+      
+      if (daysA !== daysB) return daysA - daysB;
+      return a.name.localeCompare(b.name, "ja");
+    });
+  }, [pets, currentSelectedPet]);
+
+  useEffect(() => {
+    const savedView = localStorage.getItem("pets_view_mode");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (savedView === "list") setViewMode("list");
+  }, []);
+
+  const toggleViewMode = () => {
+    const next = viewMode === "grid" ? "list" : "grid";
+    setViewMode(next);
+    localStorage.setItem("pets_view_mode", next);
+  };
 
   useEffect(() => {
     const checkSize = () => {
@@ -782,69 +817,99 @@ function PetsPageContent() {
                 大切な家族の管理
               </p>
             </div>
-
-            {/* Compact Grid Slider - Responsive Steps */}
-            <div
-              className="relative h-8 flex items-center group/slider select-none"
-              style={{ width: maxCols * 24 + "px" }}
-            >
-              <div className="absolute -top-4 right-0 flex items-center gap-1.5 opacity-40 group-hover/slider:opacity-100 transition-opacity">
-                <LayoutGrid className="w-3 h-3" />
-                <span className="text-[9px] font-black tracking-tight">
-                  {displayCols}
-                </span>
-              </div>
-
-              {/* Track */}
-              <div className="absolute inset-x-2 h-1 bg-muted/20 backdrop-blur-sm rounded-full">
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-primary rounded-full"
-                  animate={{
-                    width: `${((displayCols - 1) / (maxCols - 1 || 1)) * 100}%`,
-                  }}
-                />
-              </div>
-
-              {/* Interaction Dots - Perfectly aligned with thumb steps */}
-              <div className="absolute inset-x-2 flex justify-between pointer-events-none">
-                {Array.from({ length: maxCols }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "w-1 h-1 rounded-full transition-all duration-300",
-                      i + 1 <= displayCols
-                        ? "bg-primary/60"
-                        : "bg-muted-foreground/20",
-                    )}
-                  />
-                ))}
-              </div>
-
-              {/* Slider Thumb */}
-              <div className="absolute inset-x-2 h-0 flex items-center pointer-events-none">
-                <motion.div
-                  className="w-4 h-4 bg-white rounded-full shadow-lg border-2 border-primary z-30"
-                  animate={{
-                    marginLeft: `calc(${((displayCols - 1) / (maxCols - 1 || 1)) * 100}% - 8px)`,
-                  }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              </div>
-
-              {/* Invisible range input for interaction */}
-              <input
-                type="range"
-                min="1"
-                max={maxCols}
-                step="1"
-                value={displayCols}
-                onChange={(e) => updateCols(parseInt(e.target.value, 10))}
-                className="absolute inset-0 w-full opacity-0 cursor-pointer z-40"
-              />
-            </div>
           </div>
 
-          {/* List */}
+          {/* List/Grid Choice */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex bg-muted/20 p-1 rounded-2xl glass-capsule border border-white/5">
+              <button
+                onClick={() => toggleViewMode()}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
+                  viewMode === "grid" 
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
+                    : "text-muted-foreground opacity-60"
+                )}
+              >
+                <Columns className="w-3.5 h-3.5" />
+                グリッド
+              </button>
+              <button
+                onClick={() => toggleViewMode()}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
+                  viewMode === "list" 
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
+                    : "text-muted-foreground opacity-60"
+                )}
+              >
+                <ListIcon className="w-3.5 h-3.5" />
+                リスト
+              </button>
+            </div>
+
+            {viewMode === "grid" && (
+              <div
+                className="relative h-8 flex items-center group/slider select-none"
+                style={{ width: maxCols * 24 + "px" }}
+              >
+                <div className="absolute -top-4 right-0 flex items-center gap-1.5 opacity-40 group-hover/slider:opacity-100 transition-opacity">
+                  <LayoutGrid className="w-3 h-3" />
+                  <span className="text-[9px] font-black tracking-tight">
+                    {displayCols}
+                  </span>
+                </div>
+
+                {/* Track */}
+                <div className="absolute inset-x-2 h-1 bg-muted/20 backdrop-blur-sm rounded-full">
+                  <motion.div
+                    className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                    animate={{
+                      width: `${((displayCols - 1) / (maxCols - 1 || 1)) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                {/* Interaction Dots */}
+                <div className="absolute inset-x-2 flex justify-between pointer-events-none">
+                  {Array.from({ length: maxCols }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "w-1 h-1 rounded-full transition-all duration-300",
+                        i + 1 <= displayCols
+                          ? "bg-primary/60"
+                          : "bg-muted-foreground/20",
+                      )}
+                    />
+                  ))}
+                </div>
+
+                {/* Slider Thumb */}
+                <div className="absolute inset-x-2 h-0 flex items-center pointer-events-none">
+                  <motion.div
+                    className="w-4 h-4 bg-white rounded-full shadow-lg border-2 border-primary z-30"
+                    animate={{
+                      marginLeft: `calc(${((displayCols - 1) / (maxCols - 1 || 1)) * 100}% - 8px)`,
+                    }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+
+                <input
+                  type="range"
+                  min="1"
+                  max={maxCols}
+                  step="1"
+                  value={displayCols}
+                  onChange={(e) => updateCols(parseInt(e.target.value, 10))}
+                  className="absolute inset-0 w-full opacity-0 cursor-pointer z-40"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* List Content */}
           {loading ? (
             <div className={cn("grid gap-3", getGridClass(displayCols))}>
               {[...Array(6)].map((_, i) => (
@@ -854,7 +919,7 @@ function PetsPageContent() {
                 />
               ))}
             </div>
-          ) : pets.length === 0 ? (
+          ) : sortedPets.length === 0 ? (
             <div className="text-center py-20 bg-muted/20 rounded-[3rem]">
               <p className="text-muted-foreground font-medium">
                 登録されている家族はいません
@@ -867,9 +932,9 @@ function PetsPageContent() {
                 はじめての登録はこちら
               </Button>
             </div>
-          ) : (
+          ) : viewMode === "grid" ? (
             <div className={cn("grid gap-4", getGridClass(displayCols))}>
-              {pets.map((pet, index) => (
+              {sortedPets.map((pet, index) => (
                 <PetCard
                   key={pet.id}
                   pet={pet}
@@ -878,6 +943,62 @@ function PetsPageContent() {
                   columns={displayCols}
                 />
               ))}
+            </div>
+          ) : (
+            <div className="px-1">
+              <ListViewTable
+                headers={[
+                  { key: "name", label: "名前", width: "w-40" },
+                  { key: "species", label: "種類" },
+                  { key: "breed", label: "品種" },
+                  { key: "gender", label: "性別" },
+                  { key: "age", label: "年齢" },
+                  { key: "birthday", label: "誕生日" },
+                  { key: "chip", label: "チップID" }
+                ]}
+              >
+                {sortedPets.map((pet) => (
+                  <ListViewRow key={pet.id} onClick={() => handlePetClick(pet)}>
+                    <ListViewCell isSticky className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--glass-border)] shrink-0">
+                        {pet.avatarUrl ? (
+                          <Image src={pet.avatarUrl} alt={pet.name} width={40} height={40} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <PawPrint className="w-5 h-5 opacity-20" />
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-black text-sm">{pet.name}</span>
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold text-muted-foreground">
+                      {getSpeciesLabel(pet.species)}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-black">
+                      {pet.breed || "---"}
+                    </ListViewCell>
+                    <ListViewCell>
+                      {pet.gender ? (
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-full text-[10px] font-black border border-white/10",
+                          pet.gender === "male" ? "bg-blue-500/10 text-blue-500" : "bg-pink-500/10 text-pink-500"
+                        )}>
+                          {pet.gender === "male" ? "♂ オス" : "♀ メス"}
+                        </span>
+                      ) : "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-black">
+                      {getAgeDetailString(pet.birthday) || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold font-mono">
+                      {pet.birthday || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-mono font-medium text-muted-foreground">
+                      {pet.microchipId || "---"}
+                    </ListViewCell>
+                  </ListViewRow>
+                ))}
+              </ListViewTable>
             </div>
           )}
         </div>

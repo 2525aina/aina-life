@@ -28,6 +28,13 @@ import { DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/assets";
 import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
 import { cn } from "@/lib/utils";
+import { ListViewTable, ListViewRow, ListViewCell } from "@/components/ui/list-view-table";
+import { 
+  Columns,
+  List as ListIcon,
+  PawPrint,
+} from "lucide-react";
+import { getAgeDetailString } from "@/lib/utils/date-utils";
 
 interface FriendFormData {
   name: string;
@@ -247,6 +254,19 @@ export default function FriendsPage() {
 
   const [gridCols, setGridCols] = useState(3);
   const [maxCols, setMaxCols] = useState(6);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  useEffect(() => {
+    const savedView = localStorage.getItem("friends_view_mode");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (savedView === "list") setViewMode("list");
+  }, []);
+
+  const toggleViewMode = () => {
+    const next = viewMode === "grid" ? "list" : "grid";
+    setViewMode(next);
+    localStorage.setItem("friends_view_mode", next);
+  };
 
   useEffect(() => {
     const checkSize = () => {
@@ -339,69 +359,99 @@ export default function FriendsPage() {
                 出会った仲間たちの記録
               </p>
             </div>
-
-            {/* Compact Grid Slider - Responsive Steps */}
-            <div
-              className="relative h-8 flex items-center group/slider select-none"
-              style={{ width: maxCols * 24 + "px" }}
-            >
-              <div className="absolute -top-4 right-0 flex items-center gap-1.5 opacity-40 group-hover/slider:opacity-100 transition-opacity">
-                <LayoutGrid className="w-3 h-3" />
-                <span className="text-[9px] font-black tracking-tight">
-                  {displayCols}
-                </span>
-              </div>
-
-              {/* Track */}
-              <div className="absolute inset-x-2 h-1 bg-muted/20 backdrop-blur-sm rounded-full">
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-primary rounded-full"
-                  animate={{
-                    width: `${((displayCols - 1) / (maxCols - 1 || 1)) * 100}%`,
-                  }}
-                />
-              </div>
-
-              {/* Interaction Dots */}
-              <div className="absolute inset-x-2 flex justify-between pointer-events-none">
-                {Array.from({ length: maxCols }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "w-1 h-1 rounded-full transition-all duration-300",
-                      i + 1 <= displayCols
-                        ? "bg-primary/60"
-                        : "bg-muted-foreground/20",
-                    )}
-                  />
-                ))}
-              </div>
-
-              {/* Slider Thumb */}
-              <div className="absolute inset-x-2 h-0 flex items-center pointer-events-none">
-                <motion.div
-                  className="w-4 h-4 bg-white rounded-full shadow-lg border-2 border-primary z-30"
-                  animate={{
-                    marginLeft: `calc(${((displayCols - 1) / (maxCols - 1 || 1)) * 100}% - 8px)`,
-                  }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              </div>
-
-              {/* Invisible range input for interaction */}
-              <input
-                type="range"
-                min="1"
-                max={maxCols}
-                step="1"
-                value={displayCols}
-                onChange={(e) => updateCols(parseInt(e.target.value, 10))}
-                className="absolute inset-0 w-full opacity-0 cursor-pointer z-40"
-              />
-            </div>
           </div>
 
-          {/* Search - 友達が5人以上の場合のみ表示 */}
+          {/* List/Grid Choice */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex bg-muted/20 p-1 rounded-2xl glass-capsule border border-white/5">
+              <button
+                onClick={() => toggleViewMode()}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
+                  viewMode === "grid" 
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
+                    : "text-muted-foreground opacity-60"
+                )}
+              >
+                <Columns className="w-3.5 h-3.5" />
+                グリッド
+              </button>
+              <button
+                onClick={() => toggleViewMode()}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all",
+                  viewMode === "list" 
+                    ? "bg-white/80 backdrop-blur-md shadow-lg text-primary border border-white/40" 
+                    : "text-muted-foreground opacity-60"
+                )}
+              >
+                <ListIcon className="w-3.5 h-3.5" />
+                リスト
+              </button>
+            </div>
+
+            {viewMode === "grid" && (
+              <div
+                className="relative h-8 flex items-center group/slider select-none"
+                style={{ width: maxCols * 24 + "px" }}
+              >
+                <div className="absolute -top-4 right-0 flex items-center gap-1.5 opacity-40 group-hover/slider:opacity-100 transition-opacity">
+                  <LayoutGrid className="w-3 h-3" />
+                  <span className="text-[9px] font-black tracking-tight">
+                    {displayCols}
+                  </span>
+                </div>
+
+                {/* Track */}
+                <div className="absolute inset-x-2 h-1 bg-muted/20 backdrop-blur-sm rounded-full">
+                  <motion.div
+                    className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                    animate={{
+                      width: `${((displayCols - 1) / (maxCols - 1 || 1)) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                {/* Interaction Dots */}
+                <div className="absolute inset-x-2 flex justify-between pointer-events-none">
+                  {Array.from({ length: maxCols }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "w-1 h-1 rounded-full transition-all duration-300",
+                        i + 1 <= displayCols
+                          ? "bg-primary/60"
+                          : "bg-muted-foreground/20",
+                      )}
+                    />
+                  ))}
+                </div>
+
+                {/* Slider Thumb */}
+                <div className="absolute inset-x-2 h-0 flex items-center pointer-events-none">
+                  <motion.div
+                    className="w-4 h-4 bg-white rounded-full shadow-lg border-2 border-primary z-30"
+                    animate={{
+                      marginLeft: `calc(${((displayCols - 1) / (maxCols - 1 || 1)) * 100}% - 8px)`,
+                    }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+
+                <input
+                  type="range"
+                  min="1"
+                  max={maxCols}
+                  step="1"
+                  value={displayCols}
+                  onChange={(e) => updateCols(parseInt(e.target.value, 10))}
+                  className="absolute inset-0 w-full opacity-0 cursor-pointer z-40"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Search */}
           {friends.length >= 5 && (
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -414,7 +464,7 @@ export default function FriendsPage() {
             </div>
           )}
 
-          {/* Friends Grid */}
+          {/* Grid Content */}
           {loading ? (
             <div className={cn("grid gap-3", getGridClass(displayCols))}>
               {[...Array(displayCols * 2)].map((_, i) => (
@@ -424,7 +474,7 @@ export default function FriendsPage() {
                 />
               ))}
             </div>
-          ) : (
+          ) : viewMode === "grid" ? (
             <div className={cn("grid gap-4", getGridClass(displayCols))}>
               {filteredFriends.map((friend: Friend, index: number) => (
                 <FriendCard
@@ -435,6 +485,70 @@ export default function FriendsPage() {
                   columns={displayCols}
                 />
               ))}
+            </div>
+          ) : (
+            <div className="px-1">
+              <ListViewTable
+                headers={[
+                  { key: "name", label: "名前", width: "w-40" },
+                  { key: "species", label: "種類" },
+                  { key: "breed", label: "品種" },
+                  { key: "gender", label: "性別" },
+                  { key: "age", label: "年齢" },
+                  { key: "metAt", label: "出会った日" },
+                  { key: "lastMet", label: "最後に会った" },
+                  { key: "owner", label: "飼い主" },
+                  { key: "location", label: "出会った場所" }
+                ]}
+              >
+                {filteredFriends.map((friend) => (
+                  <ListViewRow key={friend.id} onClick={() => handleFriendClick(friend)}>
+                    <ListViewCell isSticky className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--glass-border)] shrink-0">
+                        {friend.images?.[0] ? (
+                          <Image src={friend.images[0]} alt={friend.name} width={40} height={40} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <PawPrint className="w-5 h-5 opacity-20" />
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-black text-sm">{friend.name}</span>
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold text-muted-foreground">
+                      {getSpeciesLabel(friend.species)}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-black">
+                      {friend.breed || "---"}
+                    </ListViewCell>
+                    <ListViewCell>
+                      {friend.gender && friend.gender !== "unknown" ? (
+                        <span className={cn(
+                          "px-2.5 py-1 rounded-full text-[10px] font-black border border-white/10",
+                          friend.gender === "male" ? "bg-blue-500/10 text-blue-500" : "bg-pink-500/10 text-pink-500"
+                        )}>
+                          {friend.gender === "male" ? "♂ オス" : "♀ メス"}
+                        </span>
+                      ) : "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-black">
+                      {getAgeDetailString(ensureDate(friend.birthday) ?? undefined) || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold font-mono">
+                      {friend.metAt ? format(ensureDate(friend.metAt)!, "yyyy/MM/dd") : "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold text-primary">
+                      {friend.lastMetAt ? format(ensureDate(friend.lastMetAt)!, "yyyy/MM/dd") : "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-black">
+                      {friend.ownerName || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs text-muted-foreground truncate max-w-[150px]">
+                      {friend.location || "---"}
+                    </ListViewCell>
+                  </ListViewRow>
+                ))}
+              </ListViewTable>
             </div>
           )}
         </div>

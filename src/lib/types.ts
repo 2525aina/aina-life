@@ -250,9 +250,10 @@ export interface Friend extends AuditDocument {
   address?: string;
   images: string[];
   metAt: Timestamp;
+  lastMetAt?: Timestamp;
 }
 
-export type FriendSortOption = "metAt_desc" | "metAt_asc" | "name_asc";
+export type FriendSortOption = "metAt_desc" | "metAt_asc" | "name_asc" | "lastMetAt_desc";
 
 // ============================================
 // 遭遇記録 (deprecated in favor of Friends metAt or separate Encounter logs if needed)
