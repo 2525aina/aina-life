@@ -251,6 +251,7 @@ export interface Friend extends AuditDocument {
   images: string[];
   metAt: Timestamp;
   lastMetAt?: Timestamp;
+  encounterCount?: number;
 }
 
 export type FriendSortOption = "metAt_desc" | "metAt_asc" | "name_asc" | "lastMetAt_desc";

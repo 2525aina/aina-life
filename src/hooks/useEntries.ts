@@ -28,6 +28,7 @@ import type {
   MonthlyEntries,
 } from "@/lib/types";
 import { format } from "date-fns";
+import { increment } from "firebase/firestore";
 
 const PAGE_SIZE = 20;
 
@@ -223,6 +224,36 @@ export function useEntries(petId: string | null) {
     [petId],
   );
 
+  const updateFriendStats = useCallback(
+    async (friendIds: string[], date: Timestamp, delta: number) => {
+      if (!petId || friendIds.length === 0) return;
+      
+      const updatePromises = friendIds.map(async (friendId) => {
+        const friendRef = doc(db, "pets", petId, "friends", friendId);
+        const updateData: Record<string, unknown> = {
+          encounterCount: increment(delta),
+          updatedAt: serverTimestamp(),
+        };
+        
+        // Only update lastMetAt if adding an encounter
+        if (delta > 0) {
+          // Check if this is truly the latest encounter (simplified: assume the one being added is recent)
+          updateData.lastMetAt = date;
+        }
+        
+        try {
+          await updateDoc(friendRef, updateData);
+        } catch (e) {
+          console.error("Failed to update friend stats:", e);
+        }
+      });
+      
+      await Promise.all(updatePromises);
+    },
+    [petId]
+  );
+
+
   const addEntry = useCallback(
     async (entryData: {
       type: "diary" | "schedule";
@@ -272,20 +303,13 @@ export function useEntries(petId: string | null) {
           : undefined,
       } as Partial<Entry> & { id: string; date: Timestamp });
 
-      // Update Friends' lastMetAt
-      if (entryData.friendIds && entryData.friendIds.length > 0) {
-        const lastMetAt = Timestamp.fromDate(entryData.date);
-        await Promise.all(
-          entryData.friendIds.map((friendId) =>
-            updateDoc(doc(db, "pets", petId, "friends", friendId), {
-              lastMetAt,
-              updatedAt: serverTimestamp(),
-            }),
-          ),
-        );
+      // Update Friends' Stats
+      const isEncounter = entryData.type === "diary" || entryData.isCompleted;
+      if (isEncounter && entryData.friendIds && entryData.friendIds.length > 0) {
+        await updateFriendStats(entryData.friendIds, Timestamp.fromDate(entryData.date), 1);
       }
     },
-    [petId, user, updateMonthlySummary],
+    [petId, user, updateMonthlySummary, updateFriendStats],
   );
 
   const updateEntry = useCallback(
@@ -353,20 +377,30 @@ export function useEntries(petId: string | null) {
 
       await updateMonthlySummary("update", mergedData, oldData.date);
 
-      // Update Friends' lastMetAt if needed
-      if (mergedData.friendIds && mergedData.friendIds.length > 0) {
-        const lastMetAt = mergedData.date;
-        await Promise.all(
-          mergedData.friendIds.map((friendId) =>
-            updateDoc(doc(db, "pets", petId, "friends", friendId), {
-              lastMetAt,
-              updatedAt: serverTimestamp(),
-            }),
-          ),
-        );
+      // Update Friends' Stats
+      const wasEncounter = oldData.type === "diary" || oldData.isCompleted;
+      const isEncounter = mergedData.type === "diary" || mergedData.isCompleted;
+      
+      const oldFriends = oldData.friendIds || [];
+      const newFriends = mergedData.friendIds || [];
+      
+      if (!wasEncounter && isEncounter) {
+        await updateFriendStats(newFriends, mergedData.date, 1);
+      } else if (wasEncounter && !isEncounter) {
+        await updateFriendStats(oldFriends, oldData.date, -1);
+      } else if (wasEncounter && isEncounter) {
+        const removed = oldFriends.filter(f => !newFriends.includes(f));
+        const added = newFriends.filter(f => !oldFriends.includes(f));
+        if (removed.length > 0) await updateFriendStats(removed, oldData.date, -1);
+        if (added.length > 0) await updateFriendStats(added, mergedData.date, 1);
+        
+        const common = newFriends.filter(f => oldFriends.includes(f));
+        if (common.length > 0 && oldData.date.toMillis() !== mergedData.date.toMillis()) {
+          await updateFriendStats(common, mergedData.date, 0); 
+        }
       }
     },
-    [petId, user, updateMonthlySummary],
+    [petId, user, updateMonthlySummary, updateFriendStats],
   );
 
   const deleteEntry = useCallback(
@@ -385,8 +419,14 @@ export function useEntries(petId: string | null) {
 
       // Update Summary
       await updateMonthlySummary("delete", { id: entryId, date: oldData.date });
+
+      // Update Friends' Stats
+      const wasEncounter = oldData.type === "diary" || oldData.isCompleted;
+      if (wasEncounter && oldData.friendIds && oldData.friendIds.length > 0) {
+        await updateFriendStats(oldData.friendIds, oldData.date, -1);
+      }
     },
-    [petId, updateMonthlySummary],
+    [petId, updateMonthlySummary, updateFriendStats],
   );
 
   // Keep these helpers for list view if necessary, but Calendar should use useCalendarEntries

@@ -37,7 +37,7 @@ import { StickyFab } from "@/components/ui/sticky-fab";
 import { HeaderGradient } from "@/components/ui/header-gradient";
 import { useWeights } from "@/hooks/useWeights";
 import { useMembers } from "@/hooks/useMembers";
-import { isSameDay, startOfDay, endOfDay, format, parseISO } from "date-fns";
+import { isSameDay, startOfDay, endOfDay, format } from "date-fns";
 import {
   collection,
   query,
@@ -952,9 +952,13 @@ function PetsPageContent() {
                   { key: "species", label: "種類" },
                   { key: "breed", label: "品種" },
                   { key: "gender", label: "性別" },
+                  { key: "color", label: "毛色" },
                   { key: "age", label: "年齢" },
                   { key: "birthday", label: "誕生日" },
-                  { key: "chip", label: "チップID" }
+                  { key: "adoption", label: "記念日" },
+                  { key: "chip", label: "チップID" },
+                  { key: "medical", label: "医療メモ" },
+                  { key: "vet", label: "かかりつけ医" }
                 ]}
               >
                 {sortedPets.map((pet) => (
@@ -987,14 +991,28 @@ function PetsPageContent() {
                         </span>
                       ) : "---"}
                     </ListViewCell>
+                    <ListViewCell className="text-xs font-bold">
+                      {pet.color || "---"}
+                    </ListViewCell>
                     <ListViewCell className="text-xs font-black">
                       {getAgeDetailString(pet.birthday) || "---"}
                     </ListViewCell>
                     <ListViewCell className="text-xs font-bold font-mono">
                       {pet.birthday || "---"}
                     </ListViewCell>
+                    <ListViewCell className="text-xs font-bold font-mono text-emerald-600">
+                      {pet.adoptionDate || "---"}
+                    </ListViewCell>
                     <ListViewCell className="text-xs font-mono font-medium text-muted-foreground">
                       {pet.microchipId || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-[10px] leading-tight text-red-500 max-w-[200px] whitespace-normal">
+                      {pet.medicalNotes || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-[10px] leading-tight max-w-[200px] whitespace-normal">
+                      {pet.vetInfo && pet.vetInfo.length > 0 
+                        ? pet.vetInfo.map(v => `${v.name}${v.phone ? `(${v.phone})` : ""}`).join(", ") 
+                        : "---"}
                     </ListViewCell>
                   </ListViewRow>
                 ))}

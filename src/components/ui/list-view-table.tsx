@@ -13,7 +13,7 @@ export function ListViewTable({ headers, children, className }: ListViewTablePro
   return (
     <div className={cn("relative overflow-hidden glass rounded-[2rem] border border-[var(--glass-border)]", className)}>
       <div className="overflow-x-auto scrollbar-hide">
-        <table className="w-full text-left border-collapse min-w-[800px]">
+        <table className="w-full text-left border-collapse min-w-[1400px]">
           <thead>
             <tr className="border-b border-[var(--glass-border)] bg-muted/30 backdrop-blur-md">
               {headers.map((header, i) => (

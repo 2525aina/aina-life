@@ -258,7 +258,6 @@ export default function FriendsPage() {
 
   useEffect(() => {
     const savedView = localStorage.getItem("friends_view_mode");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (savedView === "list") setViewMode("list");
   }, []);
 
@@ -491,13 +490,21 @@ export default function FriendsPage() {
               <ListViewTable
                 headers={[
                   { key: "name", label: "名前", width: "w-40" },
+                  { key: "nickname", label: "あだ名" },
                   { key: "species", label: "種類" },
                   { key: "breed", label: "品種" },
                   { key: "gender", label: "性別" },
+                  { key: "color", label: "毛色" },
                   { key: "age", label: "年齢" },
+                  { key: "weight", label: "体重" },
                   { key: "metAt", label: "出会った日" },
                   { key: "lastMet", label: "最後に会った" },
+                  { key: "count", label: "遭遇数" },
+                  { key: "features", label: "特徴" },
                   { key: "owner", label: "飼い主" },
+                  { key: "ownerDetails", label: "飼い主詳細" },
+                  { key: "contact", label: "連絡先" },
+                  { key: "address", label: "住所" },
                   { key: "location", label: "出会った場所" }
                 ]}
               >
@@ -516,6 +523,9 @@ export default function FriendsPage() {
                       <span className="font-black text-sm">{friend.name}</span>
                     </ListViewCell>
                     <ListViewCell className="text-xs font-bold text-muted-foreground">
+                      {friend.nickname || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-bold text-muted-foreground">
                       {getSpeciesLabel(friend.species)}
                     </ListViewCell>
                     <ListViewCell className="text-xs font-black">
@@ -531,8 +541,14 @@ export default function FriendsPage() {
                         </span>
                       ) : "---"}
                     </ListViewCell>
+                    <ListViewCell className="text-xs font-bold">
+                      {friend.color || "---"}
+                    </ListViewCell>
                     <ListViewCell className="text-xs font-black">
                       {getAgeDetailString(ensureDate(friend.birthday) ?? undefined) || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-black">
+                      {friend.weight ? `${friend.weight}${friend.weightUnit || "kg"}` : "---"}
                     </ListViewCell>
                     <ListViewCell className="text-xs font-bold font-mono">
                       {friend.metAt ? format(ensureDate(friend.metAt)!, "yyyy/MM/dd") : "---"}
@@ -540,8 +556,25 @@ export default function FriendsPage() {
                     <ListViewCell className="text-xs font-bold text-primary">
                       {friend.lastMetAt ? format(ensureDate(friend.lastMetAt)!, "yyyy/MM/dd") : "---"}
                     </ListViewCell>
+                    <ListViewCell className="text-center">
+                      <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-black">
+                        {friend.encounterCount || 0}回
+                      </span>
+                    </ListViewCell>
+                    <ListViewCell className="text-xs leading-tight max-w-[150px] whitespace-normal">
+                      {friend.features || "---"}
+                    </ListViewCell>
                     <ListViewCell className="text-xs font-black">
                       {friend.ownerName || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs leading-tight max-w-[150px] whitespace-normal">
+                      {friend.ownerDetails || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs font-mono">
+                      {friend.contact || "---"}
+                    </ListViewCell>
+                    <ListViewCell className="text-xs leading-tight max-w-[150px] whitespace-normal">
+                      {friend.address || "---"}
                     </ListViewCell>
                     <ListViewCell className="text-xs text-muted-foreground truncate max-w-[150px]">
                       {friend.location || "---"}
