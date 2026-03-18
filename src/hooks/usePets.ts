@@ -92,9 +92,11 @@ export function usePets() {
             }
           },
           (error) => {
-            console.error(`Error fetching pet ${petId}:`, error);
-            // 権限エラーなどで読めなくなった場合も削除
-            setPets((prev) => prev.filter((p) => p.id !== petId));
+            // 権限エラーの場合、一時的なものかもしれないのでログのみ出力
+            // （招待承諾直後のタイミング問題で一時的にエラーになることがある）
+            // メンバーシップの変更はcollectionGroupリスナーが検知して
+            // ペットリストを自動的に更新するため、ここでは削除しない
+            console.warn(`Pet ${petId} read error (may be transient):`, error);
           },
         );
         petUnsubscribes.push(unsub);

@@ -477,9 +477,9 @@ function ProfileContent() {
                   <Link
                     key={pet.id}
                     href={getPetDetailUrl(pet.id)}
-                    className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] hover:scale-[1.02] transition-all duration-300 group shadow-sm text-left w-full"
+                    className="flex items-center gap-4 p-4 rounded-2xl glass border-[var(--glass-border)] hover:bg-[var(--glass-highlight)] hover:scale-[1.02] transition-all duration-300 group shadow-sm text-left w-full overflow-hidden"
                   >
-                    <Avatar className="w-14 h-14 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">
+                    <Avatar className="w-14 h-14 flex-shrink-0 border-2 border-[var(--glass-border)] shadow-md group-hover:scale-105 transition-transform duration-300">
                       <AvatarImage
                         src={pet.avatarUrl}
                         alt={pet.name}
@@ -495,15 +495,15 @@ function ProfileContent() {
                         />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-base truncate group-hover:text-primary transition-colors">
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <p className="font-bold text-base line-clamp-2 break-all group-hover:text-primary transition-colors">
                         {pet.name}
                       </p>
                       <p className="text-xs font-bold text-muted-foreground truncate">
                         {pet.breed || "犬種未設定"}
                       </p>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/20 flex items-center justify-center">
+                    <div className="w-8 h-8 flex-shrink-0 rounded-full bg-black/5 dark:bg-white/20 flex items-center justify-center">
                       <ChevronRight className="w-4 h-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </Link>

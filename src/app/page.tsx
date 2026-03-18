@@ -101,7 +101,21 @@ export default function Home() {
               transition={{ delay: 0.6 }}
               className="text-center text-sm text-muted-foreground"
             >
-              ログインすると、利用規約とプライバシーポリシーに同意したことになります。
+              ログインすると、
+              <a
+                href="/terms/"
+                className="underline text-primary hover:text-primary/80"
+              >
+                利用規約
+              </a>
+              と
+              <a
+                href="/privacy/"
+                className="underline text-primary hover:text-primary/80"
+              >
+                プライバシーポリシー
+              </a>
+              に同意したことになります。
             </motion.p>
           </CardContent>
         </Card>
